@@ -121,6 +121,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 /* ---------- home ---------- */
 .topbar { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .level-chip { flex: 1; max-width: 170px; }
+.row-chips { display: flex; gap: 6px; }
 .xpbar { flex: 1; height: 6px; border-radius: 9px; background: rgba(255,255,255,.1); overflow: hidden; }
 .xpbar div { height: 100%; width: 0; background: linear-gradient(90deg, var(--cyan), var(--pink)); box-shadow: 0 0 8px var(--cyan); transition: width .5s; }
 
@@ -191,6 +192,19 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .island.locked { opacity: .4; }
 .island:not(.locked):hover { border-color: var(--cyan); }
 
+/* ---------- hagdan ---------- */
+.ladder { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column-reverse; gap: 6px; }
+.ladder li {
+  display: flex; align-items: center; gap: 12px; padding: 9px 14px; border-radius: 12px;
+  background: var(--panel); border: 1px solid var(--line); color: var(--muted); font-weight: 700;
+}
+.ladder .num { font-family: var(--display); font-weight: 900; width: 22px; color: var(--purple); }
+.ladder .nm { flex: 1; }
+.ladder .st { color: var(--green); font-weight: 900; text-shadow: 0 0 8px var(--green); }
+.ladder li.done { color: var(--text); border-color: var(--green); }
+.ladder li.done .num { color: var(--green); }
+#hagdan-best { text-align: center; }
+
 /* ---------- mini games ---------- */
 .carousel { display: flex; align-items: center; gap: 6px; }
 .arrow { font-size: 32px; color: var(--cyan); padding: 6px; text-shadow: 0 0 10px var(--cyan); }
@@ -235,6 +249,23 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 #hud-progress { color: var(--muted); font-size: 13px; }
 .combo { font-family: var(--display); color: var(--pink); text-shadow: 0 0 10px var(--pink); font-size: 15px; }
 .combo.bump { animation: bump .25s; }
+.combo-meter { display: flex; align-items: center; gap: 10px; opacity: .35; transition: opacity .2s; }
+.combo-meter.on { opacity: 1; }
+.combo-track { flex: 1; height: 8px; border-radius: 9px; background: rgba(255,255,255,.1); overflow: hidden; }
+#combo-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--pink), var(--yellow)); box-shadow: 0 0 10px var(--pink); }
+#combo-mult { min-width: 52px; text-align: right; font-family: var(--display); font-weight: 900; font-size: 18px; color: var(--muted); }
+.combo-meter[data-tier="1"] #combo-mult { color: var(--cyan); text-shadow: 0 0 8px var(--cyan); }
+.combo-meter[data-tier="2"] #combo-mult { color: var(--green); text-shadow: 0 0 8px var(--green); }
+.combo-meter[data-tier="3"] #combo-mult, .combo-meter[data-tier="4"] #combo-mult { color: var(--yellow); text-shadow: 0 0 10px var(--yellow); animation: bump .6s infinite; }
+/* FEVER: the stage glows and the colours cycle */
+#screen-play.fever .stage { border-color: var(--pink); animation: fever 1.2s linear infinite; }
+#screen-play.super .stage { animation-duration: .6s; }
+@keyframes fever {
+  0%   { box-shadow: 0 0 26px var(--pink),   inset 0 0 30px rgba(255, 61, 242, .25); border-color: var(--pink); }
+  33%  { box-shadow: 0 0 26px var(--cyan),   inset 0 0 30px rgba(46, 242, 255, .25); border-color: var(--cyan); }
+  66%  { box-shadow: 0 0 26px var(--yellow), inset 0 0 30px rgba(255, 210, 61, .25); border-color: var(--yellow); }
+  100% { box-shadow: 0 0 26px var(--pink),   inset 0 0 30px rgba(255, 61, 242, .25); border-color: var(--pink); }
+}
 @keyframes bump { 50% { transform: scale(1.35); } }
 
 .stage {
@@ -292,6 +323,24 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .keypad button:active { transform: scale(.94); background: rgba(46, 242, 255, .25); }
 .keypad .fn { color: var(--pink); border-color: rgba(255, 61, 242, .55); }
 .keypad .ok { color: var(--green); border-color: rgba(61, 255, 154, .6); }
+.choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.choices button {
+  --c: var(--cyan);
+  min-height: 96px; padding: 8px 4px; border-radius: 20px;
+  font-family: var(--display); font-weight: 900; font-size: clamp(22px, 7.5vw, 32px);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c) 22%, transparent), rgba(10, 6, 30, .85));
+  border: 2px solid var(--c);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--c) 50%, transparent), inset 0 0 14px color-mix(in srgb, var(--c) 22%, transparent);
+  text-shadow: 0 0 10px var(--c);
+  transition: transform .06s;
+}
+.choices button:nth-child(2) { --c: var(--pink); }
+.choices button:nth-child(3) { --c: var(--yellow); }
+.choices button:active { transform: scale(.95); }
+.choices button.good { --c: var(--green); background: rgba(61, 255, 154, .25); }
+.choices button.bad { --c: var(--red); background: rgba(255, 61, 110, .25); animation: shake .35s; }
+.play-tools { display: flex; gap: 8px; justify-content: center; }
+.play-tools .btn.small { align-self: auto; }
 .tf { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .tf .btn { padding: 28px 10px; font-size: 22px; }
 
