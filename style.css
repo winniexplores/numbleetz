@@ -56,7 +56,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 }
 @keyframes grid { to { background-position: 0 48px, 0 0; } }
 .sym {
-  position: absolute; font-family: var(--display); font-weight: 900; opacity: .5;
+  position: absolute; font-family: var(--display); font-weight: 900; opacity: .28;
   animation: floaty linear infinite; pointer-events: none;
 }
 @keyframes floaty {
@@ -248,6 +248,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .hud-row { display: flex; justify-content: space-between; align-items: center; min-height: 26px; font-weight: 800; }
 #hud-lives { font-size: 18px; letter-spacing: 2px; }
 #hud-progress { color: var(--muted); font-size: 13px; }
+#hud-combo { display: none; }  /* the big combo counter in the hype panel replaces it */
 .combo { font-family: var(--num); color: var(--pink); text-shadow: 0 0 10px var(--pink); font-size: 15px; }
 .combo.bump { animation: bump .25s; }
 .combo-meter { display: flex; align-items: center; gap: 10px; opacity: .35; transition: opacity .2s; }
@@ -270,15 +271,15 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 @keyframes bump { 50% { transform: scale(1.35); } }
 
 .stage {
-  position: relative; flex: none; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  border-radius: 24px; background: var(--panel); border: 1px solid var(--line); padding: 18px 12px; overflow: hidden;
+  position: relative; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border-radius: 24px; background: rgba(14, 10, 38, .94); border: 1px solid var(--line); padding: 22px 14px 14px; overflow: hidden;
 }
 .question {
-  font-family: var(--num); font-weight: 700; font-size: clamp(40px, 12vw, 58px); text-align: center; line-height: 1.15;
-  letter-spacing: .02em; text-shadow: 0 0 14px rgba(46, 242, 255, .55);
+  font-family: var(--num); font-weight: 600; font-size: clamp(40px, 12vw, 56px); text-align: center; line-height: 1.15;
+  letter-spacing: .02em; color: #fff;
 }
-.question.long { font-family: var(--body); font-weight: 800; font-size: clamp(18px, 5.4vw, 23px); line-height: 1.45; text-shadow: 0 0 10px var(--cyan); }
-.question .q-ask { display: block; color: var(--yellow); text-shadow: 0 0 10px var(--yellow); margin-top: 4px; }
+.question.long { font-family: var(--body); font-weight: 800; font-size: clamp(18px, 5.4vw, 23px); line-height: 1.45; }
+.question .q-ask { display: block; color: var(--yellow); margin-top: 4px; }
 .answer {
   margin-top: 14px; min-width: 150px; min-height: 64px; padding: 6px 18px; border-radius: 16px; text-align: center;
   font-family: var(--num); font-weight: 900; font-size: 40px; color: var(--cyan);
@@ -298,7 +299,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   border: 1px dashed var(--yellow); color: var(--yellow); background: rgba(255, 210, 61, .08);
 }
 .road {
-  position: absolute; left: 12px; right: 12px; top: 12px; height: 40px;
+  position: relative; width: 100%; height: 40px; margin-bottom: 12px;
   border-bottom: 3px dashed rgba(255, 210, 61, .6);
 }
 .jeep { position: absolute; left: 0; bottom: 0; font-size: 32px; transform: scaleX(-1); filter: drop-shadow(0 0 8px var(--cyan)); }
@@ -324,15 +325,14 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .keypad button:active { transform: scale(.94); background: rgba(46, 242, 255, .25); }
 .keypad .fn { color: var(--pink); border-color: rgba(255, 61, 242, .55); }
 .keypad .ok { color: var(--green); border-color: rgba(61, 255, 154, .6); }
-.choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; margin-top: 18px; }
 .choices button {
   --c: var(--cyan);
-  min-height: 96px; padding: 8px 4px; border-radius: 20px;
+  min-height: 84px; padding: 8px 4px; border-radius: 18px;
   font-family: var(--num); font-weight: 700; font-size: clamp(26px, 8.5vw, 36px); color: #fff;
   background: linear-gradient(180deg, color-mix(in srgb, var(--c) 22%, transparent), rgba(10, 6, 30, .85));
   border: 2px solid var(--c);
-  box-shadow: 0 0 14px color-mix(in srgb, var(--c) 50%, transparent), inset 0 0 14px color-mix(in srgb, var(--c) 22%, transparent);
-  text-shadow: 0 0 10px color-mix(in srgb, var(--c) 70%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--c) 40%, transparent);
   transition: transform .06s;
 }
 .choices button:nth-child(2) { --c: var(--pink); }
@@ -342,6 +342,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .choices button.bad { --c: var(--red); background: rgba(255, 61, 110, .25); animation: shake .35s; }
 .play-tools { display: flex; gap: 8px; justify-content: center; }
 .play-tools .btn.small { align-self: auto; }
+.stage .tf { width: 100%; margin-top: 18px; }
 .tf { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .tf .btn { padding: 28px 10px; font-size: 22px; }
 
@@ -431,4 +432,27 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; }
+}
+
+/* ---------- hype panel: avatar, big combo, cheers ---------- */
+.hype { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 120px; text-align: center; }
+.hype-avatar { font-size: 54px; line-height: 1; filter: drop-shadow(0 0 14px rgba(46, 242, 255, .6)); }
+.hype-avatar.bounce { animation: hop .35s ease-out; }
+@keyframes hop { 40% { transform: translateY(-14px) scale(1.12); } }
+.hype-combo b { display: block; font-family: var(--num); font-weight: 700; font-size: 64px; line-height: 1; color: var(--muted); }
+.hype-combo span { font-family: var(--display); font-size: 11px; letter-spacing: .1em; color: var(--muted); }
+.hype-combo i { font-style: normal; color: var(--text); }
+.hype[data-tier="1"] .hype-combo b { color: var(--cyan); text-shadow: 0 0 16px var(--cyan); }
+.hype[data-tier="2"] .hype-combo b { color: var(--green); text-shadow: 0 0 16px var(--green); }
+.hype[data-tier="3"] .hype-combo b, .hype[data-tier="4"] .hype-combo b { color: var(--yellow); text-shadow: 0 0 20px var(--yellow); }
+.hype-cheer { min-height: 34px; font-family: var(--body); font-weight: 800; font-size: 24px; }
+.hype-cheer.pop { animation: cheerpop .4s ease-out; }
+@keyframes cheerpop { from { transform: scale(.5); opacity: 0; } 60% { transform: scale(1.15); } }
+
+/* ---------- phones: keep the question + choices low, near the thumb ---------- */
+@media (pointer: coarse) {
+  #screen-play .hype { flex: 1; }
+  .hype-avatar { font-size: 72px; }
+  .hype-combo b { font-size: 84px; }
+  #screen-play .play-tools { margin-bottom: 9vh; }   /* lifts the question box a little */
 }
