@@ -616,6 +616,8 @@
     $('#float-layer').innerHTML = '';
     show('play');
     sfx.start();
+    $('#hype-avatar').textContent = P.avatar;
+    cheer(pick(['Laban! 💪', 'Kaya mo yan!', 'Game na! 🎮'], Math.random), 'var(--cyan)');
     nextQ();
     requestAnimationFrame(tick);
   }
@@ -740,7 +742,7 @@
       const tier = tierOf(G.combo);
       if (G.M.climb && G.correct % PER_STEP === 0 && G.step < LADDER[G.op].length - 1) {
         G.step++;
-        floatText(`🪜 STEP ${G.step + 1}! Akyat!`, 'var(--cyan)', 20, -40);
+        cheer(`🪜 STEP ${G.step + 1}! Akyat!`, 'var(--cyan)');
         toast(`🪜 Step ${G.step + 1}: ${LADDER[G.op][G.step]}`);
         sfx.step();
       }
@@ -752,9 +754,10 @@
       stage.classList.add('good');
       if (!G.M.tf) renderInput('good');
       floatText(`+${pts}` + (speed ? ' ⚡' : ''), 'var(--green)');
-      if (tier !== prevTier) floatText(`×${tier[1]} ${tier[2]}`, 'var(--pink)', 22, 30);
-      else if (G.combo % 5 === 0) floatText(`${G.combo} COMBO! Laban! 🔥`, 'var(--pink)', 18, 30);
-      else if (Math.random() < 0.35) floatText(pick(CHEERS, Math.random), 'var(--yellow)', 18, 30);
+      if (tier !== prevTier) cheer(`×${tier[1]} ${tier[2]}`, 'var(--pink)');
+      else if (G.combo % 5 === 0) cheer(`${G.combo} COMBO! Laban! 🔥`, 'var(--pink)');
+      else if (!(G.M.climb && G.correct % PER_STEP === 0)) cheer(pick(CHEERS, Math.random), 'var(--yellow)');
+      bounceAvatar();
       sparks();
       if (tier !== prevTier && tier[1] >= 3) sfx.fever();
       else if (tier !== prevTier || G.combo % 5 === 0) sfx.combo();
@@ -777,7 +780,7 @@
         G.input = String(G.q.ans);
         renderInput('bad');
       }
-      floatText(timedOut ? 'Lumampas! 🚏' : pick(OOPS, Math.random), 'var(--red)');
+      cheer(timedOut ? 'Lumampas! 🚏' : pick(OOPS, Math.random), 'var(--red)');
       if (timedOut) sfx.horn();
       sfx.bad();
       updateHUD();
@@ -788,6 +791,19 @@
         else nextQ();
       }, 950);
     }
+  }
+
+  // Big cheer line in the hype panel above the question
+  function cheer(txt, color) {
+    const c = $('#hype-cheer');
+    c.textContent = txt;
+    c.style.color = color;
+    c.style.textShadow = `0 0 12px ${color}`;
+    c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop');
+  }
+  function bounceAvatar() {
+    const a = $('#hype-avatar');
+    a.classList.remove('bounce'); void a.offsetWidth; a.classList.add('bounce');
   }
 
   function floatText(txt, color, size, offset) {
@@ -819,6 +835,9 @@
     $('#hud-score').textContent = G.score;
     const tier = tierOf(G.combo);
     $('#hud-combo').textContent = G.combo >= 2 ? `${G.combo} COMBO` : '';
+    $('#hype-combo').textContent = G.combo;
+    $('#hype-mult').textContent = `×${tier[1]}`;
+    $('#hype').dataset.tier = COMBO_TIERS.indexOf(tier);
     $('#combo-mult').textContent = `×${tier[1]}`;
     $('#combo-meter').classList.toggle('on', G.combo > 0);
     if (G.combo === 0) $('#combo-fill').style.width = '0%';
@@ -870,7 +889,7 @@
 
   function breakCombo() {
     if (G.combo >= 3) {
-      floatText('Combo lost! 💨', 'var(--muted)', 18, -40);
+      cheer('Combo lost! 💨', 'var(--muted)');
       sfx.comboLost();
     }
     G.combo = 0;
