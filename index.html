@@ -24,7 +24,10 @@
           <span>Lv.<b id="home-level">1</b></span>
           <div class="xpbar"><div id="home-xp"></div></div>
         </div>
-        <button class="chip" id="btn-sound" title="Sound on/off">🔊</button>
+        <div class="row-chips">
+          <button class="chip" id="btn-music" title="Music on/off">🎵</button>
+          <button class="chip" id="btn-sound" title="Sound effects on/off">🔊</button>
+        </div>
       </header>
 
       <div class="logo">
@@ -47,6 +50,7 @@
         <button class="btn big pink" data-go="ranked">🏆 RANKED<small>60 seconds · halo-halo math · global ranking</small></button>
         <button class="btn big blue" data-go="daily">🌟 DAILY HAMON<small id="daily-sub">Same 20 questions for everyone today</small></button>
         <button class="btn big cyan" data-go="classic">🏝️ CLASSIC · ISLAND HOPPING<small>Batanes to Davao · stars · hints</small></button>
+        <button class="btn big green" data-go="hagdan">🪜 HAGDAN · LEVEL UP<small>One operation · gets harder the longer you play</small></button>
         <button class="btn big purple" data-go="mini">🕹️ MINI GAMES<small>Jeepney Rush · Sari-Sari · Tama o Mali · Tables</small></button>
         <div class="row">
           <button class="btn yellow" data-go="board">📊 LEADERBOARD</button>
@@ -62,6 +66,16 @@
       <p class="hint-text">Choose your route, then hop island to island. 15 questions, 3 lives. Earn ⭐ to sail to the next island.</p>
       <div class="ops" id="classic-ops"></div>
       <div class="islands" id="classic-levels"></div>
+    </section>
+
+    <!-- ===================== HAGDAN (LEVEL UP) ===================== -->
+    <section id="screen-hagdan" class="screen">
+      <header class="bar"><button class="back" data-go="home">‹ BACK</button><h3>HAGDAN</h3><span></span></header>
+      <p class="hint-text">Pick one operation. Every 8 correct answers you climb a step and it gets harder: whole numbers, bigger numbers, signed numbers, then decimals. 3 lives!</p>
+      <div class="ops" id="hagdan-ops"></div>
+      <ol class="ladder" id="hagdan-steps"></ol>
+      <div class="mini-best" id="hagdan-best"></div>
+      <button class="btn big pink" id="hagdan-play">▶ AKYAT NA!</button>
     </section>
 
     <!-- ===================== MINI GAMES ===================== -->
@@ -98,6 +112,10 @@
         <div id="hud-progress"></div>
         <div class="combo" id="hud-combo"></div>
       </div>
+      <div class="combo-meter" id="combo-meter" title="Answer before the bar runs out to keep your combo">
+        <div class="combo-track"><div id="combo-fill"></div></div>
+        <span id="combo-mult">×1</span>
+      </div>
 
       <div class="stage" id="stage">
         <div class="road hidden" id="road"><div class="jeep" id="jeep">🚙</div><div class="stop">🚏</div></div>
@@ -113,11 +131,15 @@
         <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
         <button data-k="del" class="fn">⌫</button><button data-k="0">0</button><button data-k="ok" class="fn ok">✓</button>
       </div>
+      <div class="choices hidden" id="choices"></div>
       <div class="tf hidden" id="tfpad">
         <button class="btn big green" data-tf="1">✓ TAMA</button>
         <button class="btn big pink" data-tf="0">✗ MALI</button>
       </div>
-      <button class="btn small ghost hidden" id="btn-hint">💡 Tulong (hint)</button>
+      <div class="play-tools">
+        <button class="btn small ghost hidden" id="btn-hint">💡 Tulong (hint)</button>
+        <button class="btn small ghost" id="btn-input">⌨️ Type instead</button>
+      </div>
     </section>
 
     <!-- ===================== RESULTS ===================== -->
