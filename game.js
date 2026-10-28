@@ -1,905 +1,433 @@
 /* ============================================================
-   NUMBLEETZ — game logic
-   Plain JavaScript, no libraries. Settings live in config.js.
+   NUMBLEETZ — neon arcade styles
    ============================================================ */
-(() => {
-  'use strict';
+:root {
+  --bg: #07061a;
+  --bg2: #120c33;
+  --panel: rgba(20, 14, 52, .78);
+  --line: rgba(140, 120, 255, .28);
+  --text: #f2efff;
+  --muted: #a49ccc;
+  --pink: #ff3df2;
+  --cyan: #2ef2ff;
+  --blue: #3d7bff;     /* PH flag blue  */
+  --red: #ff3d6e;      /* PH flag red   */
+  --yellow: #ffd23d;   /* PH flag sun   */
+  --green: #3dff9a;
+  --purple: #9b6bff;
+  --radius: 18px;
+  --display: "Orbitron", "Exo 2", system-ui, sans-serif;
+  --body: "Exo 2", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
 
-  const CFG = Object.assign({
-    GAME_NAME: 'NumBleetz', TAGLINE: 'Sipnayan Arcade', LEADERBOARD_URL: '', LEADERBOARD_SIZE: 50
-  }, window.GAME_CONFIG || {});
-  const API = String(CFG.LEADERBOARD_URL || '').trim();
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  overflow-x: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+}
+button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
+.hidden { display: none !important; }
 
-  const $ = (s) => document.querySelector(s);
-  const $$ = (s) => [...document.querySelectorAll(s)];
-  function el(tag, cls, text) {
-    const e = document.createElement(tag);
-    if (cls) e.className = cls;
-    if (text != null) e.textContent = text;
-    return e;
-  }
+/* ---------- animated background ---------- */
+#bg {
+  position: fixed; inset: 0; z-index: 0; overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(155, 107, 255, .35), transparent 60%),
+    radial-gradient(ellipse at 0% 100%, rgba(255, 61, 242, .25), transparent 55%),
+    radial-gradient(ellipse at 100% 80%, rgba(46, 242, 255, .2), transparent 55%),
+    linear-gradient(var(--bg2), var(--bg));
+}
+#bg::before {
+  content: ""; position: absolute; left: -50%; right: -50%; bottom: -10%; height: 55%;
+  background-image:
+    linear-gradient(rgba(255, 61, 242, .35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46, 242, 255, .3) 1px, transparent 1px);
+  background-size: 48px 48px;
+  transform: perspective(400px) rotateX(62deg);
+  animation: grid 4s linear infinite;
+  mask-image: linear-gradient(transparent, #000 60%);
+  -webkit-mask-image: linear-gradient(transparent, #000 60%);
+}
+@keyframes grid { to { background-position: 0 48px, 0 0; } }
+.sym {
+  position: absolute; font-family: var(--display); font-weight: 900; opacity: .5;
+  animation: floaty linear infinite; pointer-events: none;
+}
+@keyframes floaty {
+  from { transform: translateY(110vh) rotate(0deg); }
+  to   { transform: translateY(-15vh) rotate(360deg); }
+}
 
-  /* ---------------- game data ---------------- */
-  const AVATARS = ['🐒', '🐃', '🦅', '🐓', '🐠', '🥭', '🌺', '🦀', '🐢', '🦜', '🍍', '🐊'];
-  const OPS = {
-    add: { sym: '+', name: 'DAGDAG', color: 'cyan' },
-    sub: { sym: '−', name: 'BAWAS', color: 'pink' },
-    mul: { sym: '×', name: 'PARAMI', color: 'yellow' },
-    div: { sym: '÷', name: 'HATI', color: 'green' },
-    mix: { sym: '🍧', name: 'HALO-HALO', color: 'purple' }
-  };
-  const ISLANDS = [
-    ['Batanes', '🌊', 'Stone houses by the sea'],
-    ['Vigan', '🏛️', 'Calle Crisologo'],
-    ['Baguio', '🌲', 'City of Pines'],
-    ['Maynila', '🌆', 'Intramuros'],
-    ['Tagaytay', '🌋', 'Taal Volcano view'],
-    ['Boracay', '🏖️', 'White Beach'],
-    ['Bohol', '🍫', 'Chocolate Hills'],
-    ['Cebu', '⛪', "Magellan's Cross"],
-    ['Palawan', '🐠', 'El Nido lagoons'],
-    ['Davao', '🦅', 'Home of the Philippine Eagle']
-  ];
-  const RANKS = [
-    [0, 'BAGUHAN', '🌱'], [500, 'MASIPAG', '🐃'], [1000, 'MATALINO', '🦉'],
-    [1600, 'HENYO', '🧠'], [2400, 'BAYANI', '🛡️'], [3500, 'ALAMAT', '🌞']
-  ];
-  const CHEERS = ['Galing!', 'Ang bilis!', 'Astig!', 'Tama!', 'Lodi!', 'Petmalu!', 'Husay!'];
-  const OOPS = ['Sayang!', 'Konti na lang!', "Kaya mo 'yan!", 'Laban lang!'];
-  // [emoji, name, min price, max price]
-  const STORE = [
-    ['🍞', 'Pandesal', 2, 6], ['🍬', 'Kendi', 1, 3], ['🥤', 'Softdrinks', 15, 30],
-    ['🍿', 'Chichirya', 8, 20], ['🥚', 'Itlog', 7, 12], ['☕', 'Kape', 8, 15],
-    ['🐟', 'Sardinas', 18, 32], ['🍜', 'Pancit Canton', 14, 22], ['🍌', 'Banana cue', 12, 25],
-    ['🧊', 'Ice candy', 5, 10], ['🍚', 'Bigas (1 kilo)', 42, 60], ['🧼', 'Sabon', 20, 40]
-  ];
-  const BILLS = [20, 50, 100, 200, 500, 1000];
+/* ---------- layout ---------- */
+#app {
+  position: relative; z-index: 1;
+  max-width: 480px; min-height: 100vh; min-height: 100dvh; margin: 0 auto;
+  padding: max(14px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
+}
+.screen { display: none; flex-direction: column; gap: 14px; min-height: calc(100dvh - 32px); animation: pop .25s ease; }
+.screen.active { display: flex; }
+@keyframes pop { from { opacity: 0; transform: scale(.98); } }
+.row { display: flex; gap: 10px; }
+.row > * { flex: 1; }
 
-  const MODES = {
-    ranked:    { title: 'RANKED', board: true, time: 60, adaptive: true, op: 'mix', thresholds: [400, 900, 1600] },
-    daily:     { title: 'DAILY HAMON', board: true, questions: 20, op: 'mix', seeded: true, thresholds: [400, 900, 1500] },
-    classic:   { title: 'CLASSIC', questions: 15, lives: 3, hint: true },
-    jeepney:   { title: 'JEEPNEY RUSH', board: true, lives: 3, adaptive: true, op: 'mix', fuse: true, thresholds: [300, 800, 1500] },
-    sarisari:  { title: 'SARI-SARI STORE', board: true, time: 75, adaptive: true, store: true, thresholds: [250, 600, 1100] },
-    tamaomali: { title: 'TAMA O MALI', board: true, time: 45, adaptive: true, op: 'mix', tf: true, thresholds: [300, 800, 1400] },
-    tables:    { title: 'TIMES TABLES', questions: 12, lives: 3, hint: true }
-  };
-  const MINIS = [
-    { id: 'jeepney', icon: '🚙', title: 'JEEPNEY RUSH', tags: [['⚡ SPEED', 'yellow'], ['❤️ 3 LIVES', 'pink']],
-      desc: 'Answer before the jeepney reaches the stop! Every ride gets faster.' },
-    { id: 'sarisari', icon: '🏪', title: 'SARI-SARI STORE', tags: [['₱ PERA', 'green'], ['🧠 WORD PROBLEMS', 'cyan']],
-      desc: 'Be the tindera! Add up the prices and give the right sukli in 75 seconds.' },
-    { id: 'tamaomali', icon: '✅', title: 'TAMA O MALI', tags: [['⚡ SPEED', 'yellow'], ['👀 FOCUS', 'cyan']],
-      desc: 'Is the answer tama or mali? Tap fast, you only have 45 seconds!' },
-    { id: 'tables', icon: '📚', title: 'TIMES TABLES', tags: [['× PRACTICE', 'purple'], ['💡 HINTS', 'yellow']],
-      desc: 'Pick a table from 2 to 12 and master it. Get 3 stars on every table!' }
-  ];
-  const BOARD_TABS = [['ranked', '🏆 Ranked'], ['daily', '🌟 Daily'], ['jeepney', '🚙 Jeepney'], ['sarisari', '🏪 Sari-Sari'], ['tamaomali', '✅ Tama o Mali']];
+/* ---------- colours ---------- */
+.pink.pink   { --c: var(--pink); }
+.cyan.cyan   { --c: var(--cyan); }
+.blue.blue   { --c: var(--blue); }
+.red.red    { --c: var(--red); }
+.yellow.yellow { --c: var(--yellow); }
+.green.green  { --c: var(--green); }
+.purple.purple { --c: var(--purple); }
 
-  const CARDS = [
-    { id: 'sampaguita', e: '🌼', n: 'Sampaguita', d: 'Get your first correct answer', c: 'yellow', t: (p) => p.stats.correct >= 1 },
-    { id: 'tarsier', e: '🐒', n: 'Tarsier', d: 'Reach a 10 combo', c: 'green', t: (p) => p.stats.bestCombo >= 10 },
-    { id: 'kalabaw', e: '🐃', n: 'Kalabaw', d: '200 correct answers', c: 'cyan', t: (p) => p.stats.correct >= 200 },
-    { id: 'jeepney', e: '🚙', n: 'Jeepney', d: 'Score 500 in Jeepney Rush', c: 'pink', t: (p) => (p.best.jeepney || 0) >= 500 },
-    { id: 'halohalo', e: '🍧', n: 'Halo-Halo', d: 'Clear a Halo-Halo island', c: 'purple', t: (p) => Object.keys(p.classic).some((k) => k.startsWith('mix-') && p.classic[k] > 0) },
-    { id: 'bahaykubo', e: '🛖', n: 'Bahay Kubo', d: 'Collect 15 stars', c: 'green', t: (p) => totalStars(p) >= 15 },
-    { id: 'sarisari', e: '🏪', n: 'Sari-Sari', d: 'Score 600 in Sari-Sari Store', c: 'yellow', t: (p) => (p.best.sarisari || 0) >= 600 },
-    { id: 'tama', e: '✅', n: 'Tama!', d: 'Score 800 in Tama o Mali', c: 'green', t: (p) => (p.best.tamaomali || 0) >= 800 },
-    { id: 'parol', e: '🌟', n: 'Parol', d: 'Finish a Daily Hamon', c: 'yellow', t: (p) => p.stats.daily >= 1 },
-    { id: 'mayon', e: '🌋', n: 'Mayon', d: 'Reach a 25 combo', c: 'red', t: (p) => p.stats.bestCombo >= 25 },
-    { id: 'vinta', e: '⛵', n: 'Vinta', d: '3 stars on 6 times tables', c: 'cyan', t: (p) => Object.values(p.tables).filter((s) => s >= 3).length >= 6 },
-    { id: 'chocohills', e: '🍫', n: 'Chocolate Hills', d: 'Reach Davao on any route', c: 'pink', t: (p) => Object.keys(p.classic).some((k) => k.endsWith('-10') && p.classic[k] > 0) },
-    { id: 'banaue', e: '🌾', n: 'Banaue', d: '1,000 correct answers', c: 'green', t: (p) => p.stats.correct >= 1000 },
-    { id: 'agila', e: '🦅', n: 'Philippine Eagle', d: 'Reach HENYO rank', c: 'cyan', t: (p) => (p.best.ranked || 0) >= 1600 },
-    { id: 'sarimanok', e: '🐓', n: 'Sarimanok', d: 'Reach ALAMAT rank', c: 'pink', t: (p) => (p.best.ranked || 0) >= 3500 },
-    { id: 'araw', e: '☀️', n: 'Araw', d: 'Collect 100 stars', c: 'yellow', t: (p) => totalStars(p) >= 100 }
-  ];
+/* ---------- buttons ---------- */
+.btn {
+  --c: var(--cyan);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 13px 14px; border-radius: var(--radius);
+  font-family: var(--display); font-weight: 800; letter-spacing: .06em; font-size: 15px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c) 22%, transparent), rgba(10, 6, 30, .75));
+  border: 2px solid var(--c);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--c) 55%, transparent), inset 0 0 14px color-mix(in srgb, var(--c) 25%, transparent);
+  text-shadow: 0 0 8px var(--c);
+  transition: transform .08s, filter .15s;
+}
+.btn:hover { filter: brightness(1.15); }
+.btn:active { transform: scale(.97); }
+.btn.big { font-size: 19px; padding: 16px; }
+.btn small { font-family: var(--body); font-weight: 600; font-size: 12px; letter-spacing: .02em; color: var(--muted); text-shadow: none; margin-top: 3px; }
+.btn.small { font-size: 13px; padding: 9px 14px; align-self: center; }
+.btn.ghost { --c: var(--purple); background: transparent; box-shadow: none; }
+.btn:disabled { opacity: .45; pointer-events: none; }
 
-  /* ---------------- saved progress ---------------- */
-  const KEY = 'numbleetz.v1';
-  const DEFAULT = {
-    name: '', avatar: '🐒', id: '', xp: 0, sound: true,
-    classic: {}, tables: {}, best: {}, cards: [], local: {}, queue: [],
-    dailyDone: '', stats: { games: 0, correct: 0, answered: 0, bestCombo: 0, daily: 0 }
-  };
-  let P = load();
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 12px; border-radius: 999px;
+  background: var(--panel); border: 1px solid var(--line);
+  font-weight: 800; font-size: 13px;
+}
+.back {
+  white-space: nowrap;
+  font-family: var(--display); font-weight: 800; font-size: 12px; letter-spacing: .08em;
+  padding: 8px 12px; border-radius: 12px; color: var(--cyan);
+  background: var(--panel); border: 1px solid var(--line);
+}
+.back.small { padding: 8px 11px; }
 
-  function load() {
-    let saved = {};
-    try { saved = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { /* private mode */ }
-    const p = Object.assign({}, DEFAULT, saved);
-    p.stats = Object.assign({}, DEFAULT.stats, saved.stats);
-    ['classic', 'tables', 'best', 'local'].forEach((k) => { p[k] = Object.assign({}, p[k]); });
-    p.cards = Array.isArray(p.cards) ? p.cards : [];
-    p.queue = Array.isArray(p.queue) ? p.queue : [];
-    if (!p.id) p.id = Math.random().toString(36).slice(2) + Date.now().toString(36);
-    return p;
-  }
-  function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(P)); } catch (e) { /* storage full or blocked */ }
-  }
+/* ---------- home ---------- */
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.level-chip { flex: 1; max-width: 170px; }
+.row-chips { display: flex; gap: 6px; }
+.xpbar { flex: 1; height: 6px; border-radius: 9px; background: rgba(255,255,255,.1); overflow: hidden; }
+.xpbar div { height: 100%; width: 0; background: linear-gradient(90deg, var(--cyan), var(--pink)); box-shadow: 0 0 8px var(--cyan); transition: width .5s; }
 
-  /* ---------------- helpers ---------------- */
-  let rng = Math.random;
-  function mulberry32(a) {
-    return function () {
-      a |= 0; a = (a + 0x6D2B79F5) | 0;
-      let t = Math.imul(a ^ (a >>> 15), 1 | a);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-  function hashStr(s) {
-    let h = 2166136261;
-    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
-    return h >>> 0;
-  }
-  const rand = (a, b, r = rng) => a + Math.floor(r() * (b - a + 1));
-  const pick = (arr, r = rng) => arr[Math.floor(r() * arr.length)];
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  function shuffle(arr, r = rng) {
-    for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
-    return arr;
-  }
-  function manilaDate() {
-    try { return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Manila' }).format(new Date()); }
-    catch (e) { return new Date().toISOString().slice(0, 10); }
-  }
-  function totalStars(p) {
-    const sum = (o) => Object.values(o).reduce((a, b) => a + (b || 0), 0);
-    return sum(p.classic) + sum(p.tables);
-  }
-  function levelInfo(xp) {
-    const lvl = Math.floor(Math.sqrt(xp / 40)) + 1;
-    const lo = 40 * (lvl - 1) ** 2, hi = 40 * lvl ** 2;
-    return { lvl, pct: ((xp - lo) / (hi - lo)) * 100 };
-  }
-  function rankOf(score) {
-    let r = RANKS[0], next = null;
-    for (let i = 0; i < RANKS.length; i++) {
-      if (score >= RANKS[i][0]) { r = RANKS[i]; next = RANKS[i + 1] || null; }
-    }
-    return { min: r[0], name: r[1], icon: r[2], next };
-  }
-  function toast(msg, ms = 2200) {
-    const t = $('#toast');
-    t.textContent = msg;
-    t.classList.remove('hidden');
-    clearTimeout(toast.timer);
-    toast.timer = setTimeout(() => t.classList.add('hidden'), ms);
-  }
+.logo { text-align: center; margin: 6px 0 0; position: relative; }
+.sun {
+  font-size: 54px; line-height: 1; color: var(--yellow);
+  text-shadow: 0 0 18px var(--yellow), 0 0 40px #ff9d00;
+  animation: spin 18s linear infinite; display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.logo h1 {
+  text-transform: uppercase;
+  margin: 4px 0 0; font-family: var(--display); font-weight: 900; font-size: clamp(32px, 10vw, 46px);
+  letter-spacing: .04em; line-height: 1.05; color: #fff;
+  text-shadow: 0 0 6px #fff, 0 0 16px var(--cyan), 0 0 34px var(--blue);
+}
+.logo h2 {
+  text-transform: uppercase;
+  margin: 4px 0 0; font-family: var(--display); font-size: 14px; letter-spacing: .35em; color: var(--pink);
+  text-shadow: 0 0 10px var(--pink);
+}
+.stars3 { margin-top: 6px; display: flex; gap: 14px; justify-content: center; color: var(--yellow); text-shadow: 0 0 10px var(--yellow); font-size: 14px; }
+.stars3 span:nth-child(2) { transform: translateY(-4px); }
 
-  /* ---------------- sound ---------------- */
-  let actx = null;
-  function beep(freq, dur = 0.08, type = 'sine', vol = 0.07, delay = 0) {
-    if (!P.sound) return;
-    try {
-      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
-      const t0 = actx.currentTime + delay;
-      const o = actx.createOscillator(), g = actx.createGain();
-      o.type = type; o.frequency.value = freq;
-      g.gain.setValueAtTime(vol, t0);
-      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-      o.connect(g).connect(actx.destination);
-      o.start(t0); o.stop(t0 + dur);
-    } catch (e) { /* no audio */ }
-  }
-  const sfx = {
-    tap: () => beep(520, 0.03, 'square', 0.025),
-    good: (c) => { const f = 620 + Math.min(c, 15) * 35; beep(f, 0.08, 'triangle'); beep(f * 1.5, 0.1, 'triangle', 0.06, 0.06); },
-    bad: () => { beep(180, 0.22, 'sawtooth', 0.05); beep(120, 0.25, 'sawtooth', 0.04, 0.08); },
-    end: () => [523, 659, 784, 1046].forEach((f, i) => beep(f, 0.14, 'triangle', 0.06, i * 0.1))
-  };
+.rank-card {
+  display: flex; align-items: center; gap: 14px; text-align: left; width: 100%;
+  padding: 12px 14px; border-radius: var(--radius);
+  background: var(--panel); border: 1px solid var(--line);
+}
+.rank-badge {
+  width: 52px; height: 52px; display: grid; place-items: center; font-size: 28px; flex: none;
+  border-radius: 50%; border: 2px solid var(--yellow); box-shadow: 0 0 14px var(--yellow);
+}
+.rank-name { font-family: var(--display); font-weight: 900; letter-spacing: .1em; color: var(--yellow); text-shadow: 0 0 8px var(--yellow); }
+.rank-sub, .rank-next { font-size: 13px; color: var(--muted); }
+.rank-sub b { color: var(--text); }
+.menu { display: flex; flex-direction: column; gap: 11px; }
+.foot { text-align: center; color: var(--muted); font-size: 12px; margin: auto 0 0; }
 
-  /* ---------------- question makers ---------------- */
-  const AMAX = [10, 15, 20, 30, 50, 80, 100, 200, 500, 999];
-  const MULA = [5, 6, 9, 10, 12, 12, 15, 20, 25, 30];
-  const MULB = [5, 9, 10, 12, 12, 15, 15, 15, 20, 25];
+/* ---------- headers ---------- */
+.bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; }
+.bar > :last-child { justify-self: end; color: var(--muted); font-size: 13px; }
+.bar h3 { margin: 0; font-family: var(--display); font-size: 17px; letter-spacing: .1em; text-shadow: 0 0 10px var(--cyan); }
+.bar .back { justify-self: start; }
+.bar > .back:last-child { justify-self: end; }
+.hint-text { color: var(--muted); font-size: 14px; margin: 0; text-align: center; }
 
-  function makeQ(op, diff) {
-    const d = clamp(Math.round(diff), 1, 10);
-    if (op === 'mix') op = pick(d <= 2 ? ['add', 'sub'] : d <= 4 ? ['add', 'sub', 'mul'] : ['add', 'sub', 'mul', 'div']);
-    let a, b, ans;
-    if (op === 'add') { a = rand(1, AMAX[d - 1]); b = rand(1, AMAX[d - 1]); ans = a + b; }
-    else if (op === 'sub') { a = rand(2, AMAX[d - 1] + Math.floor(AMAX[d - 1] / 2)); b = rand(1, a); ans = a - b; }
-    else if (op === 'mul') {
-      a = rand(2, MULA[d - 1]); b = rand(d > 1 ? 2 : 1, MULB[d - 1]);
-      if (rng() < 0.5) [a, b] = [b, a];
-      ans = a * b;
-    } else { b = rand(2, Math.max(2, MULA[d - 1])); ans = rand(1, MULB[d - 1]); a = b * ans; }
-    return { op, a, b, ans, d, text: `${a} ${OPS[op].sym} ${b}` };
-  }
+/* ---------- classic ---------- */
+.ops { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+.op {
+  --c: var(--cyan);
+  padding: 10px 2px; border-radius: 14px; text-align: center;
+  background: var(--panel); border: 2px solid var(--line);
+  font-family: var(--display); font-weight: 900; font-size: 24px; line-height: 1.1;
+}
+.op small { display: block; font-family: var(--body); font-size: 10px; font-weight: 800; letter-spacing: .04em; color: var(--muted); margin-top: 2px; }
+.op.active { border-color: var(--c); box-shadow: 0 0 14px var(--c); text-shadow: 0 0 8px var(--c); }
+.islands { display: flex; flex-direction: column; gap: 8px; }
+.island {
+  display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 14px; width: 100%; text-align: left;
+  background: var(--panel); border: 1px solid var(--line);
+}
+.island .num { font-family: var(--display); font-weight: 900; width: 26px; color: var(--cyan); }
+.island .em { font-size: 24px; }
+.island .nm { flex: 1; font-weight: 800; }
+.island .nm small { display: block; color: var(--muted); font-weight: 600; font-size: 12px; }
+.island .st { color: var(--yellow); letter-spacing: 2px; text-shadow: 0 0 6px var(--yellow); }
+.island.locked { opacity: .4; }
+.island:not(.locked):hover { border-color: var(--cyan); }
 
-  function tablesQ(table, k) {
-    const [a, b] = rng() < 0.5 ? [table, k] : [k, table];
-    return { op: 'mul', a, b, ans: a * b, d: 3, text: `${a} × ${b}` };
-  }
+/* ---------- hagdan ---------- */
+.ladder { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column-reverse; gap: 6px; }
+.ladder li {
+  display: flex; align-items: center; gap: 12px; padding: 9px 14px; border-radius: 12px;
+  background: var(--panel); border: 1px solid var(--line); color: var(--muted); font-weight: 700;
+}
+.ladder .num { font-family: var(--display); font-weight: 900; width: 22px; color: var(--purple); }
+.ladder .nm { flex: 1; }
+.ladder .st { color: var(--green); font-weight: 900; text-shadow: 0 0 8px var(--green); }
+.ladder li.done { color: var(--text); border-color: var(--green); }
+.ladder li.done .num { color: var(--green); }
+#hagdan-best { text-align: center; }
 
-  // Wrong-but-believable answers for Tama o Mali
-  function wrongAnswer(q) {
-    const opts = [1, -1, 2, -2, 10, -10];
-    if (q.op === 'mul') opts.push(q.a, -q.a, q.b, -q.b);
-    for (let i = 0; i < 20; i++) {
-      const w = q.ans + pick(opts);
-      if (w >= 0 && w !== q.ans) return w;
-    }
-    return q.ans + 1;
-  }
+/* ---------- mini games ---------- */
+.carousel { display: flex; align-items: center; gap: 6px; }
+.arrow { font-size: 32px; color: var(--cyan); padding: 6px; text-shadow: 0 0 10px var(--cyan); }
+.mini-card {
+  flex: 1; text-align: center; padding: 18px 14px; border-radius: 24px;
+  background: var(--panel); border: 2px solid var(--purple); box-shadow: 0 0 22px rgba(155, 107, 255, .45);
+}
+.orb {
+  width: 120px; height: 120px; margin: 0 auto 12px; border-radius: 50%; display: grid; place-items: center;
+  border: 2px dashed var(--cyan); box-shadow: 0 0 26px var(--cyan), inset 0 0 26px rgba(46, 242, 255, .4);
+  font-size: 58px; animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 50% { box-shadow: 0 0 40px var(--pink), inset 0 0 30px rgba(255, 61, 242, .4); border-color: var(--pink); } }
+.mini-card h4 { margin: 0; font-family: var(--display); font-size: 22px; letter-spacing: .06em; text-shadow: 0 0 10px #fff; }
+.tags { display: flex; gap: 6px; justify-content: center; margin: 10px 0; flex-wrap: wrap; }
+.tag { font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 99px; border: 1px solid var(--c, var(--cyan)); color: var(--c, var(--cyan)); }
+.mini-card p { margin: 0; color: var(--muted); font-size: 14px; min-height: 40px; }
+.mini-best { margin-top: 8px; font-size: 13px; color: var(--yellow); }
+.dots { display: flex; gap: 6px; justify-content: center; }
+.dots span { width: 8px; height: 8px; border-radius: 9px; background: rgba(255,255,255,.2); }
+.dots span.on { width: 22px; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+.tables-pick { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.tables-pick button {
+  padding: 9px 0; border-radius: 10px; background: var(--panel); border: 1px solid var(--line);
+  font-family: var(--display); font-weight: 800; position: relative;
+}
+.tables-pick button.active { border-color: var(--yellow); box-shadow: 0 0 10px var(--yellow); color: var(--yellow); }
+.tables-pick button i { position: absolute; top: -4px; right: -2px; font-size: 9px; font-style: normal; color: var(--yellow); }
 
-  function storeQ(diff) {
-    const d = clamp(Math.round(diff), 1, 10);
-    const items = shuffle(STORE.slice()).map((s) => ({ e: s[0], n: s[1], p: rand(s[2], s[3]) }));
-    const billFor = (amt) => {
-      const ok = BILLS.filter((b) => b > amt);
-      return ok[rng() < 0.7 || ok.length < 2 ? 0 : 1] || 1000;
-    };
-    const type = d <= 2 ? pick(['total', 'qty']) : d <= 5 ? pick(['total', 'qty', 'sukli']) : pick(['total3', 'qtysukli', 'sukli', 'qty']);
-    const line = (x, n) => (n ? `${n} × ${x.e} ${x.n} @ ₱${x.p}` : `${x.e} ${x.n} ₱${x.p}`);
-    let lines, ask, ans;
-    const [x, y, z] = items;
-    if (type === 'total') { lines = [line(x), line(y)]; ask = 'Magkano lahat?'; ans = x.p + y.p; }
-    else if (type === 'total3') { lines = [line(x), line(y), line(z)]; ask = 'Magkano lahat?'; ans = x.p + y.p + z.p; }
-    else if (type === 'qty') { const n = rand(2, d <= 2 ? 3 : 6); lines = [line(x, n)]; ask = 'Magkano lahat?'; ans = n * x.p; }
-    else if (type === 'sukli') { const bill = billFor(x.p); lines = [line(x), `💵 Bayad: ₱${bill}`]; ask = 'Magkano ang sukli?'; ans = bill - x.p; }
-    else { const n = rand(2, 4), tot = n * x.p, bill = billFor(tot); lines = [line(x, n), `💵 Bayad: ₱${bill}`]; ask = 'Magkano ang sukli?'; ans = bill - tot; }
-    return { op: 'store', ans, d, long: true, lines, ask };
-  }
+/* ---------- play ---------- */
+.hud { display: flex; align-items: center; gap: 10px; }
+.hud-mid { flex: 1; }
+.hud-mode { font-family: var(--display); font-size: 12px; letter-spacing: .14em; color: var(--pink); text-shadow: 0 0 8px var(--pink); margin-bottom: 5px; }
+.timer { height: 10px; border-radius: 9px; background: rgba(255,255,255,.1); overflow: hidden; }
+.timer div { height: 100%; width: 100%; background: linear-gradient(90deg, var(--green), var(--cyan)); box-shadow: 0 0 10px var(--cyan); }
+.timer div.low { background: linear-gradient(90deg, var(--red), var(--pink)); box-shadow: 0 0 10px var(--red); }
+.hud-score { text-align: right; min-width: 70px; }
+.hud-score span { display: block; font-family: var(--display); font-weight: 900; font-size: 24px; color: var(--yellow); text-shadow: 0 0 10px var(--yellow); }
+.hud-score small { font-size: 10px; color: var(--muted); letter-spacing: .1em; }
+.hud-row { display: flex; justify-content: space-between; align-items: center; min-height: 26px; font-weight: 800; }
+#hud-lives { font-size: 18px; letter-spacing: 2px; }
+#hud-progress { color: var(--muted); font-size: 13px; }
+.combo { font-family: var(--display); color: var(--pink); text-shadow: 0 0 10px var(--pink); font-size: 15px; }
+.combo.bump { animation: bump .25s; }
+.combo-meter { display: flex; align-items: center; gap: 10px; opacity: .35; transition: opacity .2s; }
+.combo-meter.on { opacity: 1; }
+.combo-track { flex: 1; height: 8px; border-radius: 9px; background: rgba(255,255,255,.1); overflow: hidden; }
+#combo-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--pink), var(--yellow)); box-shadow: 0 0 10px var(--pink); }
+#combo-mult { min-width: 52px; text-align: right; font-family: var(--display); font-weight: 900; font-size: 18px; color: var(--muted); }
+.combo-meter[data-tier="1"] #combo-mult { color: var(--cyan); text-shadow: 0 0 8px var(--cyan); }
+.combo-meter[data-tier="2"] #combo-mult { color: var(--green); text-shadow: 0 0 8px var(--green); }
+.combo-meter[data-tier="3"] #combo-mult, .combo-meter[data-tier="4"] #combo-mult { color: var(--yellow); text-shadow: 0 0 10px var(--yellow); animation: bump .6s infinite; }
+/* FEVER: the stage glows and the colours cycle */
+#screen-play.fever .stage { border-color: var(--pink); animation: fever 1.2s linear infinite; }
+#screen-play.super .stage { animation-duration: .6s; }
+@keyframes fever {
+  0%   { box-shadow: 0 0 26px var(--pink),   inset 0 0 30px rgba(255, 61, 242, .25); border-color: var(--pink); }
+  33%  { box-shadow: 0 0 26px var(--cyan),   inset 0 0 30px rgba(46, 242, 255, .25); border-color: var(--cyan); }
+  66%  { box-shadow: 0 0 26px var(--yellow), inset 0 0 30px rgba(255, 210, 61, .25); border-color: var(--yellow); }
+  100% { box-shadow: 0 0 26px var(--pink),   inset 0 0 30px rgba(255, 61, 242, .25); border-color: var(--pink); }
+}
+@keyframes bump { 50% { transform: scale(1.35); } }
 
-  // Friendly strategy tips ("Tulong") for Classic and Times Tables
-  function hintFor(q) {
-    const { op, a, b } = q;
-    if (op === 'add') {
-      if (b >= 10) { const t = b - (b % 10); return `Split it: ${a} + ${t} = ${a + t}, then add ${b % 10}.`; }
-      return `Start at ${Math.max(a, b)} and count up ${Math.min(a, b)}.`;
-    }
-    if (op === 'sub') {
-      if (b >= 10) { const t = b - (b % 10); return `Split it: ${a} − ${t} = ${a - t}, then take away ${b % 10}.`; }
-      return `Start at ${a} and count back ${b}.`;
-    }
-    if (op === 'mul') {
-      const big = Math.max(a, b), small = Math.min(a, b);
-      if (big > 10) return `Split it: 10 × ${small} = ${10 * small}, plus ${big - 10} × ${small} = ${(big - 10) * small}.`;
-      if (small <= 1) return `Anything times 1 stays the same!`;
-      return `${big} × ${small - 1} = ${big * (small - 1)}. Add one more ${big}.`;
-    }
-    if (op === 'div') return `Think: ${b} × ? = ${a}`;
-    return '';
-  }
+.stage {
+  position: relative; flex: 1; min-height: 210px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border-radius: 24px; background: var(--panel); border: 1px solid var(--line); padding: 18px 12px; overflow: hidden;
+}
+.question {
+  font-family: var(--display); font-weight: 900; font-size: clamp(34px, 11vw, 52px); text-align: center; line-height: 1.15;
+  text-shadow: 0 0 8px #fff, 0 0 22px var(--cyan);
+}
+.question.long { font-family: var(--body); font-weight: 800; font-size: clamp(18px, 5.4vw, 23px); line-height: 1.45; text-shadow: 0 0 10px var(--cyan); }
+.question .q-ask { display: block; color: var(--yellow); text-shadow: 0 0 10px var(--yellow); margin-top: 4px; }
+.answer {
+  margin-top: 14px; min-width: 150px; min-height: 64px; padding: 6px 18px; border-radius: 16px; text-align: center;
+  font-family: var(--display); font-weight: 900; font-size: 40px; color: var(--cyan);
+  border: 2px solid var(--cyan); box-shadow: 0 0 14px rgba(46, 242, 255, .5), inset 0 0 14px rgba(46, 242, 255, .2);
+}
+.stage.good { animation: good .35s; }
+.stage.bad { animation: shake .35s; }
+@keyframes good { 40% { box-shadow: 0 0 40px var(--green), inset 0 0 30px rgba(61, 255, 154, .35); border-color: var(--green); } }
+@keyframes shake {
+  20%, 60% { transform: translateX(-8px); box-shadow: 0 0 30px var(--red); border-color: var(--red); }
+  40%, 80% { transform: translateX(8px); }
+}
+.answer.bad { color: var(--red); border-color: var(--red); box-shadow: 0 0 14px var(--red); }
+.answer.good { color: var(--green); border-color: var(--green); box-shadow: 0 0 14px var(--green); }
+.tutor {
+  margin-top: 12px; padding: 9px 12px; border-radius: 12px; font-size: 14px; text-align: center;
+  border: 1px dashed var(--yellow); color: var(--yellow); background: rgba(255, 210, 61, .08);
+}
+.road {
+  position: absolute; left: 12px; right: 12px; top: 12px; height: 40px;
+  border-bottom: 3px dashed rgba(255, 210, 61, .6);
+}
+.jeep { position: absolute; left: 0; bottom: 0; font-size: 32px; transform: scaleX(-1); filter: drop-shadow(0 0 8px var(--cyan)); }
+.stop { position: absolute; right: 0; bottom: 0; font-size: 28px; filter: drop-shadow(0 0 8px var(--pink)); }
+.road.danger .jeep { filter: drop-shadow(0 0 10px var(--red)); }
+.float-layer { position: absolute; inset: 0; pointer-events: none; }
+.float {
+  position: absolute; left: 50%; top: 42%; transform: translate(-50%, 0);
+  font-family: var(--display); font-weight: 900; font-size: 22px; white-space: nowrap;
+  animation: rise .9s ease-out forwards;
+}
+@keyframes rise { to { transform: translate(-50%, -70px); opacity: 0; } }
+.spark { position: absolute; width: 7px; height: 7px; border-radius: 50%; animation: burst .6s ease-out forwards; }
+@keyframes burst { to { transform: translate(var(--dx), var(--dy)) scale(.2); opacity: 0; } }
 
-  /* ---------------- screens ---------------- */
-  function show(id) {
-    $$('.screen').forEach((s) => s.classList.toggle('active', s.id === 'screen-' + id));
-    window.scrollTo(0, 0);
-    if (id === 'home') renderHome();
-    if (id === 'classic') renderClassic();
-    if (id === 'mini') renderMini();
-    if (id === 'cards') renderCards();
-  }
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+.keypad button {
+  padding: 15px 0; border-radius: 16px; font-family: var(--display); font-weight: 800; font-size: 25px;
+  background: linear-gradient(180deg, rgba(155, 107, 255, .22), rgba(10, 6, 30, .8));
+  border: 1px solid rgba(155, 107, 255, .55); box-shadow: inset 0 0 12px rgba(155, 107, 255, .25);
+  transition: transform .06s;
+}
+.keypad button:active { transform: scale(.94); background: rgba(46, 242, 255, .25); }
+.keypad .fn { color: var(--pink); border-color: rgba(255, 61, 242, .55); }
+.keypad .ok { color: var(--green); border-color: rgba(61, 255, 154, .6); }
+.choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.choices button {
+  --c: var(--cyan);
+  min-height: 96px; padding: 8px 4px; border-radius: 20px;
+  font-family: var(--display); font-weight: 900; font-size: clamp(22px, 7.5vw, 32px);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c) 22%, transparent), rgba(10, 6, 30, .85));
+  border: 2px solid var(--c);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--c) 50%, transparent), inset 0 0 14px color-mix(in srgb, var(--c) 22%, transparent);
+  text-shadow: 0 0 10px var(--c);
+  transition: transform .06s;
+}
+.choices button:nth-child(2) { --c: var(--pink); }
+.choices button:nth-child(3) { --c: var(--yellow); }
+.choices button:active { transform: scale(.95); }
+.choices button.good { --c: var(--green); background: rgba(61, 255, 154, .25); }
+.choices button.bad { --c: var(--red); background: rgba(255, 61, 110, .25); animation: shake .35s; }
+.play-tools { display: flex; gap: 8px; justify-content: center; }
+.play-tools .btn.small { align-self: auto; }
+.tf { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tf .btn { padding: 28px 10px; font-size: 22px; }
 
-  function renderHome() {
-    $('#game-title').textContent = CFG.GAME_NAME;
-    $('#game-tagline').textContent = CFG.TAGLINE;
-    $('#home-name').textContent = P.name || 'Player';
-    $('#home-avatar').textContent = P.avatar;
-    const L = levelInfo(P.xp);
-    $('#home-level').textContent = L.lvl;
-    $('#home-xp').style.width = L.pct + '%';
-    $('#btn-sound').textContent = P.sound ? '🔊' : '🔇';
-    const best = P.best.ranked || 0, R = rankOf(best);
-    $('#home-rank-badge').textContent = R.icon;
-    $('#home-rank-name').textContent = R.name;
-    $('#home-rank-best').textContent = best;
-    $('#home-rank-next').textContent = R.next ? `Next: ${R.next[1]} at ${R.next[0]}` : 'Pinakamataas na rank! 👑';
-    $('#home-stars').textContent = totalStars(P);
-    $('#home-cards').textContent = `${P.cards.length}/${CARDS.length}`;
-    $('#daily-sub').textContent = P.dailyDone === manilaDate()
-      ? '✅ Done today · practice run (not ranked)'
-      : 'Same 20 questions for everyone · first try counts';
-  }
+/* ---------- results ---------- */
+.res-title { margin: 18px 0 0; text-align: center; font-family: var(--display); font-size: 30px; letter-spacing: .08em; color: var(--pink); text-shadow: 0 0 14px var(--pink); }
+.res-stars { text-align: center; font-size: 46px; color: var(--yellow); text-shadow: 0 0 16px var(--yellow); letter-spacing: 8px; }
+.res-score { text-align: center; font-family: var(--display); font-weight: 900; font-size: 56px; text-shadow: 0 0 10px #fff, 0 0 30px var(--cyan); }
+.res-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.res-grid div { text-align: center; padding: 10px 4px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); }
+.res-grid b { display: block; font-family: var(--display); font-size: 18px; color: var(--cyan); }
+.res-grid small { font-size: 10px; color: var(--muted); letter-spacing: .06em; }
+.res-msg { text-align: center; color: var(--muted); min-height: 20px; font-size: 14px; }
+.res-msg b { color: var(--yellow); }
+.res-cards { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.res-cards .card { width: 96px; }
 
-  let classicOp = 'add';
-  function renderClassic() {
-    const ops = $('#classic-ops');
-    ops.innerHTML = '';
-    Object.entries(OPS).forEach(([k, o]) => {
-      const b = el('button', `op ${o.color}${k === classicOp ? ' active' : ''}`, o.sym);
-      b.appendChild(el('small', null, o.name));
-      b.onclick = () => { classicOp = k; sfx.tap(); renderClassic(); };
-      ops.appendChild(b);
-    });
-    const list = $('#classic-levels');
-    list.innerHTML = '';
-    ISLANDS.forEach(([name, em, sub], i) => {
-      const lvl = i + 1;
-      const stars = P.classic[`${classicOp}-${lvl}`] || 0;
-      const unlocked = lvl === 1 || (P.classic[`${classicOp}-${lvl - 1}`] || 0) > 0;
-      const b = el('button', 'island' + (unlocked ? '' : ' locked'));
-      b.appendChild(el('span', 'num', lvl));
-      b.appendChild(el('span', 'em', unlocked ? em : '🔒'));
-      const nm = el('span', 'nm', name);
-      nm.appendChild(el('small', null, sub));
-      b.appendChild(nm);
-      b.appendChild(el('span', 'st', '★'.repeat(stars) + '☆'.repeat(3 - stars)));
-      b.onclick = () => {
-        if (!unlocked) { toast(`Clear ${ISLANDS[i - 1][0]} first ⛵`); return; }
-        startGame('classic', { op: classicOp, level: lvl });
-      };
-      list.appendChild(b);
-    });
-  }
+/* ---------- leaderboard ---------- */
+.tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px; }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs button {
+  flex: none; padding: 8px 12px; border-radius: 999px; font-weight: 800; font-size: 13px;
+  background: var(--panel); border: 1px solid var(--line); color: var(--muted);
+}
+.tabs button.active { color: var(--bg); background: var(--cyan); box-shadow: 0 0 12px var(--cyan); }
+.tabs.small { justify-content: center; }
+.tabs.small button { font-size: 11px; padding: 6px 12px; }
+.board-status { text-align: center; color: var(--muted); font-size: 13px; min-height: 18px; }
+.board { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.board li {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px;
+  background: var(--panel); border: 1px solid var(--line);
+}
+.board .pos { width: 30px; font-family: var(--display); font-weight: 900; color: var(--muted); text-align: center; }
+.board .av { font-size: 22px; }
+.board .nm { flex: 1; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.board .nm small { display: block; font-weight: 600; font-size: 11px; color: var(--muted); }
+.board .sc { font-family: var(--display); font-weight: 900; color: var(--yellow); text-shadow: 0 0 8px var(--yellow); }
+.board li:nth-child(1) .pos { color: var(--yellow); }
+.board li:nth-child(2) .pos { color: #d9e4ff; }
+.board li:nth-child(3) .pos { color: #ff9d5c; }
+.board li.me { border-color: var(--pink); box-shadow: 0 0 12px rgba(255, 61, 242, .6); }
 
-  let miniIdx = 0, tablePick = 2;
-  function renderMini() {
-    const m = MINIS[miniIdx];
-    $('#mini-icon').textContent = m.icon;
-    $('#mini-title').textContent = m.title;
-    $('#mini-desc').textContent = m.desc;
-    const tags = $('#mini-tags');
-    tags.innerHTML = '';
-    m.tags.forEach(([t, c]) => { const s = el('span', 'tag ' + c, t); s.style.setProperty('--c', `var(--${c})`); tags.appendChild(s); });
-    $('#mini-best').textContent = m.id === 'tables'
-      ? `⭐ ${Object.values(P.tables).reduce((a, b) => a + b, 0)} / 33 stars`
-      : `Best: ${P.best[m.id] || 0}`;
-    $('#mini-dots').innerHTML = MINIS.map((_, i) => `<span class="${i === miniIdx ? 'on' : ''}"></span>`).join('');
-    const tp = $('#tables-pick');
-    tp.classList.toggle('hidden', m.id !== 'tables');
-    if (m.id === 'tables') {
-      tp.innerHTML = '';
-      for (let t = 2; t <= 12; t++) {
-        const b = el('button', t === tablePick ? 'active' : '', t);
-        const s = P.tables[t] || 0;
-        if (s) b.appendChild(el('i', null, '★'.repeat(s)));
-        b.onclick = () => { tablePick = t; sfx.tap(); renderMini(); };
-        tp.appendChild(b);
-      }
-    }
-  }
+/* ---------- cards ---------- */
+.cards-progress { height: 8px; border-radius: 9px; background: rgba(255,255,255,.1); overflow: hidden; }
+.cards-progress div { height: 100%; background: linear-gradient(90deg, var(--yellow), var(--pink)); box-shadow: 0 0 8px var(--pink); }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.card {
+  --c: var(--cyan);
+  padding: 12px 6px 10px; border-radius: 16px; text-align: center;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c) 20%, transparent), rgba(10, 6, 30, .85));
+  border: 2px solid var(--c); box-shadow: 0 0 14px color-mix(in srgb, var(--c) 50%, transparent);
+}
+.card .ci { font-size: 38px; filter: drop-shadow(0 0 8px var(--c)); }
+.card .cn { font-weight: 800; font-size: 13px; margin-top: 4px; }
+.card .cd { font-size: 10.5px; color: var(--muted); margin-top: 3px; line-height: 1.3; }
+.card.locked { --c: #4a4370; box-shadow: none; }
+.card.locked .ci { filter: grayscale(1) brightness(.4); }
+.card.new { animation: pulse 1.4s ease-in-out infinite; }
 
-  function renderCards() {
-    const grid = $('#cards-grid');
-    grid.innerHTML = '';
-    CARDS.forEach((c) => grid.appendChild(cardEl(c, P.cards.includes(c.id))));
-    $('#cards-count').textContent = `${P.cards.length}/${CARDS.length}`;
-    $('#cards-bar').style.width = (P.cards.length / CARDS.length) * 100 + '%';
-  }
-  function cardEl(c, owned, isNew) {
-    const d = el('div', 'card' + (owned ? '' : ' locked') + (isNew ? ' new' : ''));
-    if (owned) d.style.setProperty('--c', `var(--${c.c})`);
-    d.appendChild(el('div', 'ci', owned ? c.e : '🔒'));
-    d.appendChild(el('div', 'cn', owned ? c.n : '???'));
-    d.appendChild(el('div', 'cd', c.d));
-    return d;
-  }
-  function checkCards() {
-    const fresh = CARDS.filter((c) => !P.cards.includes(c.id) && c.t(P));
-    fresh.forEach((c) => P.cards.push(c.id));
-    return fresh;
-  }
+/* ---------- modal & toast ---------- */
+.modal { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 16px; background: rgba(4, 3, 14, .8); backdrop-filter: blur(4px); }
+.modal-box {
+  width: 100%; max-width: 380px; padding: 22px; border-radius: 22px; text-align: center;
+  background: var(--bg2); border: 2px solid var(--pink); box-shadow: 0 0 30px rgba(255, 61, 242, .5);
+  display: flex; flex-direction: column; gap: 12px;
+}
+.modal-box h3 { margin: 0; font-family: var(--display); letter-spacing: .06em; text-shadow: 0 0 10px var(--pink); }
+.modal-box p { margin: 0; color: var(--muted); font-size: 14px; }
+.modal-box input {
+  padding: 13px; border-radius: 12px; border: 2px solid var(--cyan); background: rgba(0,0,0,.35); color: var(--text);
+  font: 800 18px var(--body); text-align: center; outline: none; -webkit-user-select: text; user-select: text;
+}
+.avatars { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.avatars button { font-size: 26px; padding: 6px 0; border-radius: 12px; border: 2px solid transparent; background: var(--panel); }
+.avatars button.active { border-color: var(--yellow); box-shadow: 0 0 10px var(--yellow); }
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 20; max-width: 90vw;
+  padding: 10px 18px; border-radius: 99px; font-weight: 800; font-size: 14px;
+  background: var(--bg2); border: 1px solid var(--cyan); box-shadow: 0 0 14px var(--cyan);
+}
 
-  /* ---------------- gameplay ---------------- */
-  let G = null;
-
-  function startGame(mode, opts = {}) {
-    const M = MODES[mode];
-    const today = manilaDate();
-    rng = M.seeded ? mulberry32(hashStr('bilang-' + today)) : Math.random;
-    G = {
-      mode, M, opts, op: opts.op || M.op || 'mix',
-      diff: mode === 'classic' ? opts.level : 2,
-      score: 0, combo: 0, bestCombo: 0, correct: 0, wrong: 0, answered: 0,
-      lives: M.lives || 0, timeLeft: M.time || 0, qIndex: 0, total: M.questions || 0,
-      input: '', q: null, qStart: 0, fuse: 0, fuseMax: 1, locked: false, over: false, hinted: false,
-      last: performance.now(), ranked: true
-    };
-    if (mode === 'tables') G.deck = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-    if (mode === 'daily') {
-      G.ranked = P.dailyDone !== today;   // only the first try each day goes to the leaderboard
-      P.dailyDone = today;
-      save();
-    }
-
-    let title = M.title;
-    if (mode === 'classic') title = `${OPS[G.op].name} · ${ISLANDS[opts.level - 1][0].toUpperCase()}`;
-    if (mode === 'tables') title = `TIMES TABLE · ${opts.table}`;
-    if (mode === 'daily' && !G.ranked) title += ' · PRACTICE';
-    $('#hud-mode').textContent = title;
-    $('#keypad').classList.toggle('hidden', !!M.tf);
-    $('#tfpad').classList.toggle('hidden', !M.tf);
-    $('#answer').classList.toggle('hidden', !!M.tf);
-    $('#btn-hint').classList.toggle('hidden', !M.hint);
-    $('#road').classList.toggle('hidden', !M.fuse);
-    $('#float-layer').innerHTML = '';
-    show('play');
-    nextQ();
-    requestAnimationFrame(tick);
-  }
-
-  function nextQ() {
-    if (!G || G.over) return;
-    if (G.total && G.qIndex >= G.total) { endGame(); return; }
-    G.qIndex++;
-    G.input = '';
-    G.hinted = false;
-    $('#tutor').classList.add('hidden');
-    $('#btn-hint').disabled = false;
-
-    let q;
-    if (G.mode === 'tables') q = tablesQ(G.opts.table, G.deck[G.qIndex - 1]);
-    else if (G.M.store) q = storeQ(G.diff);
-    else if (G.mode === 'daily') q = makeQ('mix', 2 + ((G.qIndex - 1) * 6) / 19);
-    else q = makeQ(G.op, G.diff);
-    if (G.M.tf) q.shown = rng() < 0.5 ? q.ans : wrongAnswer(q);
-    G.q = q;
-
-    const qe = $('#question');
-    qe.classList.toggle('long', !!q.long);
-    qe.innerHTML = '';
-    if (q.long) {
-      q.lines.forEach((l, i) => { if (i) qe.appendChild(document.createElement('br')); qe.appendChild(document.createTextNode(l)); });
-      qe.appendChild(el('span', 'q-ask', q.ask));
-    } else {
-      qe.textContent = G.M.tf ? `${q.text} = ${q.shown}` : `${q.text} = ?`;
-    }
-    renderInput();
-    G.qStart = performance.now();
-    if (G.M.fuse) {
-      G.fuseMax = Math.max(3.2, 9 - G.correct * 0.22);
-      G.fuse = G.fuseMax;
-    }
-    updateHUD();
-  }
-
-  function renderInput(state) {
-    const a = $('#answer');
-    a.classList.remove('good', 'bad');
-    if (state) a.classList.add(state);
-    a.textContent = G.input || ' ';
-  }
-
-  function press(k) {
-    if (!G || G.locked || G.over || G.M.tf) return;
-    sfx.tap();
-    if (k === 'del') G.input = G.input.slice(0, -1);
-    else if (k === 'ok') { if (G.input) submit(); return; }
-    else if (G.input.length < 6) G.input += k;
-    renderInput();
-    // Auto-check as soon as enough digits are typed — keeps the arcade pace fast
-    if (G.input.length >= String(G.q.ans).length) submit();
-  }
-
-  function submit() { answer(parseInt(G.input, 10) === G.q.ans); }
-
-  function pressTF(saysTrue) {
-    if (!G || G.locked || G.over || !G.M.tf) return;
-    answer(saysTrue === (G.q.shown === G.q.ans));
-  }
-
-  function answer(ok, timedOut) {
-    const secs = (performance.now() - G.qStart) / 1000;
-    G.answered++;
-    G.locked = true;
-    const stage = $('#stage');
-    stage.classList.remove('good', 'bad');
-    void stage.offsetWidth; // restart the CSS animation
-
-    if (ok) {
-      G.correct++;
-      G.combo++;
-      G.bestCombo = Math.max(G.bestCombo, G.combo);
-      let pts = Math.round((10 + G.q.d * 5) * (1 + Math.min(G.combo, 20) * 0.1)) + (secs < 2 ? 5 : 0);
-      if (G.hinted) pts = Math.round(pts / 2);
-      G.score += pts;
-      if (G.M.adaptive) G.diff = clamp(G.diff + (secs < 3 ? 0.45 : secs < 6 ? 0.2 : 0.05), 1, 10);
-      stage.classList.add('good');
-      if (!G.M.tf) renderInput('good');
-      floatText(`+${pts}`, 'var(--green)');
-      if (G.combo % 5 === 0) floatText(`${G.combo} COMBO! Laban! 🔥`, 'var(--pink)', 18, 30);
-      else if (Math.random() < 0.35) floatText(pick(CHEERS, Math.random), 'var(--yellow)', 18, 30);
-      sparks();
-      sfx.good(G.combo);
-      const c = $('#hud-combo');
-      c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump');
-      updateHUD();
-      setTimeout(() => { if (G && !G.over) { G.locked = false; nextQ(); } }, 260);
-    } else {
-      G.wrong++;
-      G.combo = 0;
-      if (G.M.adaptive) G.diff = clamp(G.diff - 0.8, 1, 10);
-      if (G.M.lives) G.lives--;
-      stage.classList.add('bad');
-      if (G.M.tf) {
-        floatText(`${G.q.text} = ${G.q.ans}`, 'var(--cyan)', 20, 30);
-      } else {
-        G.input = String(G.q.ans);
-        renderInput('bad');
-      }
-      floatText(timedOut ? 'Lumampas! 🚏' : pick(OOPS, Math.random), 'var(--red)');
-      sfx.bad();
-      updateHUD();
-      setTimeout(() => {
-        if (!G || G.over) return;
-        G.locked = false;
-        if (G.M.lives && G.lives <= 0) endGame();
-        else nextQ();
-      }, 950);
-    }
-  }
-
-  function floatText(txt, color, size, offset) {
-    const f = el('div', 'float', txt);
-    f.style.color = color;
-    f.style.textShadow = `0 0 10px ${color}`;
-    if (size) f.style.fontSize = size + 'px';
-    if (offset) f.style.top = `calc(42% + ${offset}px)`;
-    $('#float-layer').appendChild(f);
-    setTimeout(() => f.remove(), 950);
-  }
-  function sparks() {
-    const layer = $('#float-layer');
-    const colors = ['var(--cyan)', 'var(--pink)', 'var(--yellow)', 'var(--green)'];
-    for (let i = 0; i < 12; i++) {
-      const s = el('div', 'spark');
-      const a = (Math.PI * 2 * i) / 12, r = 50 + Math.random() * 40;
-      s.style.left = '50%'; s.style.top = '50%';
-      s.style.background = colors[i % 4];
-      s.style.boxShadow = `0 0 8px ${colors[i % 4]}`;
-      s.style.setProperty('--dx', Math.cos(a) * r + 'px');
-      s.style.setProperty('--dy', Math.sin(a) * r + 'px');
-      layer.appendChild(s);
-      setTimeout(() => s.remove(), 650);
-    }
-  }
-
-  function updateHUD() {
-    $('#hud-score').textContent = G.score;
-    $('#hud-combo').textContent = G.combo >= 2 ? `x${G.combo} COMBO` : '';
-    $('#hud-lives').textContent = G.M.lives ? '❤️'.repeat(Math.max(0, G.lives)) + '🖤'.repeat(G.M.lives - Math.max(0, G.lives)) : '';
-    $('#hud-progress').textContent = G.total ? `${Math.min(G.qIndex, G.total)} / ${G.total}` : (G.M.fuse ? `Ride ${G.qIndex}` : '');
-    if (G.total && !G.M.time) $('#hud-timer').style.width = ((G.qIndex - 1) / G.total) * 100 + '%';
-  }
-
-  function tick(t) {
-    if (!G || G.over) return;
-    const dt = Math.min((t - G.last) / 1000, 0.25);
-    G.last = t;
-    const bar = $('#hud-timer');
-    if (G.M.time) {
-      G.timeLeft -= dt;
-      const frac = Math.max(0, G.timeLeft / G.M.time);
-      bar.style.width = frac * 100 + '%';
-      bar.classList.toggle('low', G.timeLeft < 10);
-      if (G.timeLeft <= 0) { endGame(); return; }
-    }
-    if (G.M.fuse && !G.locked) {
-      G.fuse -= dt;
-      const frac = clamp(G.fuse / G.fuseMax, 0, 1);
-      bar.style.width = frac * 100 + '%';
-      bar.classList.toggle('low', frac < 0.3);
-      $('#jeep').style.left = `calc(${(1 - frac) * 100}% - ${(1 - frac) * 44}px)`;
-      $('#road').classList.toggle('danger', frac < 0.3);
-      if (G.fuse <= 0) answer(false, true);
-    }
-    requestAnimationFrame(tick);
-  }
-
-  function useHint() {
-    if (!G || G.locked || G.hinted) return;
-    const h = hintFor(G.q);
-    if (!h) return;
-    G.hinted = true;
-    G.combo = 0;
-    updateHUD();
-    const t = $('#tutor');
-    t.textContent = '💡 ' + h;
-    t.classList.remove('hidden');
-    $('#btn-hint').disabled = true;
-  }
-
-  function quitGame() {
-    if (!G || G.over) return;
-    if (!confirm('Quit this game? Your score will not be saved.')) return;
-    G.over = true;
-    show('home');
-  }
-
-  /* ---------------- results ---------------- */
-  function endGame() {
-    if (!G || G.over) return;
-    G.over = true;
-    const { mode, M } = G;
-    const acc = G.answered ? Math.round((G.correct / G.answered) * 100) : 0;
-    let stars, title, msg = '';
-
-    if (mode === 'classic' || mode === 'tables') {
-      const failed = G.lives <= 0;
-      stars = failed ? 0 : Math.max(1, 3 - G.wrong);
-      title = failed ? 'UBOS ANG BUHAY!' : 'GALING MO!';
-      const store = mode === 'classic' ? P.classic : P.tables;
-      const key = mode === 'classic' ? `${G.op}-${G.opts.level}` : G.opts.table;
-      store[key] = Math.max(store[key] || 0, stars);
-      if (failed) msg = "Sayang! Try again, kaya mo 'yan! 💪";
-      else if (mode === 'classic' && G.opts.level < 10) msg = `⛵ Next island unlocked: <b>${ISLANDS[G.opts.level][0]}</b>`;
-      else if (mode === 'classic') msg = `🦅 You reached <b>Davao</b>! Route complete!`;
-      else msg = `Times table ${G.opts.table}: ${'★'.repeat(stars)}`;
-    } else {
-      stars = M.thresholds.filter((t) => G.score >= t).length;
-      title = mode === 'jeepney' ? 'LAST STOP!' : mode === 'daily' ? 'HAMON COMPLETE!' : "TIME'S UP!";
-    }
-
-    // stats & XP
-    P.stats.games++;
-    P.stats.correct += G.correct;
-    P.stats.answered += G.answered;
-    P.stats.bestCombo = Math.max(P.stats.bestCombo, G.bestCombo);
-    if (mode === 'daily') P.stats.daily++;
-    const xp = Math.floor(G.score / 10) + G.correct * 2;
-    const lvlBefore = levelInfo(P.xp).lvl;
-    P.xp += xp;
-    const lvlAfter = levelInfo(P.xp).lvl;
-
-    let record = false;
-    if (M.board) {
-      if (G.score > (P.best[mode] || 0)) { record = P.best[mode] > 0 || G.score > 0; P.best[mode] = G.score; }
-      const list = (P.local[mode] = P.local[mode] || []);
-      list.push({ name: P.name || 'Player', avatar: P.avatar, score: G.score, accuracy: acc, combo: G.bestCombo, date: new Date().toISOString() });
-      list.sort((a, b) => b.score - a.score);
-      list.length = Math.min(list.length, 10);
-    }
-    const fresh = checkCards();
-    save();
-
-    // render
-    $('#res-title').textContent = title;
-    $('#res-stars').textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars);
-    $('#res-score').textContent = G.score;
-    $('#res-correct').textContent = G.correct;
-    $('#res-acc').textContent = acc + '%';
-    $('#res-combo').textContent = G.bestCombo;
-    $('#res-xp').textContent = '+' + xp;
-    const parts = [];
-    if (msg) parts.push(msg);
-    if (record) parts.push('🎉 <b>Bagong record!</b> New personal best!');
-    if (lvlAfter > lvlBefore) parts.push(`⬆️ Level up! You are now <b>Lv.${lvlAfter}</b>`);
-    if (mode === 'ranked') {
-      const R = rankOf(P.best.ranked || 0);
-      parts.push(`Rank: <b>${R.icon} ${R.name}</b>`);
-    }
-    if (mode === 'daily' && !G.ranked) parts.push('Practice run · only your first try today counts.');
-    $('#res-msg').innerHTML = parts.join('<br>');
-    const rc = $('#res-cards');
-    rc.innerHTML = '';
-    fresh.forEach((c) => rc.appendChild(cardEl(c, true, true)));
-    if (fresh.length) toast(`🃏 New card${fresh.length > 1 ? 's' : ''} unlocked!`);
-    $('#btn-res-board').classList.toggle('hidden', !M.board);
-    show('results');
-    sfx.end();
-
-    if (M.board && G.ranked && G.score > 0) {
-      sendScore({ mode, score: G.score, correct: G.correct, accuracy: acc, combo: G.bestCombo });
-    }
-  }
-
-  /* ---------------- leaderboard (Google Apps Script) ---------------- */
-  function addLine(html) {
-    const m = $('#res-msg');
-    m.innerHTML += (m.innerHTML ? '<br>' : '') + html;
-  }
-
-  async function postScore(entry) {
-    const res = await fetch(API, {
-      method: 'POST',
-      // text/plain avoids a CORS "preflight", which Apps Script does not support
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(entry)
-    });
-    return res.json();
-  }
-
-  async function sendScore(s) {
-    if (!API) { addLine('📴 Offline leaderboard (no Google Sheet linked yet).'); return; }
-    const entry = Object.assign({ action: 'submit', id: P.id, name: P.name || 'Player', avatar: P.avatar }, s);
-    addLine('📡 Sending score…');
-    try {
-      const j = await postScore(entry);
-      if (!j.ok) throw new Error(j.error || 'rejected');
-      const m = $('#res-msg');
-      m.innerHTML = m.innerHTML.replace('📡 Sending score…', j.rank ? `🌏 Global rank: <b>#${j.rank}</b>` : '🌏 Score saved!');
-    } catch (e) {
-      P.queue.push(entry);
-      save();
-      const m = $('#res-msg');
-      m.innerHTML = m.innerHTML.replace('📡 Sending score…', '📶 No connection. Score will be sent next time.');
-    }
-  }
-
-  async function flushQueue() {
-    if (!API || !P.queue.length) return;
-    const pending = P.queue.slice();
-    P.queue = [];
-    for (const entry of pending) {
-      try {
-        const j = await postScore(entry);
-        if (!j.ok && /network|busy/i.test(j.error || '')) P.queue.push(entry);
-      } catch (e) { P.queue.push(entry); }
-    }
-    save();
-  }
-
-  let boardMode = 'ranked', boardPeriod = 'all', boardReq = 0;
-  function openBoard(mode) {
-    if (mode) boardMode = mode;
-    show('board');
-    renderBoardTabs();
-    loadBoard();
-  }
-  function renderBoardTabs() {
-    const tabs = $('#board-tabs');
-    tabs.innerHTML = '';
-    BOARD_TABS.forEach(([id, label]) => {
-      const b = el('button', id === boardMode ? 'active' : '', label);
-      b.onclick = () => { boardMode = id; renderBoardTabs(); loadBoard(); };
-      tabs.appendChild(b);
-    });
-    $('#board-period').classList.toggle('hidden', boardMode === 'daily');
-    $$('#board-period button').forEach((b) => b.classList.toggle('active', b.dataset.period === boardPeriod));
-  }
-  async function loadBoard() {
-    const req = ++boardReq;
-    const list = $('#board-list'), status = $('#board-status');
-    list.innerHTML = '';
-    if (!API) {
-      status.textContent = '📴 Offline mode: showing scores from this device only. Link a Google Sheet in config.js to go global.';
-      drawBoard(P.local[boardMode] || []);
-      return;
-    }
-    const period = boardMode === 'daily' ? 'today' : boardPeriod;
-    status.textContent = '📡 Loading…';
-    try {
-      const url = `${API}?action=top&mode=${boardMode}&period=${period}&limit=${CFG.LEADERBOARD_SIZE}`;
-      const j = await (await fetch(url)).json();
-      if (req !== boardReq) return;
-      if (!j.ok) throw new Error(j.error);
-      status.textContent = j.scores.length
-        ? (boardMode === 'daily' ? `🌟 Today's Hamon · ${manilaDate()}` : '🌏 Global leaderboard')
-        : 'Wala pang score. Be the first! 🚀';
-      drawBoard(j.scores);
-    } catch (e) {
-      if (req !== boardReq) return;
-      status.textContent = '📶 Could not reach the leaderboard. Showing this device only.';
-      drawBoard(P.local[boardMode] || []);
-    }
-  }
-  function drawBoard(rows) {
-    const list = $('#board-list');
-    list.innerHTML = '';
-    const me = (P.name || '').trim().toLowerCase();
-    const medals = ['🥇', '🥈', '🥉'];
-    rows.forEach((r, i) => {
-      const li = el('li', String(r.name || '').trim().toLowerCase() === me ? 'me' : '');
-      li.appendChild(el('span', 'pos', medals[i] || i + 1));
-      li.appendChild(el('span', 'av', r.avatar || '🙂'));
-      const nm = el('span', 'nm', r.name);
-      const extra = [];
-      if (r.accuracy != null && r.accuracy !== '') extra.push(`${r.accuracy}% tama`);
-      if (r.combo) extra.push(`x${r.combo} combo`);
-      if (extra.length) nm.appendChild(el('small', null, extra.join(' · ')));
-      li.appendChild(nm);
-      li.appendChild(el('span', 'sc', r.score));
-      list.appendChild(li);
-    });
-  }
-
-  /* ---------------- name / avatar ---------------- */
-  let avatarPick = P.avatar;
-  function openNameModal() {
-    $('#name-input').value = P.name;
-    avatarPick = P.avatar;
-    renderAvatars();
-    $('#modal-name').classList.remove('hidden');
-    setTimeout(() => $('#name-input').focus(), 50);
-  }
-  function renderAvatars() {
-    const box = $('#avatar-pick');
-    box.innerHTML = '';
-    AVATARS.forEach((a) => {
-      const b = el('button', a === avatarPick ? 'active' : '', a);
-      b.onclick = () => { avatarPick = a; renderAvatars(); };
-      box.appendChild(b);
-    });
-  }
-  function saveName() {
-    const n = $('#name-input').value.replace(/[^\p{L}\p{N} ._-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 16);
-    if (!n) { toast('Type a nickname first 🙂'); return; }
-    P.name = n;
-    P.avatar = avatarPick;
-    save();
-    $('#modal-name').classList.add('hidden');
-    renderHome();
-  }
-
-  /* ---------------- background ---------------- */
-  function buildBackground() {
-    const bg = $('#bg');
-    const syms = ['+', '−', '×', '÷', '=', '★', '₱', '7', '3', '9', '%'];
-    const colors = ['var(--cyan)', 'var(--pink)', 'var(--yellow)', 'var(--purple)', 'var(--green)'];
-    for (let i = 0; i < 16; i++) {
-      const s = el('span', 'sym', syms[i % syms.length]);
-      const c = colors[i % colors.length];
-      s.style.left = Math.random() * 96 + '%';
-      s.style.fontSize = 16 + Math.random() * 30 + 'px';
-      s.style.color = c;
-      s.style.textShadow = `0 0 12px ${c}`;
-      const dur = 16 + Math.random() * 18;
-      s.style.animationDuration = dur + 's';
-      s.style.animationDelay = -Math.random() * dur + 's';
-      bg.appendChild(s);
-    }
-  }
-
-  /* ---------------- wiring ---------------- */
-  function go(target) {
-    sfx.tap();
-    if (target === 'ranked' || target === 'daily') {
-      if (!P.name) { openNameModal(); return; }
-      startGame(target);
-    } else if (target === 'board') openBoard(boardMode);
-    else show(target);
-  }
-
-  document.addEventListener('click', (e) => {
-    const b = e.target.closest('[data-go]');
-    if (b) go(b.dataset.go);
-  });
-  $('#keypad').addEventListener('click', (e) => { const b = e.target.closest('[data-k]'); if (b) press(b.dataset.k); });
-  $('#tfpad').addEventListener('click', (e) => { const b = e.target.closest('[data-tf]'); if (b) pressTF(b.dataset.tf === '1'); });
-  $('#btn-hint').onclick = useHint;
-  $('#btn-quit').onclick = quitGame;
-  $('#btn-again').onclick = () => { if (G) startGame(G.mode, G.opts); };
-  $('#btn-res-board').onclick = () => openBoard(G && G.M.board ? G.mode : 'ranked');
-  $('#btn-profile').onclick = openNameModal;
-  $('#btn-sound').onclick = () => { P.sound = !P.sound; save(); renderHome(); };
-  $('#name-save').onclick = saveName;
-  $('#name-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') saveName(); });
-  $('#mini-prev').onclick = () => { miniIdx = (miniIdx + MINIS.length - 1) % MINIS.length; sfx.tap(); renderMini(); };
-  $('#mini-next').onclick = () => { miniIdx = (miniIdx + 1) % MINIS.length; sfx.tap(); renderMini(); };
-  $('#mini-play').onclick = () => {
-    const id = MINIS[miniIdx].id;
-    if (MODES[id].board && !P.name) { openNameModal(); return; }
-    startGame(id, id === 'tables' ? { table: tablePick } : {});
-  };
-  $('#board-refresh').onclick = loadBoard;
-  $$('#board-period button').forEach((b) => {
-    b.onclick = () => { boardPeriod = b.dataset.period; renderBoardTabs(); loadBoard(); };
-  });
-
-  // Swipe between mini games on phones
-  let touchX = null;
-  $('#mini-card').addEventListener('touchstart', (e) => { touchX = e.touches[0].clientX; }, { passive: true });
-  $('#mini-card').addEventListener('touchend', (e) => {
-    if (touchX == null) return;
-    const dx = e.changedTouches[0].clientX - touchX;
-    if (Math.abs(dx) > 40) (dx < 0 ? $('#mini-next') : $('#mini-prev')).click();
-    touchX = null;
-  });
-
-  // Physical keyboard support
-  document.addEventListener('keydown', (e) => {
-    if (!$('#modal-name').classList.contains('hidden')) return;
-    if (!$('#screen-play').classList.contains('active') || !G || G.over) return;
-    if (G.M.tf) {
-      if (['t', 'T', 'ArrowLeft', '1'].includes(e.key)) pressTF(true);
-      if (['m', 'M', 'f', 'F', 'ArrowRight', '0'].includes(e.key)) pressTF(false);
-      return;
-    }
-    if (/^[0-9]$/.test(e.key)) press(e.key);
-    else if (e.key === 'Backspace') press('del');
-    else if (e.key === 'Enter') press('ok');
-    else if (e.key === 'h' && G.M.hint) useHint();
-  });
-
-  document.title = CFG.GAME_NAME;
-  buildBackground();
-  show('home');
-  if (!P.name) openNameModal();
-  flushQueue();
-})();
+/* ---------- small phones ---------- */
+@media (max-height: 700px) {
+  .keypad button { padding: 11px 0; font-size: 22px; }
+  .stage { min-height: 170px; }
+  .sun { font-size: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; }
+}
