@@ -14,7 +14,7 @@ window.GAME_CONFIG = {
   // Paste your Google Apps Script "Web app URL" between the quotes.
   // It looks like: https://script.google.com/macros/s/AKfy.../exec
   // Leave it empty ("") to play offline with a local-only leaderboard.
-  LEADERBOARD_URL: "",
+  LEADERBOARD_URL: "https://script.google.com/macros/s/AKfycbzoiUeEgvvyf18E4M9skriGtbnY3_P-OcCOCPe6uz5XcD-6n-C69A5fgTGMDrtnqyfe/exec",
 
   // How many names to show on the leaderboard
   LEADERBOARD_SIZE: 50
@@ -222,6 +222,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .island .nm small { display: block; color: var(--muted); font-weight: 600; font-size: 12px; }
 .island .st { color: var(--yellow); letter-spacing: 2px; text-shadow: 0 0 6px var(--yellow); }
 .island.locked { opacity: .4; }
+.fact { margin: 12px auto 0; max-width: 460px; padding: 12px 14px; border: 1px solid rgba(255, 210, 61, .45); border-radius: 14px; background: rgba(255, 210, 61, .08); text-align: left; font-size: 14px; line-height: 1.45; color: var(--text); }
+.fact b { color: var(--yellow); }
 .island:not(.locked):hover { border-color: var(--cyan); }
 
 /* ---------- hagdan ---------- */
@@ -566,7 +568,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       <nav class="menu">
         <button class="btn big pink" data-go="ranked">🏆 RANKED<small>3 buhay · walang timer · patagalan, pataasan ng score</small></button>
         <button class="btn big blue" data-go="daily">🌟 DAILY HAMON<small id="daily-sub">Same 20 questions for everyone today</small></button>
-        <button class="btn big cyan" data-go="classic">🏝️ CLASSIC · ISLAND HOPPING<small>Batanes to Davao · stars · hints</small></button>
+        <button class="btn big cyan" data-go="classic">🏝️ CLASSIC · ISLAND HOPPING<small>18 regions · Batanes to Tawi-Tawi · stars</small></button>
         <button class="btn big green" data-go="hagdan">🪜 HAGDAN · LEVEL UP<small>One operation · gets harder the longer you play</small></button>
         <button class="btn big purple" data-go="mini">🕹️ MINI GAMES<small>Jeepney Rush · Sari-Sari · Tama o Mali · Tables</small></button>
         <div class="row">
@@ -580,7 +582,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     <!-- ===================== CLASSIC SELECT ===================== -->
     <section id="screen-classic" class="screen">
       <header class="bar"><button class="back" data-go="home">‹ BACK</button><h3>ISLAND HOPPING</h3><span></span></header>
-      <p class="hint-text">Choose your route, then hop island to island. 15 questions, 3 lives. Earn ⭐ to sail to the next island.</p>
+      <p class="hint-text">Choose your route, then travel all 18 regions of the Philippines, Batanes to Tawi-Tawi. 15 questions, 3 lives. Earn ⭐ to unlock the next region and learn an <b>Alam mo ba?</b> fact.</p>
       <div class="ops" id="classic-ops"></div>
       <div class="islands" id="classic-levels"></div>
     </section>
@@ -751,17 +753,26 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     div: { sym: '÷', name: 'HATI', color: 'green' },
     mix: { sym: '🍧', name: 'HALO-HALO', color: 'purple' }
   };
+  // The 18 regions of the Philippines, Batanes to Tawi-Tawi: [name, emoji, region · landmark, "Alam mo ba?" fact]
   const ISLANDS = [
-    ['Batanes', '🌊', 'Stone houses by the sea'],
-    ['Vigan', '🏛️', 'Calle Crisologo'],
-    ['Baguio', '🌲', 'City of Pines'],
-    ['Maynila', '🌆', 'Intramuros'],
-    ['Tagaytay', '🌋', 'Taal Volcano view'],
-    ['Boracay', '🏖️', 'White Beach'],
-    ['Bohol', '🍫', 'Chocolate Hills'],
-    ['Cebu', '⛪', "Magellan's Cross"],
-    ['Palawan', '🐠', 'El Nido lagoons'],
-    ['Davao', '🦅', 'Home of the Philippine Eagle']
+    ['Cagayan Valley', '🌊', 'Region II · Batanes', 'Ang Batanes ang pinakahilagang probinsya ng Pilipinas. Gawa sa makakapal na bato ang mga bahay ng mga Ivatan para makatagal sa malalakas na bagyo.'],
+    ['Ilocos', '🏛️', 'Region I · Vigan', 'Ang Vigan ay UNESCO World Heritage Site dahil sa mga bahay at kalye nito mula pa noong panahon ng Kastila, gaya ng Calle Crisologo.'],
+    ['Cordillera (CAR)', '⛰️', 'CAR · Banaue Rice Terraces', 'Ang Rice Terraces ng Cordillera ay inukit ng mga Ifugao sa gilid ng bundok gamit lang ang kamay. UNESCO World Heritage Site din ito.'],
+    ['Central Luzon', '🌾', 'Region III · Rice Granary', 'Tinatawag ang Central Luzon na "Rice Granary of the Philippines" dahil dito inaani ang napakaraming palay ng bansa.'],
+    ['Metro Manila (NCR)', '🌆', 'NCR · Intramuros', 'Ang Metro Manila ay binubuo ng 16 na lungsod at 1 bayan (Pateros). Ito ang pinakamataong rehiyon sa bansa.'],
+    ['CALABARZON', '🌋', 'Region IV-A · Taal Volcano', 'Ang CALABARZON ay galing sa CAvite, LAguna, BAtangas, Rizal at QueZON. Sa Calamba, Laguna ipinanganak si Jose Rizal.'],
+    ['MIMAROPA', '🐠', 'MIMAROPA · Palawan', 'Ang MIMAROPA ay galing sa MIndoro, MArinduque, ROmblon at PAlawan. Nasa Palawan ang Puerto Princesa Underground River, isa sa New 7 Wonders of Nature.'],
+    ['Bicol', '🌶️', 'Region V · Mayon Volcano', 'Kilala ang Bulkang Mayon sa halos perpektong hugis-apa (cone). Sa Donsol, Sorsogon naman makikita ang mga butanding (whale shark).'],
+    ['Western Visayas', '🏖️', 'Region VI · Boracay', 'Sa Western Visayas ginaganap ang Ati-Atihan Festival ng Aklan at Dinagyang Festival ng Iloilo. Nandito rin ang White Beach ng Boracay.'],
+    ['Negros Island', '🎭', 'NIR · Bacolod', 'Ang Negros Island Region ang pinakabagong rehiyon (2024). Tinatawag ang Negros na "Sugarbowl of the Philippines", at sa Bacolod ang MassKara Festival.'],
+    ['Central Visayas', '🍫', 'Region VII · Cebu at Bohol', 'Itinanim ang Krus ni Magellan sa Cebu noong 1521. Nasa Bohol naman ang Chocolate Hills: mahigit 1,200 na burol na nagiging kulay tsokolate tuwing tag-init.'],
+    ['Eastern Visayas', '🌉', 'Region VIII · San Juanico Bridge', 'Ang San Juanico Bridge ang nagdudugtong sa Samar at Leyte. Mahigit 2 kilometro ang haba nito.'],
+    ['Zamboanga Peninsula', '⛵', 'Region IX · Vinta', 'Chavacano ang wika ng maraming taga-Zamboanga, halo ng Espanyol at mga katutubong wika. Kilala rin dito ang makukulay na layag ng vinta.'],
+    ['Northern Mindanao', '🍍', 'Region X · Bukidnon at Camiguin', 'Maraming pinya ang itinatanim sa Bukidnon. Ang Camiguin naman ay tinatawag na "Island Born of Fire" dahil sa mga bulkan nito.'],
+    ['Caraga', '🏄', 'Region XIII · Siargao', 'Ang Siargao ay tinaguriang "Surfing Capital of the Philippines" dahil sa malalaking alon ng Cloud 9.'],
+    ['Davao Region', '🦅', 'Region XI · Mt. Apo', 'Malapit sa Davao City ang Mt. Apo, ang pinakamataas na bundok sa Pilipinas. Dito rin inaalagaan ang Philippine Eagle, ang pambansang ibon.'],
+    ['SOCCSKSARGEN', '🐟', 'Region XII · General Santos', 'Ang SOCCSKSARGEN ay galing sa SOuth Cotabato, Cotabato, Sultan Kudarat, SARangani at GENeral Santos, ang "Tuna Capital of the Philippines".'],
+    ['BARMM', '🛶', 'BARMM · Tawi-Tawi', 'Nasa Tawi-Tawi ang pinakatimog na dulo ng Pilipinas. Sa Simunul, Tawi-Tawi itinayo ang Sheikh Karimul Makhdum Mosque, ang pinakaunang mosque sa bansa.']
   ];
   const RANKS = [
     [0, 'BAGUHAN', '🌱'], [500, 'MASIPAG', '🐃'], [1000, 'MATALINO', '🦉'],
@@ -827,7 +838,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     { id: 'parol', e: '🌟', n: 'Parol', d: 'Finish a Daily Hamon', c: 'yellow', t: (p) => p.stats.daily >= 1 },
     { id: 'mayon', e: '🌋', n: 'Mayon', d: 'Reach a 25 combo', c: 'red', t: (p) => p.stats.bestCombo >= 25 },
     { id: 'vinta', e: '⛵', n: 'Vinta', d: '3 stars on 6 times tables', c: 'cyan', t: (p) => Object.values(p.tables).filter((s) => s >= 3).length >= 6 },
-    { id: 'chocohills', e: '🍫', n: 'Chocolate Hills', d: 'Reach Davao on any route', c: 'pink', t: (p) => Object.keys(p.classic).some((k) => k.endsWith('-10') && p.classic[k] > 0) },
+    { id: 'chocohills', e: '🍫', n: 'Chocolate Hills', d: 'Reach BARMM (Tawi-Tawi) on any route', c: 'pink', t: (p) => Object.keys(p.classic).some((k) => k.endsWith('-' + ISLANDS.length) && p.classic[k] > 0) },
     { id: 'banaue', e: '🌾', n: 'Banaue', d: '1,000 correct answers', c: 'green', t: (p) => p.stats.correct >= 1000 },
     { id: 'agila', e: '🦅', n: 'Philippine Eagle', d: 'Reach HENYO rank', c: 'cyan', t: (p) => (p.best.ranked || 0) >= 1600 },
     { id: 'sarimanok', e: '🐓', n: 'Sarimanok', d: 'Reach ALAMAT rank', c: 'pink', t: (p) => (p.best.ranked || 0) >= 3500 },
@@ -1227,7 +1238,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       b.appendChild(nm);
       b.appendChild(el('span', 'st', '★'.repeat(stars) + '☆'.repeat(3 - stars)));
       b.onclick = () => {
-        if (!unlocked) { toast(`Clear ${ISLANDS[i - 1][0]} first ⛵`); return; }
+        if (!unlocked) { toast(`Tapusin muna ang ${ISLANDS[i - 1][0]} ⛵`); return; }
         startGame('classic', { op: classicOp, level: lvl });
       };
       list.appendChild(b);
@@ -1314,7 +1325,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     rng = M.seeded ? mulberry32(hashStr('bilang-' + today)) : Math.random;
     G = {
       mode, M, opts, op: opts.op || M.op || 'mix',
-      diff: mode === 'classic' ? opts.level : 2,
+      diff: mode === 'classic' ? 1 + ((opts.level - 1) * 9) / (ISLANDS.length - 1) : 2,
       score: 0, combo: 0, bestCombo: 0, correct: 0, wrong: 0, answered: 0,
       lives: M.lives || 0, timeLeft: M.time || 0, qIndex: 0, total: M.questions || 0,
       input: '', q: null, qStart: 0, fuse: 0, fuseMax: 1, locked: false, over: false, hinted: false,
@@ -1728,8 +1739,9 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       const key = mode === 'classic' ? `${G.op}-${G.opts.level}` : G.opts.table;
       store[key] = Math.max(store[key] || 0, stars);
       if (failed) msg = "Sayang! Try again, kaya mo 'yan! 💪";
-      else if (mode === 'classic' && G.opts.level < 10) msg = `⛵ Next island unlocked: <b>${ISLANDS[G.opts.level][0]}</b>`;
-      else if (mode === 'classic') msg = `🦅 You reached <b>Davao</b>! Route complete!`;
+      else if (mode === 'classic' && G.opts.level < ISLANDS.length) msg = `⛵ Next region unlocked: <b>${ISLANDS[G.opts.level][0]}</b>`;
+      else if (mode === 'classic') msg = `🛶 You reached <b>Tawi-Tawi</b>! Batanes hanggang Tawi-Tawi, kumpleto ang 18 regions!`;
+      if (mode === 'classic') msg += `<div class="fact">📚 <b>Alam mo ba?</b> ${ISLANDS[G.opts.level - 1][3]}</div>`;
       else msg = `Times table ${G.opts.table}: ${'★'.repeat(stars)}`;
     } else if (M.climb) {
       const L = LADDER[G.op];
@@ -1894,7 +1906,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     const list = $('#board-list'), status = $('#board-status');
     list.innerHTML = '';
     if (!API) {
-      status.textContent = '📴 Offline mode: showing scores from this device only. Link a Google Sheet in config.js to go global.';
+      status.textContent = '📴 Offline mode: showing scores from this device only. Paste your Google Sheet link in LEADERBOARD_URL at the top of index.html to go global.';
       drawBoard(P.local[boardMode] || []);
       return;
     }
