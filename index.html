@@ -224,6 +224,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .island.locked { opacity: .4; }
 .fact { margin: 12px auto 0; max-width: 460px; padding: 12px 14px; border: 1px solid rgba(255, 210, 61, .45); border-radius: 14px; background: rgba(255, 210, 61, .08); text-align: left; font-size: 14px; line-height: 1.45; color: var(--text); }
 .fact b { color: var(--yellow); }
+.fact-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.fact-head span { font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 999px; background: rgba(46, 242, 255, .12); color: var(--cyan); white-space: nowrap; }
 .island:not(.locked):hover { border-color: var(--cyan); }
 
 /* ---------- hagdan ---------- */
@@ -528,6 +530,9 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   .hype-combo b { font-size: 76px; }
 }
 
+/* Philippine flag (SVG, since flag emoji don't show on Windows) */
+.ph-flag { width: 1.6em; height: .8em; vertical-align: -.05em; border-radius: 2px; box-shadow: 0 0 8px rgba(255, 255, 255, .35); }
+
   </style>
 </head>
 <body>
@@ -568,7 +573,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       <nav class="menu">
         <button class="btn big pink" data-go="ranked">🏆 RANKED<small>3 buhay · walang timer · patagalan, pataasan ng score</small></button>
         <button class="btn big blue" data-go="daily">🌟 DAILY HAMON<small id="daily-sub">Same 20 questions for everyone today</small></button>
-        <button class="btn big cyan" data-go="classic">🏝️ CLASSIC · ISLAND HOPPING<small>18 regions · Batanes to Tawi-Tawi · stars</small></button>
+        <button class="btn big cyan" data-go="classic"><svg class="ph-flag" viewBox="0 0 30 15" aria-label="Philippine flag"><rect width="30" height="7.5" fill="#0038a8"/><rect y="7.5" width="30" height="7.5" fill="#ce1126"/><path d="M0 0 L13 7.5 L0 15 Z" fill="#fff"/><circle cx="4.6" cy="7.5" r="1.7" fill="#fcd116"/><g fill="#fcd116"><circle cx="1.6" cy="2.2" r=".7"/><circle cx="1.6" cy="12.8" r=".7"/><circle cx="10.6" cy="7.5" r=".7"/></g></svg> LAKBAY PILIPINAS<small>Classic · 18 regions · Batanes hanggang Tawi-Tawi</small></button>
         <button class="btn big green" data-go="hagdan">🪜 HAGDAN · LEVEL UP<small>One operation · gets harder the longer you play</small></button>
         <button class="btn big purple" data-go="mini">🕹️ MINI GAMES<small>Jeepney Rush · Sari-Sari · Tama o Mali · Tables</small></button>
         <div class="row">
@@ -581,7 +586,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
     <!-- ===================== CLASSIC SELECT ===================== -->
     <section id="screen-classic" class="screen">
-      <header class="bar"><button class="back" data-go="home">‹ BACK</button><h3>ISLAND HOPPING</h3><span></span></header>
+      <header class="bar"><button class="back" data-go="home">‹ BACK</button><h3><svg class="ph-flag" viewBox="0 0 30 15" aria-label="Philippine flag"><rect width="30" height="7.5" fill="#0038a8"/><rect y="7.5" width="30" height="7.5" fill="#ce1126"/><path d="M0 0 L13 7.5 L0 15 Z" fill="#fff"/><circle cx="4.6" cy="7.5" r="1.7" fill="#fcd116"/><g fill="#fcd116"><circle cx="1.6" cy="2.2" r=".7"/><circle cx="1.6" cy="12.8" r=".7"/><circle cx="10.6" cy="7.5" r=".7"/></g></svg> LAKBAY PILIPINAS</h3><span></span></header>
       <p class="hint-text">Choose your route, then travel all 18 regions of the Philippines, Batanes to Tawi-Tawi. 15 questions, 3 lives. Earn ⭐ to unlock the next region and learn an <b>Alam mo ba?</b> fact.</p>
       <div class="ops" id="classic-ops"></div>
       <div class="islands" id="classic-levels"></div>
@@ -679,6 +684,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         <div><b id="res-xp">+0</b><small>XP</small></div>
       </div>
       <div class="res-msg" id="res-msg"></div>
+      <button class="btn green big hidden" id="btn-next"></button>
       <div class="res-review" id="res-review"></div>
       <div class="res-cards" id="res-cards"></div>
       <div class="row">
@@ -753,26 +759,135 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     div: { sym: '÷', name: 'HATI', color: 'green' },
     mix: { sym: '🍧', name: 'HALO-HALO', color: 'purple' }
   };
-  // The 18 regions of the Philippines, Batanes to Tawi-Tawi: [name, emoji, region · landmark, "Alam mo ba?" fact]
+  // The 18 regions of the Philippines, Batanes to Tawi-Tawi: [name, emoji, region · landmark, "Alam mo ba?" facts]
+  // Each region has 5 facts [label, text], one per route, in the order + − × ÷ Halo-Halo
   const ISLANDS = [
-    ['Cagayan Valley', '🌊', 'Region II · Batanes', 'Ang Batanes ang pinakahilagang probinsya ng Pilipinas. Gawa sa makakapal na bato ang mga bahay ng mga Ivatan para makatagal sa malalakas na bagyo.'],
-    ['Ilocos', '🏛️', 'Region I · Vigan', 'Ang Vigan ay UNESCO World Heritage Site dahil sa mga bahay at kalye nito mula pa noong panahon ng Kastila, gaya ng Calle Crisologo.'],
-    ['Cordillera (CAR)', '⛰️', 'CAR · Banaue Rice Terraces', 'Ang Banaue Rice Terraces ay inukit ng mga Ifugao sa gilid ng bundok gamit lang ang kamay. Ang Rice Terraces ng Ifugao ay UNESCO World Heritage Site.'],
-    ['Central Luzon', '🌾', 'Region III · Rice Granary', 'Tinatawag ang Central Luzon na "Rice Granary of the Philippines" dahil dito inaani ang napakaraming palay ng bansa.'],
-    ['Metro Manila (NCR)', '🌆', 'NCR · Intramuros', 'Ang Metro Manila ay binubuo ng 16 na lungsod at 1 bayan (Pateros). Ito ang pinakamataong rehiyon sa bansa.'],
-    ['CALABARZON', '🌋', 'Region IV-A · Taal Volcano', 'Ang CALABARZON ay galing sa CAvite, LAguna, BAtangas, Rizal at QueZON. Sa Calamba, Laguna ipinanganak si Jose Rizal.'],
-    ['MIMAROPA', '🐠', 'MIMAROPA · Palawan', 'Ang MIMAROPA ay galing sa MIndoro, MArinduque, ROmblon at PAlawan. Nasa Palawan ang Puerto Princesa Underground River, isa sa New 7 Wonders of Nature.'],
-    ['Bicol', '🌶️', 'Region V · Mayon Volcano', 'Kilala ang Bulkang Mayon sa halos perpektong hugis-apa (cone). Sa Donsol, Sorsogon naman makikita ang mga butanding (whale shark).'],
-    ['Western Visayas', '🏖️', 'Region VI · Boracay', 'Sa Western Visayas ginaganap ang Ati-Atihan Festival ng Aklan at Dinagyang Festival ng Iloilo. Nandito rin ang White Beach ng Boracay.'],
-    ['Negros Island', '🎭', 'NIR · Bacolod', 'Ang Negros Island Region ang pinakabagong rehiyon (2024). Tinatawag ang Negros na "Sugarbowl of the Philippines", at sa Bacolod ang MassKara Festival.'],
-    ['Central Visayas', '🍫', 'Region VII · Cebu at Bohol', 'Itinanim ang Krus ni Magellan sa Cebu noong 1521. Nasa Bohol naman ang Chocolate Hills: mahigit 1,200 na burol na nagiging kulay tsokolate tuwing tag-init.'],
-    ['Eastern Visayas', '🌉', 'Region VIII · San Juanico Bridge', 'Ang San Juanico Bridge ang nagdudugtong sa Samar at Leyte. Mahigit 2 kilometro ang haba nito.'],
-    ['Zamboanga Peninsula', '⛵', 'Region IX · Vinta', 'Chavacano ang wika ng maraming taga-Zamboanga, halo ng Espanyol at mga katutubong wika. Kilala rin dito ang makukulay na layag ng vinta.'],
-    ['Northern Mindanao', '🍍', 'Region X · Bukidnon at Camiguin', 'Maraming pinya ang itinatanim sa Bukidnon. Ang Camiguin naman ay tinatawag na "Island Born of Fire" dahil sa mga bulkan nito.'],
-    ['Caraga', '🏄', 'Region XIII · Siargao', 'Ang Siargao ay tinaguriang "Surfing Capital of the Philippines" dahil sa malalaking alon ng Cloud 9.'],
-    ['Davao Region', '🦅', 'Region XI · Mt. Apo', 'Malapit sa Davao City ang Mt. Apo, ang pinakamataas na bundok sa Pilipinas. Dito rin inaalagaan ang Philippine Eagle, ang pambansang ibon.'],
-    ['SOCCSKSARGEN', '🐟', 'Region XII · General Santos', 'Ang SOCCSKSARGEN ay galing sa SOuth Cotabato, Cotabato, Sultan Kudarat, SARangani at GENeral Santos, ang "Tuna Capital of the Philippines".'],
-    ['BARMM', '🛶', 'BARMM · Tawi-Tawi', 'Nasa Tawi-Tawi ang pinakatimog na dulo ng Pilipinas. Sa Simunul, Tawi-Tawi itinayo ang Sheikh Karimul Makhdum Mosque, ang pinakaunang mosque sa bansa.']
+    ["Cagayan Valley", '🌊', "Region II · Batanes", [
+      ["🏝️ Pasyalan", "Sa Batanes makikita ang mga bahay na bato ng mga Ivatan at ang malalawak na burol ng Racuh a Payaman, na tinatawag ding \"Marlboro Country\"."],
+      ["🛍️ Produkto", "Ang Isabela ay isa sa pinakamalalaking pinagkukunan ng mais sa buong bansa."],
+      ["🎉 Festival", "Tuwing Enero, ipinagdiriwang sa Isabela ang Bambanti Festival. Ang bambanti ay panakot-ibon na ginagawang makukulay na palamuti."],
+      ["🍲 Pagkain", "Sikat sa Tuguegarao ang pancit batil patong: pancit na may itlog sa ibabaw at may kasamang sabaw."],
+      ["📜 Kasaysayan", "Sa Callao Cave sa Peñablanca, Cagayan natagpuan ang mga buto ng Homo luzonensis, isang sinaunang uri ng tao."]
+    ]],
+    ["Ilocos", '🏛️', "Region I · Vigan", [
+      ["🏝️ Pasyalan", "Ang Vigan ay UNESCO World Heritage Site. Sa Calle Crisologo makikita ang mga bahay at kalye mula pa noong panahon ng Kastila, at puwedeng sumakay sa kalesa."],
+      ["🛍️ Produkto", "Ang pangalang Pangasinan ay galing sa salitang \"asin\", dahil kilala ito sa paggawa ng asin at bagoong."],
+      ["🎉 Festival", "Tuwing Abril hanggang Mayo, ipinagdiriwang ng Dagupan, Pangasinan ang Bangus Festival na may mahabang ihawan ng bangus."],
+      ["🍲 Pagkain", "Kilala ang Ilocos sa bagnet, Vigan longganisa, at empanada ng Batac."],
+      ["🏝️ Pasyalan", "Sa Alaminos, Pangasinan makikita ang Hundred Islands National Park na may mahigit 100 maliliit na isla."]
+    ]],
+    ["Cordillera (CAR)", '⛰️', "CAR · Banaue Rice Terraces", [
+      ["📜 Kasaysayan", "Ang Banaue Rice Terraces ay inukit ng mga Ifugao sa gilid ng bundok gamit lang ang kamay. Ang Rice Terraces ng Ifugao ay UNESCO World Heritage Site."],
+      ["🛍️ Produkto", "Sa La Trinidad, Benguet sikat ang mga strawberry farm, at sa Benguet nanggagaling ang maraming gulay ng bansa."],
+      ["🎉 Festival", "Tuwing Pebrero, ipinagdiriwang sa Baguio ang Panagbenga, ang Flower Festival na may parada ng mga float na puno ng bulaklak."],
+      ["🏝️ Pasyalan", "Sa Sagada, Mountain Province makikita ang \"Hanging Coffins\", mga kabaong na isinasabit sa gilid ng bangin."],
+      ["🌿 Kalikasan", "Ang Mt. Pulag sa Benguet ang pinakamataas na bundok sa Luzon at sikat sa tanawing \"sea of clouds\"."]
+    ]],
+    ["Central Luzon", '🌾', "Region III · Rice Granary", [
+      ["🛍️ Produkto", "Tinatawag ang Central Luzon na \"Rice Granary of the Philippines\", at ang Nueva Ecija ang isa sa pinakamalalaking taniman ng palay."],
+      ["🎉 Festival", "Sa San Fernando, Pampanga ginaganap ang Giant Lantern Festival tuwing Disyembre, kaya tinatawag itong \"Christmas Capital of the Philippines\"."],
+      ["🍲 Pagkain", "Ang Pampanga ay tinatawag na \"Culinary Capital of the Philippines\". Dito nagmula ang sisig!"],
+      ["🏝️ Pasyalan", "Ang bunganga ng Bulkang Pinatubo ay isa nang magandang lawa na dinarayo ng mga turista."],
+      ["📜 Kasaysayan", "Sa Barasoain Church sa Malolos, Bulacan pinasinayaan ang Unang Republika ng Pilipinas noong 1899."]
+    ]],
+    ["Metro Manila (NCR)", '🌆', "NCR · Intramuros", [
+      ["🏝️ Pasyalan", "Sa Intramuros, ang lumang lungsod na napapaligiran ng pader, makikita ang Fort Santiago at ang San Agustin Church, isang UNESCO World Heritage Site."],
+      ["🛍️ Produkto", "Ang Marikina ay tinatawag na \"Shoe Capital of the Philippines\" dahil sa dami ng gumagawa ng sapatos."],
+      ["🎉 Festival", "Tuwing Enero 9, ginaganap sa Quiapo ang Traslacion ng Itim na Nazareno, na dinadaluhan ng milyun-milyong deboto."],
+      ["🍲 Pagkain", "Kilala ang Pateros sa balut at itlog na maalat."],
+      ["📜 Kasaysayan", "Sa Bagumbayan, na ngayon ay Rizal Park (Luneta), binaril si Jose Rizal noong Disyembre 30, 1896."]
+    ]],
+    ["CALABARZON", '🌋', "Region IV-A · Taal Volcano", [
+      ["🏝️ Pasyalan", "Mula sa Tagaytay, tanaw ang Bulkang Taal, isa sa pinakamaliliit na aktibong bulkan sa mundo, na nasa gitna ng Lawa ng Taal."],
+      ["🛍️ Produkto", "Sikat ang Batangas sa kapeng barako, isang matapang na klase ng kape."],
+      ["🎉 Festival", "Tuwing Mayo 15, ginaganap sa Lucban, Quezon ang Pahiyas Festival. Pinapalamutian ang mga bahay ng makukulay na kiping at ani."],
+      ["🍲 Pagkain", "Sikat na pasalubong mula sa Laguna ang buko pie."],
+      ["📜 Kasaysayan", "Sa Kawit, Cavite idineklara ang kalayaan ng Pilipinas noong Hunyo 12, 1898. Sa Calamba, Laguna naman ipinanganak si Jose Rizal."]
+    ]],
+    ["MIMAROPA", '🐠', "MIMAROPA · Palawan", [
+      ["🏝️ Pasyalan", "Nasa Palawan ang Puerto Princesa Underground River, isa sa New 7 Wonders of Nature at UNESCO World Heritage Site."],
+      ["🛍️ Produkto", "Ang Romblon ay tinatawag na \"Marble Capital of the Philippines\" dahil sa dami at ganda ng marmol nito."],
+      ["🎉 Festival", "Tuwing Semana Santa, ginaganap sa Marinduque ang Moriones Festival, kung saan nagsusuot ng maskara ng sundalong Romano."],
+      ["🛍️ Produkto", "Malaking pinagkukunan ng kasoy (cashew) sa bansa ang Palawan. Sikat itong pasalubong!"],
+      ["🌿 Kalikasan", "Sa Mindoro lang sa buong mundo matatagpuan ang tamaraw, isang maliit na kamag-anak ng kalabaw."]
+    ]],
+    ["Bicol", '🌶️', "Region V · Mayon Volcano", [
+      ["🏝️ Pasyalan", "Kilala ang Bulkang Mayon sa halos perpektong hugis-apa (cone). Sa paanan nito ang Cagsawa Ruins, labi ng simbahang nasira sa pagputok noong 1814."],
+      ["🛍️ Produkto", "Ang Catanduanes ay isa sa pinakamalalaking pinagkukunan ng abaka sa bansa. Ang pili nut naman ay kilalang pasalubong ng Bicol."],
+      ["🎉 Festival", "Ang Masbate ay \"Rodeo Capital of the Philippines\". Tuwing taon ay may Rodeo Festival na may mga cowboy at karera ng baka."],
+      ["🍲 Pagkain", "Ang Bicol Express at laing ay maaanghang na ulam na gawa sa sili at gata."],
+      ["🌿 Kalikasan", "Sa Donsol, Sorsogon makikita ang mga butanding (whale shark), ang pinakamalaking isda sa mundo."]
+    ]],
+    ["Western Visayas", '🏖️', "Region VI · Boracay", [
+      ["🏝️ Pasyalan", "Sikat sa buong mundo ang White Beach ng Boracay, Aklan dahil sa pino at puting buhangin nito."],
+      ["🛍️ Produkto", "Sa Kalibo, Aklan hinahabi ang telang piña, na gawa sa hibla ng dahon ng pinya. Ito ang ginagamit sa mga barong Tagalog."],
+      ["🎉 Festival", "Tuwing Enero, ginaganap ang Ati-Atihan Festival ng Kalibo, Aklan at ang Dinagyang Festival ng Iloilo."],
+      ["🍲 Pagkain", "Sa Iloilo nagmula ang La Paz batchoy. Ang Guimaras naman ay sikat sa napakatatamis nitong mangga."],
+      ["📜 Kasaysayan", "Sa Miag-ao, Iloilo makikita ang Miag-ao Church, isang UNESCO World Heritage Site."]
+    ]],
+    ["Negros Island", '🎭', "NIR · Bacolod", [
+      ["🏝️ Pasyalan", "Sa Talisay, Negros Occidental makikita ang The Ruins, isang lumang mansyon na tinatawag na \"Taj Mahal ng Negros\"."],
+      ["🛍️ Produkto", "Tinatawag ang Negros na \"Sugarbowl of the Philippines\" dahil sa malalawak na taniman ng tubó."],
+      ["🎉 Festival", "Tuwing Oktubre, ipinagdiriwang sa Bacolod, ang \"City of Smiles\", ang MassKara Festival na may mga nakangiting maskara."],
+      ["🍲 Pagkain", "Sikat sa Bacolod ang chicken inasal at ang piaya, isang flat na tinapay na may palamang muscovado."],
+      ["📜 Kasaysayan", "Ang Negros Island Region ang pinakabagong rehiyon ng bansa (2024). Kasama rito ang Negros Occidental, Negros Oriental at Siquijor."]
+    ]],
+    ["Central Visayas", '🍫', "Region VII · Cebu at Bohol", [
+      ["🏝️ Pasyalan", "Nasa Bohol ang Chocolate Hills, mahigit 1,200 na burol na nagiging kulay tsokolate tuwing tag-init. Dito rin makikita ang tarsier."],
+      ["🛍️ Produkto", "Sikat sa buong mundo ang mga gitarang gawa sa Mactan, Cebu."],
+      ["🎉 Festival", "Ang Sinulog Festival ng Cebu ay ginaganap tuwing ikatlong Linggo ng Enero bilang parangal sa Santo Niño."],
+      ["🍲 Pagkain", "Kilalang-kilala ang lechon ng Cebu. Sa Bohol naman sikat ang kalamay na nakalagay sa bao ng niyog."],
+      ["📜 Kasaysayan", "Sa Mactan, Cebu natalo ni Lapu-Lapu si Magellan noong 1521. Itinanim din sa Cebu ang Krus ni Magellan."]
+    ]],
+    ["Eastern Visayas", '🌉', "Region VIII · San Juanico Bridge", [
+      ["🏝️ Pasyalan", "Ang San Juanico Bridge ang nagdudugtong sa Samar at Leyte. Mahigit 2 kilometro ang haba nito."],
+      ["🛍️ Produkto", "Sa Basey, Samar hinahabi ang makukulay na banig mula sa tikog, isang uri ng damo."],
+      ["🎉 Festival", "Tuwing Hunyo, ipinagdiriwang sa Tacloban ang Pintados-Kasadyaan Festival. Ginagaya ng mga mananayaw ang mga tattoo ng sinaunang \"Pintados\"."],
+      ["🍲 Pagkain", "Ang binagol ng Leyte ay matamis na kakanin na gawa sa gabi at inilalagay sa bao ng niyog."],
+      ["📜 Kasaysayan", "Sa Palo, Leyte bumalik si Gen. Douglas MacArthur noong 1944. May monumento roon, ang MacArthur Landing Memorial."]
+    ]],
+    ["Zamboanga Peninsula", '⛵', "Region IX · Vinta", [
+      ["🏝️ Pasyalan", "Kulay-rosas ang buhangin ng Great Santa Cruz Island sa Zamboanga dahil sa durog na pulang korales."],
+      ["🛍️ Produkto", "Ang Zamboanga City ay tinatawag na \"Sardines Capital of the Philippines\" dahil sa dami ng pagawaan ng sardinas."],
+      ["🎉 Festival", "Tuwing Oktubre, ipinagdiriwang ang Zamboanga Hermosa Festival. Makikita ang makukulay na vinta sa dagat."],
+      ["🎨 Kultura", "Chavacano ang wika ng maraming taga-Zamboanga, halo ng Espanyol at mga katutubong wika, kaya tinatawag itong \"Asia's Latin City\"."],
+      ["📜 Kasaysayan", "Sa Dapitan, Zamboanga del Norte ipinatapon si Jose Rizal mula 1892 hanggang 1896. Doon siya nagturo at nanggamot."]
+    ]],
+    ["Northern Mindanao", '🍍', "Region X · Bukidnon at Camiguin", [
+      ["🏝️ Pasyalan", "Sa Camiguin, ang \"Island Born of Fire\", makikita ang Sunken Cemetery at ang White Island. Sikat naman sa Cagayan de Oro ang white water rafting."],
+      ["🛍️ Produkto", "Sa Bukidnon makikita ang malalawak na taniman ng pinya na iniluluwas pa sa ibang bansa."],
+      ["🎉 Festival", "Ang Kaamulan Festival ng Bukidnon ay pagdiriwang ng pitong katutubong tribu ng probinsya."],
+      ["🍲 Pagkain", "Sikat ang Camiguin sa matatamis na lanzones, at may Lanzones Festival pa sila tuwing Oktubre."],
+      ["🌿 Kalikasan", "Sa Iligan, ang \"City of Majestic Waterfalls\", makikita ang Maria Cristina Falls na pinagkukunan ng kuryente."]
+    ]],
+    ["Caraga", '🏄', "Region XIII · Siargao", [
+      ["🏝️ Pasyalan", "Ang Siargao ay tinaguriang \"Surfing Capital of the Philippines\" dahil sa malalaking alon ng Cloud 9."],
+      ["🛍️ Produkto", "Mayaman ang Caraga sa mineral gaya ng nickel, lalo na sa mga probinsya ng Surigao."],
+      ["🏝️ Pasyalan", "Kilala ang Enchanted River sa Hinatuan, Surigao del Sur sa napakalinaw at asul nitong tubig."],
+      ["🌿 Kalikasan", "Ang Agusan Marsh ay malawak na latian na tirahan ng maraming ibon at buwaya."],
+      ["📜 Kasaysayan", "Sa Butuan natagpuan ang mga balangay, mga sinaunang bangka na mahigit 1,000 taon na ang edad."]
+    ]],
+    ["Davao Region", '🦅', "Region XI · Mt. Apo", [
+      ["🏝️ Pasyalan", "Malapit sa Davao City ang Mt. Apo, ang pinakamataas na bundok sa Pilipinas. Katabi rin ng lungsod ang Island Garden City of Samal."],
+      ["🛍️ Produkto", "Malaking pinagkukunan ng cacao ang Davao, kaya dito gawa ang ilang sikat na Filipino chocolate."],
+      ["🎉 Festival", "Tuwing Agosto, ipinagdiriwang ang Kadayawan Festival ng Davao bilang pasasalamat sa masaganang ani."],
+      ["🍲 Pagkain", "Durian ang sikat na prutas ng Davao: matapang ang amoy pero matamis ang lasa!"],
+      ["🌿 Kalikasan", "Sa Davao inaalagaan ang Philippine Eagle, ang pambansang ibon ng Pilipinas."]
+    ]],
+    ["SOCCSKSARGEN", '🐟', "Region XII · General Santos", [
+      ["🛍️ Produkto", "Ang General Santos City ay \"Tuna Capital of the Philippines\". Dumadaan sa fish port nito ang napakaraming tuna."],
+      ["🏝️ Pasyalan", "Sa Lake Sebu, South Cotabato makikita ang Seven Falls, na may zipline sa ibabaw ng mga talon."],
+      ["🎉 Festival", "Tuwing Setyembre, ipinagdiriwang ng General Santos ang Tuna Festival."],
+      ["🎨 Kultura", "Hinahabi ng mga T'boli ng Lake Sebu ang t'nalak, telang gawa sa abaka. May T'nalak Festival pa ang South Cotabato!"],
+      ["📜 Kasaysayan", "Ang SOCCSKSARGEN ay galing sa SOuth Cotabato, Cotabato, Sultan Kudarat, SARangani at GENeral Santos."]
+    ]],
+    ["BARMM", '🛶', "BARMM · Tawi-Tawi", [
+      ["📜 Kasaysayan", "Nasa Tawi-Tawi ang pinakatimog na dulo ng Pilipinas. Sa Simunul, Tawi-Tawi itinayo ang Sheikh Karimul Makhdum Mosque, ang pinakaunang mosque sa bansa."],
+      ["🛍️ Produkto", "Ang Tawi-Tawi ay isa sa pinakamalalaking pinagkukunan ng seaweed sa Pilipinas."],
+      ["🎉 Festival", "Tuwing Disyembre, ipinagdiriwang sa Maguindanao ang Shariff Kabunsuan Festival na may parada ng mga bangka sa ilog."],
+      ["🍲 Pagkain", "Ang pastil ay kanin na may ginutay na manok o baka, binalot sa dahon ng saging. Sikat ito sa Maguindanao."],
+      ["🎨 Kultura", "Kilala ang mga Maranao ng Lanao del Sur sa okir, isang tradisyonal na disenyo, at sa makukulay na malong at gawang tanso (brass)."]
+    ]]
   ];
   const RANKS = [
     [0, 'BAGUHAN', '🌱'], [500, 'MASIPAG', '🐃'], [1000, 'MATALINO', '🦉'],
@@ -1741,7 +1856,11 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       if (failed) msg = "Sayang! Try again, kaya mo 'yan! 💪";
       else if (mode === 'classic' && G.opts.level < ISLANDS.length) msg = `⛵ Next region unlocked: <b>${ISLANDS[G.opts.level][0]}</b>`;
       else if (mode === 'classic') msg = `🛶 You reached <b>Tawi-Tawi</b>! Batanes hanggang Tawi-Tawi, kumpleto ang 18 regions!`;
-      if (mode === 'classic') msg += `<div class="fact">📚 <b>Alam mo ba?</b> ${ISLANDS[G.opts.level - 1][3]}</div>`;
+      if (mode === 'classic') {
+        const facts = ISLANDS[G.opts.level - 1][3];
+        const [label, text] = facts[Object.keys(OPS).indexOf(G.op)] || facts[0];
+        msg += `<div class="fact"><div class="fact-head"><b>📚 Alam mo ba?</b><span>${label}</span></div>${text}</div>`;
+      }
       else msg = `Times table ${G.opts.table}: ${'★'.repeat(stars)}`;
     } else if (M.climb) {
       const L = LADDER[G.op];
@@ -1818,6 +1937,10 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     fresh.forEach((c) => rc.appendChild(cardEl(c, true, true)));
     if (fresh.length) toast(`🃏 New card${fresh.length > 1 ? 's' : ''} unlocked!`);
     $('#btn-res-board').classList.toggle('hidden', !M.board);
+    const next = mode === 'classic' && stars > 0 && G.opts.level < ISLANDS.length ? G.opts.level + 1 : 0;
+    const nb = $('#btn-next');
+    nb.classList.toggle('hidden', !next);
+    if (next) nb.innerHTML = `⛵ NEXT DESTINATION<small>${ISLANDS[next - 1][1]} ${ISLANDS[next - 1][0]} →</small>`;
     show('results');
     if (stars > 0 || record) sfx.end(); else sfx.lose();
     if (fresh.length) setTimeout(sfx.card, 900);
@@ -2015,6 +2138,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   $('#btn-hint').onclick = useHint;
   $('#btn-quit').onclick = quitGame;
   $('#btn-again').onclick = () => { if (G) startGame(G.mode, G.opts); };
+  $('#btn-next').onclick = () => { if (G && G.mode === 'classic') startGame('classic', { op: G.op, level: G.opts.level + 1 }); };
   $('#btn-res-board').onclick = () => openBoard(G && G.M.board ? G.mode : 'ranked');
   $('#btn-profile').onclick = openNameModal;
   $('#btn-sound').onclick = () => { P.sound = !P.sound; save(); renderHome(); };
