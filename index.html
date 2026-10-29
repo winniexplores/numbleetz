@@ -14,7 +14,7 @@ window.GAME_CONFIG = {
   // Paste your Google Apps Script "Web app URL" between the quotes.
   // It looks like: https://script.google.com/macros/s/AKfy.../exec
   // Leave it empty ("") to play offline with a local-only leaderboard.
-  LEADERBOARD_URL: "https://script.google.com/macros/s/AKfycbzoiUeEgvvyf18E4M9skriGtbnY3_P-OcCOCPe6uz5XcD-6n-C69A5fgTGMDrtnqyfe/exec",
+  LEADERBOARD_URL: "",
 
   // How many names to show on the leaderboard
   LEADERBOARD_SIZE: 50
@@ -387,6 +387,14 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .res-grid small { font-size: 10px; color: var(--muted); letter-spacing: .06em; }
 .res-msg { text-align: center; color: var(--muted); min-height: 20px; font-size: 14px; }
 .res-msg b { color: var(--yellow); }
+.res-review { display: flex; flex-direction: column; gap: 6px; }
+.res-review h4 { margin: 4px 0; text-align: center; font-size: 16px; color: var(--yellow); }
+.rv-row { padding: 9px 12px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); }
+.rv-q { font-family: var(--num); font-weight: 600; font-size: 18px; }
+.rv-a { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 14px; margin-top: 2px; }
+.rv-ok { color: var(--green); font-weight: 800; }
+.rv-bad { color: var(--red); }
+.rv-more { text-align: center; color: var(--muted); font-size: 13px; }
 .res-cards { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 .res-cards .card { width: 96px; }
 
@@ -482,10 +490,11 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
 /* ---------- phones: keep the question + choices low, near the thumb ---------- */
 @media (pointer: coarse) {
-  #screen-play .hype { flex: 1; }
-  .hype-avatar { font-size: 72px; }
-  .hype-combo b { font-size: 84px; }
-  #screen-play .play-tools { margin-bottom: 9vh; }   /* lifts the question box a little */
+  /* hype panel + question box + tools sit together in the middle of the screen */
+  #screen-play .hype { margin-top: auto; }
+  #screen-play .play-tools { margin-bottom: auto; }
+  .hype-avatar { font-size: 64px; }
+  .hype-combo b { font-size: 76px; }
 }
 
   </style>
@@ -526,7 +535,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       </button>
 
       <nav class="menu">
-        <button class="btn big pink" data-go="ranked">🏆 RANKED<small>60 seconds · halo-halo math · global ranking</small></button>
+        <button class="btn big pink" data-go="ranked">🏆 RANKED<small>3 buhay · walang timer · patagalan, pataasan ng score</small></button>
         <button class="btn big blue" data-go="daily">🌟 DAILY HAMON<small id="daily-sub">Same 20 questions for everyone today</small></button>
         <button class="btn big cyan" data-go="classic">🏝️ CLASSIC · ISLAND HOPPING<small>Batanes to Davao · stars · hints</small></button>
         <button class="btn big green" data-go="hagdan">🪜 HAGDAN · LEVEL UP<small>One operation · gets harder the longer you play</small></button>
@@ -639,6 +648,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         <div><b id="res-xp">+0</b><small>XP</small></div>
       </div>
       <div class="res-msg" id="res-msg"></div>
+      <div class="res-review" id="res-review"></div>
       <div class="res-cards" id="res-cards"></div>
       <div class="row">
         <button class="btn cyan" id="btn-again">↻ ULIT</button>
@@ -743,7 +753,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   const BILLS = [20, 50, 100, 200, 500, 1000];
 
   const MODES = {
-    ranked:    { title: 'RANKED', board: true, time: 60, adaptive: true, op: 'mix', thresholds: [400, 900, 1600] },
+    ranked:    { title: 'RANKED', board: true, lives: 3, survival: true, adaptive: true, op: 'mix', thresholds: [500, 1600, 3500] },
     daily:     { title: 'DAILY HAMON', board: true, questions: 20, op: 'mix', seeded: true, thresholds: [400, 900, 1500] },
     classic:   { title: 'CLASSIC', questions: 15, lives: 3, hint: true },
     jeepney:   { title: 'JEEPNEY RUSH', board: true, lives: 3, adaptive: true, op: 'mix', fuse: true, thresholds: [300, 800, 1500] },
@@ -1057,6 +1067,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     const dec = { add: [6, 7], sub: [6, 7], mul: [5], div: [5] }[op].includes(s);
     const q = { op, a, b, ans, d: Math.min(10, 2 + s), step: s, text: `${fmtN(a)} ${OPS[op].sym} ${wrap(b)}` };
     q.choices = ladderChoices(ans, signed, dec);
+    q.cat = signed ? 'signed' : dec ? 'decimal' : op;
     return q;
   }
 
@@ -1278,7 +1289,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       score: 0, combo: 0, bestCombo: 0, correct: 0, wrong: 0, answered: 0,
       lives: M.lives || 0, timeLeft: M.time || 0, qIndex: 0, total: M.questions || 0,
       input: '', q: null, qStart: 0, fuse: 0, fuseMax: 1, locked: false, over: false, hinted: false,
-      last: performance.now(), ranked: true
+      last: performance.now(), ranked: true, mistakes: [], topics: {}
     };
     if (mode === 'tables') G.deck = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
     if (mode === 'daily') {
@@ -1292,7 +1303,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     if (mode === 'tables') title = `TIMES TABLE · ${opts.table}`;
     if (mode === 'hagdan') { title = `HAGDAN · ${OPS[G.op].name}`; G.step = 0; }
     if (mode === 'daily' && !G.ranked) title += ' · PRACTICE';
-    $('#hud-mode').textContent = title;
+    G.title = title;
+    $('#hud-mode').textContent = M.time ? `${title} · ⏱ ${M.time}s` : title;
     $('#tfpad').classList.toggle('hidden', !M.tf);
     applyInputUI();
     $('#btn-hint').classList.toggle('hidden', !M.hint);
@@ -1320,7 +1332,11 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     else if (G.M.store) q = storeQ(G.diff);
     else if (G.mode === 'daily') q = makeQ('mix', 2 + ((G.qIndex - 1) * 6) / 19);
     else if (G.M.climb) q = ladderQ(G.op, G.step);
-    else q = makeQ(G.op, G.diff);
+    else {
+      // Survival: the floor keeps rising, so the longer you last the harder it gets
+      if (G.M.survival) G.diff = Math.max(G.diff, Math.min(10, 2 + G.correct / 6));
+      q = makeQ(G.op, G.diff);
+    }
     if (G.M.tf) q.shown = rng() < 0.5 ? q.ans : wrongAnswer(q);
     else if (!q.choices) q.choices = choicesFor(q);
     G.q = q;
@@ -1339,8 +1355,9 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     G.qStart = performance.now();
     G.comboMax = Math.max(2.2, 5 - G.combo * 0.08);   // the longer the streak, the less time you get
     G.comboLeft = G.comboMax;
-    if (G.M.fuse) {
-      G.fuseMax = Math.max(3.2, 9 - G.correct * 0.22);
+    if (G.M.fuse || G.M.survival) {
+      // Jeepney: 9s down to 3.2s. Survival: 15s per question, slowly down to 5s.
+      G.fuseMax = G.M.survival ? Math.max(5, 15 - G.correct * 0.25) : Math.max(3.2, 9 - G.correct * 0.22);
       G.fuse = G.fuseMax;
     }
     updateHUD();
@@ -1380,7 +1397,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     if (!G || G.locked || G.over || !tapMode() || !btn) return;
     const ok = btn.dataset.v === fmtN(G.q.ans);
     btn.classList.add(ok ? 'good' : 'bad');
-    answer(ok);
+    answer(ok, false, btn.textContent);
   }
 
   function toggleInput() {
@@ -1403,16 +1420,21 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     if (G.input.length >= String(G.q.ans).length) submit();
   }
 
-  function submit() { answer(parseInt(G.input, 10) === G.q.ans); }
+  function submit() { answer(parseInt(G.input, 10) === G.q.ans, false, G.input); }
 
   function pressTF(saysTrue) {
     if (!G || G.locked || G.over || !G.M.tf) return;
-    answer(saysTrue === (G.q.shown === G.q.ans));
+    answer(saysTrue === (G.q.shown === G.q.ans), false, saysTrue ? 'Tama' : 'Mali');
   }
 
-  function answer(ok, timedOut) {
+  function answer(ok, timedOut, given) {
     const secs = (performance.now() - G.qStart) / 1000;
     G.answered++;
+    const topic = G.q.cat || G.q.op;
+    const t = (G.topics[topic] = G.topics[topic] || [0, 0]);
+    t[1]++;
+    if (ok) t[0]++;
+    else G.mistakes.push({ q: questionText(G.q), ans: answerText(G.q), given: timedOut ? '⏰ walang sagot' : given });
     G.locked = true;
     const stage = $('#stage');
     stage.classList.remove('good', 'bad');
@@ -1464,8 +1486,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         G.input = String(G.q.ans);
         renderInput('bad');
       }
-      cheer(timedOut ? 'Lumampas! 🚏' : pick(OOPS, Math.random), 'var(--red)');
-      if (timedOut) sfx.horn();
+      cheer(timedOut ? (G.M.fuse ? 'Lumampas! 🚏' : 'Ubos ang oras! ⏰') : pick(OOPS, Math.random), 'var(--red)');
+      if (timedOut && G.M.fuse) sfx.horn();
       sfx.bad();
       updateHUD();
       setTimeout(() => {
@@ -1475,6 +1497,16 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         else nextQ();
       }, 950);
     }
+  }
+
+  // How a question and its answer read in the "Mga mali mo" review
+  function questionText(q) {
+    if (q.long) return q.lines.join(' · ') + ' — ' + q.ask;
+    return G.M.tf ? `${q.text} = ${q.shown}` : `${q.text} = ?`;
+  }
+  function answerText(q) {
+    if (G.M.tf) return q.shown === q.ans ? 'Tama' : `Mali (${fmtN(q.ans)})`;
+    return q.op === 'store' ? `₱${q.ans}` : fmtN(q.ans);
   }
 
   // Big cheer line in the hype panel above the question
@@ -1531,6 +1563,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     $('#hud-lives').textContent = G.M.lives ? '❤️'.repeat(Math.max(0, G.lives)) + '🖤'.repeat(G.M.lives - Math.max(0, G.lives)) : '';
     $('#hud-progress').textContent = G.total ? `${Math.min(G.qIndex, G.total)} / ${G.total}`
       : G.M.fuse ? `Ride ${G.qIndex}`
+      : G.M.survival ? `Tanong #${G.qIndex}`
       : G.M.climb ? `Step ${G.step + 1} · ${LADDER[G.op][G.step]}` : '';
     if (G.M.climb) {
       const top = G.step >= LADDER[G.op].length - 1;
@@ -1550,6 +1583,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       bar.style.width = frac * 100 + '%';
       bar.classList.toggle('low', G.timeLeft < 10);
       const sec = Math.ceil(G.timeLeft);
+      if (sec !== G.shownSec) { G.shownSec = sec; $('#hud-mode').textContent = `${G.title} · ⏱ ${Math.max(0, sec)}s`; }
       if (sec <= 5 && sec > 0 && sec !== G.lastTick) { G.lastTick = sec; sfx.tick(); }
       if (G.timeLeft <= 0) { endGame(); return; }
     }
@@ -1558,14 +1592,20 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       $('#combo-fill').style.width = clamp(G.comboLeft / G.comboMax, 0, 1) * 100 + '%';
       if (G.comboLeft <= 0) breakCombo();
     }
-    if (G.M.fuse && !G.locked) {
+    if ((G.M.fuse || G.M.survival) && !G.locked) {
       G.fuse -= dt;
       const frac = clamp(G.fuse / G.fuseMax, 0, 1);
       bar.style.width = frac * 100 + '%';
       bar.classList.toggle('low', frac < 0.3);
-      $('#jeep').style.left = `calc(${(1 - frac) * 100}% - ${(1 - frac) * 44}px)`;
-      $('#road').classList.toggle('danger', frac < 0.3);
-      if (frac < 0.3 && G.honked !== G.qIndex) { G.honked = G.qIndex; sfx.horn(); }
+      if (G.M.fuse) {
+        $('#jeep').style.left = `calc(${(1 - frac) * 100}% - ${(1 - frac) * 44}px)`;
+        $('#road').classList.toggle('danger', frac < 0.3);
+        if (frac < 0.3 && G.honked !== G.qIndex) { G.honked = G.qIndex; sfx.horn(); }
+      } else {
+        const sec = Math.ceil(G.fuse);
+        if (sec <= 3 && sec > 0 && sec !== G.lastTick) { G.lastTick = sec; sfx.tick(); }
+        if (sec !== G.shownSec) { G.shownSec = sec; $('#hud-mode').textContent = `${G.title} · ⏱ ${Math.max(0, sec)}s`; }
+      }
       if (G.fuse <= 0) answer(false, true);
     }
     requestAnimationFrame(tick);
@@ -1629,7 +1669,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       msg = `🪜 You reached <b>Step ${G.step + 1}: ${L[G.step]}</b>` + (msg ? '<br>' + msg : '');
     } else {
       stars = M.thresholds.filter((t) => G.score >= t).length;
-      title = mode === 'jeepney' ? 'LAST STOP!' : mode === 'daily' ? 'HAMON COMPLETE!' : "TIME'S UP!";
+      title = mode === 'jeepney' ? 'LAST STOP!' : mode === 'daily' ? 'HAMON COMPLETE!' : M.survival ? 'UBOS ANG BUHAY!' : "TIME'S UP!";
     }
 
     // stats & XP
@@ -1672,6 +1712,23 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     }
     if (mode === 'daily' && !G.ranked) parts.push('Practice run · only your first try today counts.');
     $('#res-msg').innerHTML = parts.join('<br>');
+    const rv = $('#res-review');
+    rv.innerHTML = '';
+    if (G.mistakes.length) {
+      rv.appendChild(el('h4', null, `📝 Mga mali mo (${G.mistakes.length})`));
+      G.mistakes.slice(0, 10).forEach((m) => {
+        const row = el('div', 'rv-row');
+        row.appendChild(el('div', 'rv-q', m.q));
+        const a = el('div', 'rv-a');
+        a.appendChild(el('span', 'rv-ok', '✓ ' + m.ans));
+        if (m.given) a.appendChild(el('span', 'rv-bad', 'sagot mo: ' + m.given));
+        row.appendChild(a);
+        rv.appendChild(row);
+      });
+      if (G.mistakes.length > 10) rv.appendChild(el('div', 'rv-more', `+${G.mistakes.length - 10} pa`));
+    } else if (G.answered) {
+      rv.appendChild(el('h4', null, '🎉 Walang mali! Perfect!'));
+    }
     const rc = $('#res-cards');
     rc.innerHTML = '';
     fresh.forEach((c) => rc.appendChild(cardEl(c, true, true)));
@@ -1681,9 +1738,11 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     if (stars > 0 || record) sfx.end(); else sfx.lose();
     if (fresh.length) setTimeout(sfx.card, 900);
 
-    if (M.board && G.ranked && G.score > 0) {
-      sendScore({ mode, score: G.score, correct: G.correct, accuracy: acc, combo: G.bestCombo });
-    }
+    // Topic stats for the teacher report, e.g. "add 8/10, signed 3/6"
+    const topics = Object.entries(G.topics).map(([k, [c, n]]) => `${k} ${c}/${n}`).join(', ');
+    const result = { mode, score: G.score, correct: G.correct, answered: G.answered, accuracy: acc, combo: G.bestCombo, topics };
+    if (M.board && G.ranked && G.score > 0) sendScore(result);
+    else if (!M.board && API && G.answered) sendPractice(result);   // practice modes: report only, not on the leaderboard
   }
 
   /* ---------------- leaderboard (Google Apps Script) ---------------- */
@@ -1719,6 +1778,14 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     }
   }
 
+  async function sendPractice(s) {
+    const entry = Object.assign({ action: 'submit', id: P.id, name: P.name || 'Player', avatar: P.avatar }, s);
+    try {
+      const j = await postScore(entry);
+      if (!j.ok && /fast|busy/i.test(j.error || '')) { P.queue.push(entry); save(); }
+    } catch (e) { P.queue.push(entry); save(); }
+  }
+
   async function flushQueue() {
     if (!API || !P.queue.length) return;
     const pending = P.queue.slice();
@@ -1726,7 +1793,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     for (const entry of pending) {
       try {
         const j = await postScore(entry);
-        if (!j.ok && /network|busy/i.test(j.error || '')) P.queue.push(entry);
+        if (!j.ok && /network|busy|fast/i.test(j.error || '')) P.queue.push(entry);
       } catch (e) { P.queue.push(entry); }
     }
     save();
