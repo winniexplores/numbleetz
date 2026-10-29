@@ -484,6 +484,35 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .hype[data-tier="1"] .hype-combo b { color: var(--cyan); text-shadow: 0 0 16px var(--cyan); }
 .hype[data-tier="2"] .hype-combo b { color: var(--green); text-shadow: 0 0 16px var(--green); }
 .hype[data-tier="3"] .hype-combo b, .hype[data-tier="4"] .hype-combo b { color: var(--yellow); text-shadow: 0 0 20px var(--yellow); }
+/* combo number effects */
+.hype-combo { position: relative; }
+.hype-combo b { transform-origin: 50% 60%; }
+.hype-combo b.slam { animation: slam .3s cubic-bezier(.2, 1.6, .4, 1); }
+.hype-combo b.mega { animation: mega .6s cubic-bezier(.2, 1.4, .4, 1); }
+.hype-combo b.broke { animation: broke .6s ease-out; }
+.hype-combo.danger b { animation: tremble .12s linear infinite; }
+@keyframes slam { 0% { transform: scale(1.6) rotate(-5deg); } 100% { transform: none; } }
+@keyframes mega { 0% { transform: scale(2.3) rotate(8deg); filter: brightness(2.2); } 60% { transform: scale(.9); } 100% { transform: none; filter: none; } }
+@keyframes broke { 0% { transform: none; } 20% { transform: translateX(-8px) rotate(-6deg); } 40% { transform: translateX(8px) rotate(6deg); } 70% { transform: translateY(14px) scale(.8); opacity: .3; } 100% { transform: none; opacity: 1; } }
+@keyframes tremble { 25% { transform: translate(-1.5px, 1px); } 75% { transform: translate(1.5px, -1px); } }
+.combo-ring { position: absolute; left: 50%; top: 38px; width: 70px; height: 70px; margin: -35px 0 0 -35px; border: 4px solid currentColor; border-radius: 50%; box-shadow: 0 0 16px currentColor; pointer-events: none; opacity: 0; animation: ring .55s ease-out forwards; }
+@keyframes ring { 0% { transform: scale(.4); opacity: .9; } 100% { transform: scale(2.6); opacity: 0; } }
+.hype-combo .spark { position: absolute; }
+/* FEVER: fiery number; SUPER FEVER: rainbow number */
+.hype[data-tier="3"] .hype-combo b, .hype[data-tier="4"] .hype-combo b {
+  background: linear-gradient(180deg, #fff6a8 0%, var(--yellow) 35%, #ff8a1f 70%, var(--pink) 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none;
+  filter: drop-shadow(0 0 12px rgba(255, 170, 40, .8));
+}
+.hype[data-tier="4"] .hype-combo b {
+  background: linear-gradient(90deg, var(--pink), var(--yellow), var(--green), var(--cyan), var(--pink));
+  background-size: 300% 100%; -webkit-background-clip: text; background-clip: text;
+  animation: rainbow 1.2s linear infinite;
+}
+.hype[data-tier="4"] .hype-combo b.slam { animation: slam .3s cubic-bezier(.2, 1.6, .4, 1), rainbow 1.2s linear infinite; }
+@keyframes rainbow { to { background-position: 300% 0; } }
+#screen-play.flash::after { content: ''; position: fixed; inset: 0; background: radial-gradient(circle at 50% 35%, rgba(255, 210, 61, .45), transparent 65%); pointer-events: none; animation: flash .5s ease-out forwards; z-index: 5; }
+@keyframes flash { from { opacity: 1; } to { opacity: 0; } }
 .hype-cheer { min-height: 34px; font-family: var(--body); font-weight: 800; font-size: 24px; }
 .hype-cheer.pop { animation: cheerpop .4s ease-out; }
 @keyframes cheerpop { from { transform: scale(.5); opacity: 0; } 60% { transform: scale(1.15); } }
@@ -1547,6 +1576,46 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     }
   }
 
+  // Animates the big combo number: slam on every hit, shockwave on new tiers, crumble on a break
+  function comboFx(combo, tierIdx) {
+    const prev = G.fxCombo || 0, prevTier = G.fxTier || 0;
+    G.fxCombo = combo; G.fxTier = tierIdx;
+    if (combo === prev) return;
+    const b = $('#hype-combo'), box = b.parentNode;
+    const play = cls => { b.classList.remove('slam', 'mega', 'broke'); void b.offsetWidth; b.classList.add(cls); };
+    if (combo > prev) {
+      const big = tierIdx > prevTier;
+      play(big ? 'mega' : 'slam');
+      const color = getComputedStyle(b).color;
+      for (let i = 0; i < (big ? 3 : 1); i++) {
+        const r = el('div', 'combo-ring');
+        r.style.color = big ? 'var(--yellow)' : color;
+        r.style.animationDelay = i * 0.12 + 's';
+        box.appendChild(r);
+        setTimeout(() => r.remove(), 700 + i * 120);
+      }
+      if (big || combo % 5 === 0) comboSparks(box, big ? 22 : 10);
+      if (big) { const sc = $('#screen-play'); sc.classList.remove('flash'); void sc.offsetWidth; sc.classList.add('flash'); }
+    } else if (combo === 0 && prev >= 3) {
+      play('broke');
+    }
+  }
+
+  function comboSparks(box, n) {
+    const colors = ['var(--cyan)', 'var(--pink)', 'var(--yellow)', 'var(--green)'];
+    for (let i = 0; i < n; i++) {
+      const s = el('div', 'spark');
+      const a = (Math.PI * 2 * i) / n, r = 60 + Math.random() * 60;
+      s.style.left = '50%'; s.style.top = '38px';
+      s.style.background = colors[i % 4];
+      s.style.boxShadow = `0 0 8px ${colors[i % 4]}`;
+      s.style.setProperty('--dx', Math.cos(a) * r + 'px');
+      s.style.setProperty('--dy', Math.sin(a) * r + 'px');
+      box.appendChild(s);
+      setTimeout(() => s.remove(), 650);
+    }
+  }
+
   function updateHUD() {
     $('#hud-score').textContent = G.score;
     const tier = tierOf(G.combo);
@@ -1554,6 +1623,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     $('#hype-combo').textContent = G.combo;
     $('#hype-mult').textContent = `×${tier[1]}`;
     $('#hype').dataset.tier = COMBO_TIERS.indexOf(tier);
+    comboFx(G.combo, COMBO_TIERS.indexOf(tier));
     $('#combo-mult').textContent = `×${tier[1]}`;
     $('#combo-meter').classList.toggle('on', G.combo > 0);
     if (G.combo === 0) $('#combo-fill').style.width = '0%';
@@ -1590,6 +1660,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     if (G.combo > 0 && !G.locked) {
       G.comboLeft -= dt;
       $('#combo-fill').style.width = clamp(G.comboLeft / G.comboMax, 0, 1) * 100 + '%';
+      $('.hype-combo').classList.toggle('danger', G.combo >= 3 && G.comboLeft / G.comboMax < 0.3);
       if (G.comboLeft <= 0) breakCombo();
     }
     if ((G.M.fuse || G.M.survival) && !G.locked) {
@@ -1617,6 +1688,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       sfx.comboLost();
     }
     G.combo = 0;
+    $('.hype-combo').classList.remove('danger');
     updateHUD();
   }
 
