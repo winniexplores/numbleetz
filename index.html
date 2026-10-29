@@ -533,6 +533,50 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 /* Philippine flag (SVG, since flag emoji don't show on Windows) */
 .ph-flag { width: 1.6em; height: .8em; vertical-align: -.05em; border-radius: 2px; box-shadow: 0 0 8px rgba(255, 255, 255, .35); }
 
+/* stacked fractions (Hagdan · Fraction) */
+.fr { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; font-size: .62em; line-height: 1.05; margin: 0 .08em; }
+.fr > span:first-child { border-bottom: .09em solid currentColor; padding: 0 .12em; }
+/* Hagdan has 8 topics: 4 per row */
+#hagdan-ops { grid-template-columns: repeat(4, 1fr); }
+
+/* ---------- Lakbay Pilipinas map ---------- */
+.map-wrap { display: grid; grid-template-columns: 1.25fr 1fr; gap: 10px; align-items: center; margin: 12px 0; padding: 10px; border: 1px solid var(--line); border-radius: 18px; background: rgba(14, 10, 38, .7); }
+.ph-map { width: 100%; height: auto; display: block; }
+.ph-map .land { fill: rgba(46, 242, 255, .1); stroke: rgba(46, 242, 255, .5); stroke-width: 1; stroke-linejoin: round; }
+.ph-map .pin { cursor: pointer; }
+.ph-map .pin circle { fill: #1a1340; stroke: rgba(255, 255, 255, .25); stroke-width: 1.2; }
+.ph-map .pin text { fill: rgba(255, 255, 255, .45); font-family: var(--num); font-weight: 700; font-size: 10px; text-anchor: middle; }
+.ph-map .pin.open circle { fill: #3a2a05; stroke: var(--yellow); filter: drop-shadow(0 0 4px var(--yellow)); animation: pinpulse 1.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.ph-map .pin.open text { fill: var(--yellow); }
+.ph-map .pin.done circle { fill: #0c3b25; stroke: var(--green); filter: drop-shadow(0 0 4px var(--green)); }
+.ph-map .pin.done text { fill: var(--green); }
+@keyframes pinpulse { 50% { transform: scale(1.2); } }
+.map-side { display: flex; flex-direction: column; gap: 10px; }
+.map-legend { margin: 0; font-size: 13px; line-height: 1.9; color: var(--muted); }
+.lg { display: inline-block; width: 12px; height: 12px; border-radius: 50%; vertical-align: -1px; margin-right: 4px; background: #1a1340; border: 1.5px solid rgba(255, 255, 255, .3); }
+.lg.open { background: #3a2a05; border-color: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+.lg.done { background: #0c3b25; border-color: var(--green); box-shadow: 0 0 6px var(--green); }
+.map-tip { margin: 0; font-size: 12px; color: var(--muted); }
+.passport-btn { padding: 12px 8px; font-size: 15px; }
+
+/* ---------- Passport ---------- */
+.passport-cover { margin: 8px 0 14px; padding: 18px 14px; border-radius: 16px; text-align: center; background: linear-gradient(160deg, #0b2a6b, #071a44); border: 2px solid #c9a227; box-shadow: inset 0 0 0 4px #071a44, inset 0 0 0 5px rgba(201, 162, 39, .6); }
+.pc-title { font-family: var(--display); font-size: 13px; letter-spacing: .14em; color: #e8c766; }
+.pc-sub { margin-top: 4px; font-size: 12px; color: #c9b27a; }
+.pc-name { margin-top: 10px; font-weight: 800; font-size: 18px; color: #fff; }
+.collect-head { display: flex; justify-content: space-between; margin-bottom: 6px; font-weight: 700; color: var(--muted); }
+.collect-head b { color: var(--yellow); }
+.passport-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0; }
+.stamp { --c: var(--cyan); display: flex; flex-direction: column; align-items: center; justify-content: center; aspect-ratio: 1; padding: 6px; border-radius: 50%; border: 2px dashed rgba(255, 255, 255, .18); text-align: center; color: var(--muted); }
+.stamp .st-em { font-size: 24px; opacity: .5; }
+.stamp .st-nm { font-size: 10.5px; font-weight: 800; line-height: 1.15; margin-top: 2px; }
+.stamp .st-dt { font-size: 9px; letter-spacing: .05em; margin-top: 2px; opacity: .8; }
+.stamp.got { border: 3px double var(--c); color: var(--c); transform: rotate(var(--r)); background: color-mix(in srgb, var(--c) 10%, transparent); box-shadow: 0 0 10px color-mix(in srgb, var(--c) 40%, transparent); }
+.stamp.got .st-em { opacity: 1; }
+.new-stamp { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 12px; color: var(--green); }
+.new-stamp .stamp { width: 84px; flex: none; animation: stampin .5s cubic-bezier(.2, 1.6, .4, 1); }
+@keyframes stampin { from { transform: scale(2.4) rotate(-30deg); opacity: 0; } }
+
   </style>
 </head>
 <body>
@@ -589,7 +633,29 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       <header class="bar"><button class="back" data-go="home">‹ BACK</button><h3><svg class="ph-flag" viewBox="0 0 30 15" aria-label="Philippine flag"><rect width="30" height="7.5" fill="#0038a8"/><rect y="7.5" width="30" height="7.5" fill="#ce1126"/><path d="M0 0 L13 7.5 L0 15 Z" fill="#fff"/><circle cx="4.6" cy="7.5" r="1.7" fill="#fcd116"/><g fill="#fcd116"><circle cx="1.6" cy="2.2" r=".7"/><circle cx="1.6" cy="12.8" r=".7"/><circle cx="10.6" cy="7.5" r=".7"/></g></svg> LAKBAY PILIPINAS</h3><span></span></header>
       <p class="hint-text">Choose your route, then travel all 18 regions of the Philippines, Batanes to Tawi-Tawi. 15 questions, 3 lives. Earn ⭐ to unlock the next region and learn an <b>Alam mo ba?</b> fact.</p>
       <div class="ops" id="classic-ops"></div>
+      <div class="map-wrap">
+        <svg id="ph-map" class="ph-map" viewBox="0 0 200 334" role="img" aria-label="Mapa ng Pilipinas"></svg>
+        <div class="map-side">
+          <p class="map-legend"><span class="lg done"></span> Tapos na<br><span class="lg open"></span> Bukas na<br><span class="lg"></span> Sarado pa</p>
+          <p class="map-tip">I-tap ang numero sa mapa para maglaro.</p>
+          <button class="btn yellow passport-btn" data-go="passport">🛂 PASSPORT<small id="passport-btn-count">0/18</small></button>
+        </div>
+      </div>
       <div class="islands" id="classic-levels"></div>
+    </section>
+
+    <!-- ===================== PASSPORT ===================== -->
+    <section id="screen-passport" class="screen">
+      <header class="bar"><button class="back" data-go="classic">‹ BACK</button><h3>🛂 PASSPORT</h3><span></span></header>
+      <div class="passport-cover">
+        <div class="pc-title">REPUBLIKA NG PILIPINAS</div>
+        <div class="pc-sub">NumBleetz Lakbay Passport</div>
+        <div class="pc-name" id="passport-name"></div>
+      </div>
+      <div class="collect-head"><span>Mga stamp</span><b id="passport-count">0/18</b></div>
+      <div class="cards-progress"><div id="passport-bar"></div></div>
+      <div class="passport-grid" id="passport-grid"></div>
+      <p class="hint-text">Makakakuha ka ng stamp sa unang beses na matapos mo ang isang region, kahit anong sign ang gamit mo.</p>
     </section>
 
     <!-- ===================== HAGDAN (LEVEL UP) ===================== -->
@@ -689,7 +755,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       <div class="res-cards" id="res-cards"></div>
       <div class="row">
         <button class="btn cyan" id="btn-again">↻ ULIT</button>
-        <button class="btn purple" data-go="home">⌂ HOME</button>
+        <button class="btn purple" id="btn-origin">⌂ HOME</button>
       </div>
       <button class="btn yellow" id="btn-res-board">📊 LEADERBOARD</button>
     </section>
@@ -759,6 +825,12 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     div: { sym: '÷', name: 'HATI', color: 'green' },
     mix: { sym: '🍧', name: 'HALO-HALO', color: 'purple' }
   };
+  // Hagdan also has these, on top of the four operations
+  const HAGDAN_OPS = Object.assign({}, OPS, {
+    frac: { sym: '½', name: 'FRACTION', color: 'cyan' },
+    pemdas: { sym: '( )', name: 'PEMDAS', color: 'pink' },
+    alg: { sym: 'x', name: 'ALGEBRA', color: 'yellow' }
+  });
   // The 18 regions of the Philippines, Batanes to Tawi-Tawi: [name, emoji, region · landmark, "Alam mo ba?" facts]
   // Each region has 5 facts [label, text], one per route, in the order + − × ÷ Halo-Halo
   const ISLANDS = [
@@ -925,7 +997,10 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     sub: ['Whole numbers 0–10', 'Whole numbers to 20', '2-digit numbers', '3-digit numbers', 'Signed numbers ±10', 'Signed numbers ±50', 'Decimals', 'Signed decimals'],
     mul: ['Tables up to 5', 'Tables up to 10', 'Tables up to 12', '2-digit × 1-digit', 'Signed numbers', 'Decimal × whole', 'Signed 2-digit'],
     div: ['Divide by 2–5', 'Divide by up to 10', 'Divide by up to 12', 'Signed numbers', 'Bigger answers', 'Decimal answers', 'Signed bigger'],
-    mix: ['Small whole numbers', 'Whole numbers', 'Bigger numbers', 'Signed numbers', 'Bigger signed numbers', 'Decimals', 'Signed mix']
+    mix: ['Small whole numbers', 'Whole numbers', 'Bigger numbers', 'Signed numbers', 'Bigger signed numbers', 'Decimals', 'Signed mix'],
+    frac: ['Isimplify (lowest terms)', 'Kaparehong denominator', 'Magkaibang denominator', 'Fraction × fraction', 'Fraction ÷ fraction', 'Fraction × buong bilang', 'Signed fractions'],
+    pemdas: ['× bago +', '÷ bago + at −', 'Parentheses muna', 'Tatlong operation', 'Exponents (² ³)', 'Buong PEMDAS', 'Signed PEMDAS'],
+    alg: ['x + a = b', 'x − a = b', 'ax = b', 'x ÷ a = b', 'ax + b = c', 'a(x + b) = c', 'Signed equations']
   };
   // Which step of each operation's ladder a Halo-Halo step uses
   const MIX_STEPS = { add: [0, 1, 2, 4, 5, 6, 7], sub: [0, 1, 2, 4, 5, 6, 7], mul: [0, 1, 3, 4, 6, 5, 6], div: [0, 1, 4, 3, 6, 5, 6] };
@@ -965,7 +1040,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   const KEY = 'numbleetz.v1';
   const DEFAULT = {
     name: '', avatar: '🐒', id: '', xp: 0, sound: true, music: true, inputMode: 'tap',
-    classic: {}, tables: {}, ladder: {}, best: {}, cards: [], local: {}, queue: [],
+    classic: {}, tables: {}, ladder: {}, best: {}, cards: [], local: {}, queue: [], passport: {},
     dailyDone: '', stats: { games: 0, correct: 0, answered: 0, bestCombo: 0, daily: 0 }
   };
   let P = load();
@@ -975,7 +1050,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     try { saved = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { /* private mode */ }
     const p = Object.assign({}, DEFAULT, saved);
     p.stats = Object.assign({}, DEFAULT.stats, saved.stats);
-    ['classic', 'tables', 'ladder', 'best', 'local'].forEach((k) => { p[k] = Object.assign({}, p[k]); });
+    ['classic', 'tables', 'ladder', 'best', 'local', 'passport'].forEach((k) => { p[k] = Object.assign({}, p[k]); });
     p.cards = Array.isArray(p.cards) ? p.cards : [];
     p.queue = Array.isArray(p.queue) ? p.queue : [];
     if (!p.id) p.id = Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -1182,6 +1257,9 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
   function ladderQ(op, step) {
     let s = step;
+    if (op === 'frac') return fracQ(Math.min(s, 6));
+    if (op === 'pemdas') return pemdasQ(Math.min(s, 6));
+    if (op === 'alg') return algebraQ(Math.min(s, 6));
     if (op === 'mix') { op = pick(['add', 'sub', 'mul', 'div']); s = MIX_STEPS[op][Math.min(step, 6)]; }
     s = Math.min(s, LADDER[op].length - 1);
     let a, b, ans;
@@ -1239,6 +1317,160 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     }
     while (out.length < 3) out.push(round2(ans + out.length * 3));
     return shuffle(out);
+  }
+
+
+  /* ---------------- Hagdan extra topics: fractions, PEMDAS, algebra ---------------- */
+  const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; };
+  // A fraction in lowest terms, sign kept on the numerator
+  const F = (n, d) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d); return { n: n / g, d: d / g }; };
+  const fval = (f) => f.n / f.d;
+  const fstr = (f) => (f.d === 1 ? fmtN(f.n) : (f.n < 0 ? '−' : '') + Math.abs(f.n) + '/' + f.d);
+  // Stacked fraction for the screen: 3/4 → ³⁄₄ drawn as a real fraction
+  const fracHTML = (s) => s.replace(/(\d+)\/(\d+)/g, '<span class="fr"><span>$1</span><span>$2</span></span>');
+  const wrapF = (f) => (f.n < 0 ? `(${fstr(f)})` : fstr(f));
+
+  function fracChoices(ans, wrongs, signed) {
+    const out = [ans];
+    const cands = wrongs.concat(shuffle([F(ans.n + 1, ans.d), F(ans.n - 1, ans.d), F(ans.n, ans.d + 1), F(ans.n * 2, ans.d), F(ans.n + ans.d, ans.d)]));
+    if (signed && ans.n) cands.unshift(F(-ans.n, ans.d));
+    for (const c of cands) {
+      if (out.length >= 3) break;
+      if (!c || !isFinite(fval(c)) || c.d === 0) continue;
+      if (!signed && fval(c) <= 0) continue;
+      if (out.some((o) => fval(o) === fval(c))) continue;
+      out.push(c);
+    }
+    for (let k = 2; out.length < 3; k++) out.push(F(ans.n + k * ans.d, ans.d));
+    return shuffle(out);
+  }
+
+  function fracQ(s) {
+    const DEN = [2, 3, 4, 5, 6, 8, 10, 12];
+    let A, B, sym, ans, wrongs = [], signed = s === 6;
+    if (s === 0) {
+      const d = rand(2, 9), n = rand(1, d - 1), k = rand(2, 5);
+      A = { n: n * k, d: d * k };
+      ans = F(A.n, A.d);
+      return mkFracQ(s, fstr(A), ans, [F(A.n / k + 1, A.d / k), F(A.n, A.d / k), F(A.n / k, A.d)], false);
+    }
+    if (s === 5) {
+      const d = rand(2, 10), n = rand(1, d - 1), w = d * rand(2, 10);
+      const q = { op: 'frac', cat: 'fraction', d: 2 + s, step: s, ans: n * w / d, text: `${n}/${d} × ${w}` };
+      q.textHTML = fracHTML(q.text);
+      q.choices = ladderChoices(q.ans, false, false);
+      return q;
+    }
+    if (s === 1) {
+      const d = rand(3, 12);
+      let x = rand(1, d - 1), y = rand(1, d - 1);
+      sym = rng() < 0.5 || x === y ? '+' : '−';
+      if (sym === '−' && y > x) [x, y] = [y, x];
+      A = { n: x, d }; B = { n: y, d };
+      ans = F(sym === '+' ? x + y : x - y, d);
+      wrongs = [F(sym === '+' ? x + y : x - y, 2 * d)];
+    } else if (s === 2 || s === 6) {
+      let d1 = pick(DEN), d2 = pick(DEN);
+      while (d2 === d1) d2 = pick(DEN);
+      A = { n: rand(1, d1 - 1), d: d1 }; B = { n: rand(1, d2 - 1), d: d2 };
+      sym = rng() < 0.5 ? '+' : '−';
+      if (s === 6) { if (rng() < 0.5) A = { n: -A.n, d: d1 }; else B = { n: -B.n, d: d2 }; }
+      else if (sym === '−' && fval(B) > fval(A)) [A, B] = [B, A];
+      if (sym === '−' && fval(A) === fval(B)) sym = '+';
+      ans = F(sym === '+' ? A.n * B.d + B.n * A.d : A.n * B.d - B.n * A.d, A.d * B.d);
+      wrongs = [F(sym === '+' ? A.n + B.n : A.n - B.n, A.d + B.d)];   // the classic mistake: add tops and bottoms
+      if (ans.n === 0) return fracQ(s);
+    } else if (s === 3) {
+      A = { n: rand(1, 8), d: rand(2, 9) }; B = { n: rand(1, 8), d: rand(2, 9) };
+      sym = '×';
+      ans = F(A.n * B.n, A.d * B.d);
+      wrongs = [F(A.n * B.d, A.d * B.n), F(A.n + B.n, A.d + B.d)];
+    } else {
+      A = { n: rand(1, 8), d: rand(2, 9) }; B = { n: rand(1, 8), d: rand(2, 9) };
+      sym = '÷';
+      ans = F(A.n * B.d, A.d * B.n);
+      wrongs = [F(A.n * B.n, A.d * B.d), F(A.d * B.n, A.n * B.d)];   // forgot to flip / flipped the wrong one
+    }
+    return mkFracQ(s, `${fstr(A)} ${sym} ${wrapF(B)}`, ans, wrongs, signed);
+  }
+  function mkFracQ(s, text, ans, wrongs, signed) {
+    const q = { op: 'frac', cat: 'fraction', d: 2 + s, step: s, ans, text, fmt: fstr, frac: true };
+    q.textHTML = fracHTML(text);
+    q.choices = fracChoices(ans, wrongs, signed);
+    return q;
+  }
+
+  // Wrong choices that come from real mistakes first, then near misses
+  function numChoices(ans, mistakes, signed) {
+    const out = [ans];
+    for (const m of mistakes.concat(ladderChoices(ans, signed, false))) {
+      if (out.length >= 3) break;
+      if (!Number.isInteger(m) || (!signed && m < 0)) continue;
+      if (!out.includes(m)) out.push(m);
+    }
+    while (out.length < 3) out.push(ans + out.length * 3);
+    return shuffle(out);
+  }
+
+  function pemdasQ(s) {
+    const n = fmtN;
+    let text, ans, ltr = [], signed = s === 6;
+    if (s === 0) {
+      const a = rand(1, 20), b = rand(2, 9), c = rand(2, 9);
+      if (rng() < 0.5) { text = `${a} + ${b} × ${c}`; ans = a + b * c; ltr = [(a + b) * c]; }
+      else { text = `${b} × ${c} + ${a}`; ans = b * c + a; ltr = [b * (c + a)]; }
+    } else if (s === 1) {
+      const c = rand(2, 9), b = c * rand(2, 9), a = rand(b / c + 1, 30);
+      if (rng() < 0.5) { text = `${a} + ${b} ÷ ${c}`; ans = a + b / c; ltr = [(a + b) / c]; }
+      else { text = `${a} − ${b} ÷ ${c}`; ans = a - b / c; ltr = [(a - b) / c]; }
+    } else if (s === 2) {
+      const a = rand(2, 15), b = rand(1, 12), c = rand(2, 9);
+      if (rng() < 0.5) { text = `(${a} + ${b}) × ${c}`; ans = (a + b) * c; ltr = [a + b * c]; }
+      else { const x = Math.max(a, b) + 1, y = Math.min(a, b); text = `${c} × (${x} − ${y})`; ans = c * (x - y); ltr = [c * x - y]; }
+    } else if (s === 3) {
+      const a = rand(2, 9), b = rand(2, 9), d = rand(2, 6), c = d * rand(1, Math.min(9, Math.floor((a * b) / d)) || 1);
+      text = `${a} × ${b} − ${c} ÷ ${d}`; ans = a * b - c / d; ltr = [(a * b - c) / d, a * (b - c / d)];
+    } else if (s === 4) {
+      const a = rand(2, 9), b = rand(1, 20);
+      const t = pick(['sq+', 'sq-', 'cube']);
+      if (t === 'sq+') { text = `${a}² + ${b}`; ans = a * a + b; ltr = [a * 2 + b]; }
+      else if (t === 'sq-') { const bb = Math.min(b, a * a - 1); text = `${a}² − ${bb}`; ans = a * a - bb; ltr = [a * 2 - bb]; }
+      else { const c = rand(2, 4); text = `${b} + ${c}³`; ans = b + c ** 3; ltr = [b + c * 3, (b + c) ** 3]; }
+    } else if (s === 5) {
+      const a = rand(1, 9), b = rand(1, 9), c = rand(2, 6), d = rand(2, 5);
+      text = `(${a} + ${b}) × ${c} − ${d}²`; ans = (a + b) * c - d * d; ltr = [a + b * c - d * d, (a + b) * c - d * 2];
+      if (ans < 0) return pemdasQ(s);
+    } else {
+      const a = rand(1, 12), b = rand(2, 6), c = rand(-9, 9), d = rand(1, 12);
+      text = `${n(-a)} + ${b} × (${n(c)} − ${d})`; ans = -a + b * (c - d); ltr = [(-a + b) * (c - d), -a + b * c - d, a + b * (c - d)];
+    }
+    const q = { op: 'pemdas', cat: 'pemdas', d: 2 + s, step: s, ans, text };
+    q.choices = numChoices(ans, ltr, signed || ans < 0);
+    return q;
+  }
+
+  function algebraQ(s) {
+    const coef = (a) => (a === 1 ? '' : a === -1 ? '−' : fmtN(a));
+    const plus = (b) => (b < 0 ? ` − ${-b}` : ` + ${b}`);
+    let x, text, mistakes = [], signed = s === 6;
+    if (s === 0) { x = rand(1, 20); const a = rand(1, 20); text = `x + ${a} = ${x + a}`; mistakes = [x + 2 * a]; }
+    else if (s === 1) { x = rand(5, 30); const a = rand(1, x); text = `x − ${a} = ${x - a}`; mistakes = [x - 2 * a]; }
+    else if (s === 2) { x = rand(2, 12); const a = rand(2, 9); text = `${a}x = ${a * x}`; mistakes = [a * x - a, a * x + a]; }
+    else if (s === 3) { const a = rand(2, 9), b = rand(2, 12); x = a * b; text = `x ÷ ${a} = ${b}`; mistakes = [a + b, b - a]; }
+    else if (s === 4) {
+      x = rand(1, 12); const a = rand(2, 9), b = rand(1, 20);
+      if (rng() < 0.5) { text = `${a}x + ${b} = ${a * x + b}`; mistakes = [(a * x + 2 * b) / a, a * x - b]; }
+      else { text = `${a}x − ${b} = ${a * x - b}`; mistakes = [(a * x - 2 * b) / a, a * x + b]; if (a * x - b < 0) return algebraQ(s); }
+    } else if (s === 5) {
+      x = rand(1, 12); const a = rand(2, 6), b = rand(1, 9);
+      text = `${a}(x + ${b}) = ${a * (x + b)}`; mistakes = [x + 2 * b, a * (x + b) - b];
+    } else {
+      x = rand(-12, 12) || -3; const a = (rand(2, 7)) * sgn(), b = rand(-15, 15) || 4;
+      text = `${coef(a)}x${plus(b)} = ${fmtN(a * x + b)}`; mistakes = [-x, (a * x + 2 * b) / a];
+    }
+    const q = { op: 'alg', cat: 'algebra', d: 2 + s, step: s, ans: x, text, ask2: 'x = ?' };
+    q.choices = numChoices(x, mistakes, signed || x < 0);
+    return q;
   }
 
   // Three answer choices: the right one plus two believable mistakes
@@ -1305,6 +1537,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     if (id === 'mini') renderMini();
     if (id === 'cards') renderCards();
     if (id === 'hagdan') renderHagdan();
+    if (id === 'passport') renderPassport();
   }
 
   function renderHome() {
@@ -1358,7 +1591,78 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       };
       list.appendChild(b);
     });
+    const done = (i) => (P.classic[`${classicOp}-${i + 1}`] || 0) > 0;
+    renderMap(done, (i) => i === 0 || done(i - 1));
+    syncPassport();
+    $('#passport-btn-count').textContent = `${Object.keys(P.passport).length}/${ISLANDS.length}`;
   }
+
+  /* ---------------- Lakbay Pilipinas map + passport ---------------- */
+  // Simplified outline of the big islands, as [longitude, latitude] points
+  const PH_SHAPES = [
+    [[120.6, 18.5], [121.2, 18.6], [122.2, 18.5], [122.3, 17.3], [122.1, 16.2], [121.6, 15.7], [121.6, 14.9], [122.0, 14.2], [122.6, 14.2], [123.0, 13.8], [123.9, 13.8], [124.2, 13.0], [124.1, 12.6], [123.3, 13.0], [122.6, 13.6], [121.7, 13.9], [120.9, 13.8], [120.6, 14.3], [120.5, 14.5], [120.0, 14.9], [119.8, 16.3], [120.3, 16.6], [120.4, 17.5]],
+    [[120.4, 13.5], [121.2, 13.4], [121.5, 12.6], [121.2, 12.2], [120.7, 12.5], [120.3, 13.0]],
+    [[119.6, 11.5], [119.8, 10.9], [118.8, 9.9], [117.7, 8.5], [117.2, 8.3], [117.4, 8.9], [118.4, 10.0], [119.3, 11.2]],
+    [[121.9, 11.9], [122.6, 11.8], [123.1, 11.3], [122.6, 10.7], [122.0, 10.5], [121.9, 11.3]],
+    [[122.9, 10.9], [123.5, 10.9], [123.4, 9.9], [123.1, 9.1], [122.6, 9.4], [122.4, 10.3]],
+    [[123.9, 11.3], [124.1, 11.1], [124.0, 10.3], [123.4, 9.5], [123.4, 9.9], [123.8, 10.6]],
+    [[123.8, 10.1], [124.5, 10.1], [124.6, 9.7], [124.0, 9.6]],
+    [[124.2, 12.5], [125.0, 12.6], [125.7, 11.8], [125.5, 11.1], [125.0, 11.1], [124.4, 11.6]],
+    [[124.3, 11.5], [125.0, 11.2], [125.1, 10.4], [125.3, 10.0], [124.8, 10.0], [124.6, 10.7], [124.3, 11.0]],
+    [[123.2, 12.3], [124.0, 12.4], [123.6, 11.9], [123.2, 12.0]],
+    [[122.0, 7.0], [122.1, 7.6], [122.8, 8.1], [123.6, 8.6], [124.2, 8.2], [124.8, 8.9], [125.3, 9.0], [125.5, 9.8], [126.1, 9.2], [126.6, 7.6], [126.2, 6.9], [125.8, 7.3], [125.6, 6.9], [125.4, 6.0], [125.1, 5.7], [124.3, 6.2], [124.0, 6.9], [123.5, 7.7], [122.9, 7.4], [122.2, 6.9]]
+  ];
+  const PH_DOTS = [[121.9, 20.4, 3], [122.0, 13.4, 3], [124.7, 9.2, 2.5], [126.05, 9.85, 3], [121.0, 6.0, 3], [120.4, 5.6, 2.5], [119.9, 5.1, 3]];
+  // Where each region's marker sits, same order as ISLANDS
+  const REGION_PINS = [[121.8, 17.2], [120.5, 17.6], [121.1, 16.8], [120.8, 15.5], [121.0, 14.6], [121.7, 14.1], [120.9, 12.9], [123.4, 13.4],
+    [122.4, 11.2], [123.0, 10.1], [123.8, 10.2], [124.9, 11.6], [122.9, 7.8], [124.8, 8.2], [125.7, 8.9], [125.8, 7.3], [124.8, 6.5], [120.0, 5.2]];
+  const mx = (lon) => ((lon - 116.8) * 20).toFixed(1);
+  const my = (lat) => ((21.2 - lat) * 20).toFixed(1);
+
+  function renderMap(isDone, isOpen) {
+    const svgNS = 'http://www.w3.org/2000/svg';
+    let html = PH_SHAPES.map((pts) => `<polygon class="land" points="${pts.map(([x, y]) => mx(x) + ',' + my(y)).join(' ')}"/>`).join('');
+    html += PH_DOTS.map(([x, y, r]) => `<circle class="land" cx="${mx(x)}" cy="${my(y)}" r="${r}"/>`).join('');
+    REGION_PINS.forEach(([x, y], i) => {
+      const cls = isDone(i) ? 'pin done' : isOpen(i) ? 'pin open' : 'pin';
+      html += `<g class="${cls}" data-region="${i + 1}" transform="translate(${mx(x)} ${my(y)})"><circle r="9"/><text y="3.5">${isDone(i) ? '✓' : i + 1}</text></g>`;
+    });
+    const svg = $('#ph-map');
+    svg.setAttribute('xmlns', svgNS);
+    svg.innerHTML = html;
+  }
+
+  // Passport: one stamp per region, earned the first time you clear it on any route
+  function syncPassport() {
+    ISLANDS.forEach((_, i) => {
+      if (P.passport[i + 1]) return;
+      if (Object.keys(OPS).some((op) => (P.classic[`${op}-${i + 1}`] || 0) > 0)) P.passport[i + 1] = manilaDate();
+    });
+  }
+
+  function renderPassport() {
+    syncPassport();
+    const grid = $('#passport-grid');
+    grid.innerHTML = '';
+    ISLANDS.forEach(([name, em, sub], i) => {
+      const date = P.passport[i + 1];
+      const s = el('div', 'stamp' + (date ? ' got' : ''));
+      s.style.setProperty('--r', ((i * 37) % 17) - 8 + 'deg');
+      s.style.setProperty('--c', `var(--${['cyan', 'pink', 'yellow', 'green', 'purple'][i % 5]})`);
+      s.appendChild(el('div', 'st-em', date ? em : '?'));
+      s.appendChild(el('div', 'st-nm', name));
+      s.appendChild(el('div', 'st-dt', date ? stampDate(date) : sub.split(' · ')[0]));
+      grid.appendChild(s);
+    });
+    $('#passport-name').textContent = `${P.avatar} ${P.name || 'Player'}`;
+    const n = Object.keys(P.passport).length;
+    $('#passport-count').textContent = `${n}/${ISLANDS.length}`;
+    $('#passport-bar').style.width = (n / ISLANDS.length) * 100 + '%';
+  }
+  const stampDate = (d) => {
+    const [y, m, day] = d.split('-');
+    return `${+day} ${['ENE', 'PEB', 'MAR', 'ABR', 'MAY', 'HUN', 'HUL', 'AGO', 'SET', 'OKT', 'NOB', 'DIS'][m - 1]} ${y}`;
+  };
 
   let miniIdx = 0, tablePick = 2;
   function renderMini() {
@@ -1391,7 +1695,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   function renderHagdan() {
     const ops = $('#hagdan-ops');
     ops.innerHTML = '';
-    Object.entries(OPS).forEach(([k, o]) => {
+    Object.entries(HAGDAN_OPS).forEach(([k, o]) => {
       const b = el('button', `op ${o.color}${k === hagdanOp ? ' active' : ''}`, o.sym);
       b.appendChild(el('small', null, o.name));
       b.onclick = () => { hagdanOp = k; sfx.tap(); renderHagdan(); };
@@ -1456,7 +1760,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     let title = M.title;
     if (mode === 'classic') title = `${OPS[G.op].name} · ${ISLANDS[opts.level - 1][0].toUpperCase()}`;
     if (mode === 'tables') title = `TIMES TABLE · ${opts.table}`;
-    if (mode === 'hagdan') { title = `HAGDAN · ${OPS[G.op].name}`; G.step = 0; }
+    if (mode === 'hagdan') { title = `HAGDAN · ${HAGDAN_OPS[G.op].name}`; G.step = 0; }
     if (mode === 'daily' && !G.ranked) title += ' · PRACTICE';
     G.title = title;
     $('#hud-mode').textContent = M.time ? `${title} · ⏱ ${M.time}s` : title;
@@ -1503,7 +1807,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       q.lines.forEach((l, i) => { if (i) qe.appendChild(document.createElement('br')); qe.appendChild(document.createTextNode(l)); });
       qe.appendChild(el('span', 'q-ask', q.ask));
     } else {
-      qe.textContent = G.M.tf ? `${q.text} = ${q.shown}` : `${q.text} = ?`;
+      if (q.textHTML || q.ask2) qe.innerHTML = (q.textHTML || q.text) + (q.ask2 ? `<span class="q-ask">${q.ask2}</span>` : ' = ?');
+      else qe.textContent = G.M.tf ? `${q.text} = ${q.shown}` : `${q.text} = ?`;
     }
     renderInput();
     renderChoices();
@@ -1542,17 +1847,22 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     box.innerHTML = '';
     if (!G.q.choices) return;
     G.q.choices.forEach((v) => {
-      const b = el('button', null, G.q.op === 'store' ? `₱${v}` : fmtN(v));
-      b.dataset.v = fmtN(v);
+      const b = el('button', null, G.q.op === 'store' ? `₱${v}` : fmtQ(G.q, v));
+      b.dataset.v = fmtQ(G.q, v);
+      if (G.q.frac) b.innerHTML = fracHTML(b.dataset.v);
       box.appendChild(b);
     });
+  }
+  // How an answer value is written for this question (fractions as "3/4", numbers as "−7")
+  function fmtQ(q, v) {
+    return q.fmt ? q.fmt(v) : fmtN(v);
   }
 
   function pickChoice(btn) {
     if (!G || G.locked || G.over || !tapMode() || !btn) return;
-    const ok = btn.dataset.v === fmtN(G.q.ans);
+    const ok = btn.dataset.v === fmtQ(G.q, G.q.ans);
     btn.classList.add(ok ? 'good' : 'bad');
-    answer(ok, false, btn.textContent);
+    answer(ok, false, G.q.op === 'store' ? btn.textContent : btn.dataset.v);
   }
 
   function toggleInput() {
@@ -1636,7 +1946,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       if (G.M.tf) {
         floatText(`${G.q.text} = ${G.q.ans}`, 'var(--cyan)', 20, 30);
       } else if (tapMode()) {
-        $$('#choices button').forEach((b) => { if (b.dataset.v === fmtN(G.q.ans)) b.classList.add('good'); });
+        $$('#choices button').forEach((b) => { if (b.dataset.v === fmtQ(G.q, G.q.ans)) b.classList.add('good'); });
       } else {
         G.input = String(G.q.ans);
         renderInput('bad');
@@ -1657,11 +1967,12 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   // How a question and its answer read in the "Mga mali mo" review
   function questionText(q) {
     if (q.long) return q.lines.join(' · ') + ' — ' + q.ask;
+    if (q.ask2) return `${q.text}, ${q.ask2}`;
     return G.M.tf ? `${q.text} = ${q.shown}` : `${q.text} = ?`;
   }
   function answerText(q) {
     if (G.M.tf) return q.shown === q.ans ? 'Tama' : `Mali (${fmtN(q.ans)})`;
-    return q.op === 'store' ? `₱${q.ans}` : fmtN(q.ans);
+    return q.op === 'store' ? `₱${q.ans}` : fmtQ(q, q.ans);
   }
 
   // Big cheer line in the hype panel above the question
@@ -1831,11 +2142,25 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     $('#btn-hint').disabled = true;
   }
 
+  // The menu a game was started from, so finishing or quitting goes back there instead of home
+  function origin(mode) {
+    if (mode === 'classic') return ['classic', '⛵ LAKBAY'];
+    if (mode === 'hagdan') return ['hagdan', '🪜 HAGDAN'];
+    if (MINIS.some((m) => m.id === mode)) return ['mini', '🕹️ MINI GAMES'];
+    return ['home', '⌂ HOME'];
+  }
+  function backToOrigin() {
+    const mi = MINIS.findIndex((m) => G && m.id === G.mode);
+    if (mi >= 0) miniIdx = mi;
+    if (G && G.mode === 'tables') tablePick = G.opts.table;
+    show(origin(G ? G.mode : '')[0]);
+  }
+
   function quitGame() {
     if (!G || G.over) return;
     if (!confirm('Quit this game? Your score will not be saved.')) return;
     G.over = true;
-    show('home');
+    backToOrigin();
   }
 
   /* ---------------- results ---------------- */
@@ -1856,6 +2181,11 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       if (failed) msg = "Sayang! Try again, kaya mo 'yan! 💪";
       else if (mode === 'classic' && G.opts.level < ISLANDS.length) msg = `⛵ Next region unlocked: <b>${ISLANDS[G.opts.level][0]}</b>`;
       else if (mode === 'classic') msg = `🛶 You reached <b>Tawi-Tawi</b>! Batanes hanggang Tawi-Tawi, kumpleto ang 18 regions!`;
+      if (mode === 'classic' && !failed && !P.passport[G.opts.level]) {
+        P.passport[G.opts.level] = manilaDate();
+        const [rn, re] = ISLANDS[G.opts.level - 1];
+        msg += `<div class="new-stamp"><span class="stamp got" style="--c: var(--green); --r: -8deg"><span class="st-em">${re}</span><span class="st-nm">${rn}</span><span class="st-dt">${stampDate(P.passport[G.opts.level])}</span></span><b>🛂 Bagong stamp sa passport mo!</b></div>`;
+      }
       if (mode === 'classic') {
         const facts = ISLANDS[G.opts.level - 1][3];
         const [label, text] = facts[Object.keys(OPS).indexOf(G.op)] || facts[0];
@@ -1938,9 +2268,12 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     if (fresh.length) toast(`🃏 New card${fresh.length > 1 ? 's' : ''} unlocked!`);
     $('#btn-res-board').classList.toggle('hidden', !M.board);
     const next = mode === 'classic' && stars > 0 && G.opts.level < ISLANDS.length ? G.opts.level + 1 : 0;
+    const nextTable = mode === 'tables' && G.opts.table < 12 ? G.opts.table + 1 : 0;
     const nb = $('#btn-next');
-    nb.classList.toggle('hidden', !next);
+    nb.classList.toggle('hidden', !next && !nextTable);
     if (next) nb.innerHTML = `⛵ NEXT DESTINATION<small>${ISLANDS[next - 1][1]} ${ISLANDS[next - 1][0]} →</small>`;
+    if (nextTable) nb.innerHTML = `📚 NEXT TABLE<small>Table of ${nextTable} →</small>`;
+    $('#btn-origin').textContent = origin(mode)[1];
     show('results');
     if (stars > 0 || record) sfx.end(); else sfx.lose();
     if (fresh.length) setTimeout(sfx.card, 900);
@@ -2127,6 +2460,13 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     else show(target);
   }
 
+  $('#ph-map').addEventListener('click', (e) => {
+    const pin = e.target.closest('[data-region]');
+    if (!pin) return;
+    const lvl = +pin.dataset.region;
+    const btn = $$('#classic-levels .island')[lvl - 1];
+    if (btn) btn.click();
+  });
   document.addEventListener('click', (e) => {
     const b = e.target.closest('[data-go]');
     if (b) go(b.dataset.go);
@@ -2138,7 +2478,11 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   $('#btn-hint').onclick = useHint;
   $('#btn-quit').onclick = quitGame;
   $('#btn-again').onclick = () => { if (G) startGame(G.mode, G.opts); };
-  $('#btn-next').onclick = () => { if (G && G.mode === 'classic') startGame('classic', { op: G.op, level: G.opts.level + 1 }); };
+  $('#btn-next').onclick = () => {
+    if (G && G.mode === 'classic') startGame('classic', { op: G.op, level: G.opts.level + 1 });
+    else if (G && G.mode === 'tables') { tablePick = G.opts.table + 1; startGame('tables', { table: tablePick }); }
+  };
+  $('#btn-origin').onclick = () => { sfx.tap(); backToOrigin(); };
   $('#btn-res-board').onclick = () => openBoard(G && G.M.board ? G.mode : 'ranked');
   $('#btn-profile').onclick = openNameModal;
   $('#btn-sound').onclick = () => { P.sound = !P.sound; save(); renderHome(); };
