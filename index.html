@@ -600,6 +600,18 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .confetti { position: fixed; top: -20px; width: 9px; height: 14px; border-radius: 2px; z-index: 50; pointer-events: none; font-size: 20px; animation: fall 2s linear forwards; }
 @keyframes fall { to { transform: translate(var(--x), 105vh) rotate(720deg); } }
 
+/* ---------- daily streak ---------- */
+.streak { margin: 10px 0 0; padding: 10px 14px; border-radius: 14px; border: 1px solid rgba(255, 140, 40, .5); background: linear-gradient(90deg, rgba(255, 120, 30, .16), rgba(255, 61, 242, .08)); color: #ffd9a8; font-size: 14px; text-align: center; }
+.streak b { color: #ffb347; }
+.streak small { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
+/* ---------- assignments ---------- */
+.teacher-link { display: block; margin: 14px auto 0; padding: 8px 14px; border: 1px dashed var(--line); border-radius: 12px; background: none; color: var(--muted); font: inherit; font-size: 13px; cursor: pointer; }
+.teacher-form { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+.teacher-form label { display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 13px; color: var(--muted); }
+.teacher-form select, .teacher-form input { padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(14, 10, 38, .9); color: #fff; font: inherit; font-size: 15px; }
+.t-desc { margin: 0; color: var(--yellow); font-weight: 700; text-align: center; }
+.hw-proof { margin: 8px auto; padding: 12px 16px; max-width: 420px; border: 2px dashed var(--yellow); border-radius: 14px; background: rgba(255, 210, 61, .08); color: #fff; line-height: 1.6; text-align: left; }
+
   </style>
 </head>
 <body>
@@ -637,7 +649,10 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         </div>
       </button>
 
+      <div class="streak" id="home-streak"></div>
+
       <nav class="menu">
+        <button class="btn big yellow hidden" id="hw-banner"></button>
         <button class="btn big pink" data-go="ranked">🏆 RANKED<small>3 buhay · walang timer · patagalan, pataasan ng score</small></button>
         <button class="btn big blue" data-go="daily">🌟 DAILY HAMON<small id="daily-sub">Same 20 questions for everyone today</small></button>
         <button class="btn big cyan" data-go="classic"><svg class="ph-flag" viewBox="0 0 30 15" aria-label="Philippine flag"><rect width="30" height="7.5" fill="#0038a8"/><rect y="7.5" width="30" height="7.5" fill="#ce1126"/><path d="M0 0 L13 7.5 L0 15 Z" fill="#fff"/><circle cx="4.6" cy="7.5" r="1.7" fill="#fcd116"/><g fill="#fcd116"><circle cx="1.6" cy="2.2" r=".7"/><circle cx="1.6" cy="12.8" r=".7"/><circle cx="10.6" cy="7.5" r=".7"/></g></svg> LAKBAY PILIPINAS<small>Classic · 18 regions · Batanes hanggang Tawi-Tawi</small></button>
@@ -648,6 +663,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
           <button class="btn green" data-go="cards">🃏 CARDS <span id="home-cards">0/0</span></button>
         </div>
       </nav>
+      <button class="teacher-link" data-go="teacher">👩‍🏫 Para sa guro: gumawa ng assignment link</button>
       <p class="foot">Walang ads · walang chat · puro math ✨</p>
     </section>
 
@@ -665,6 +681,23 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         </div>
       </div>
       <div class="islands" id="classic-levels"></div>
+    </section>
+
+    <!-- ===================== TEACHER ===================== -->
+    <section id="screen-teacher" class="screen">
+      <header class="bar"><button class="back" data-go="home">‹ BACK</button><h3>👩‍🏫 PARA SA GURO</h3><span></span></header>
+      <p class="hint-text">Gumawa ng link na naka-set na sa isang topic. Pag binuksan ito ng estudyante, may <b>📌 Takdang-aralin</b> button sa home nila. Lalabas ang resulta sa Google Sheet mo (Mode: <b>assign</b>).</p>
+      <div class="teacher-form">
+        <label>Topic<select id="t-topic"></select></label>
+        <label>Hirap (step)<select id="t-step"></select></label>
+        <label>Ilang tanong<select id="t-count"><option>10</option><option>15</option><option selected>20</option><option>30</option><option>50</option></select></label>
+        <p class="t-desc" id="t-desc"></p>
+        <input id="t-link" readonly>
+        <div class="row">
+          <button class="btn cyan" id="t-copy">📋 COPY LINK</button>
+          <button class="btn purple" id="t-try">▶ SUBUKAN</button>
+        </div>
+      </div>
     </section>
 
     <!-- ===================== PASSPORT ===================== -->
@@ -775,6 +808,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       </div>
       <div class="res-msg" id="res-msg"></div>
       <button class="btn green big hidden" id="btn-next"></button>
+      <button class="btn pink big hidden" id="btn-retry"></button>
       <div class="res-review" id="res-review"></div>
       <div class="res-cards" id="res-cards"></div>
       <div class="row">
@@ -1011,7 +1045,9 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     sarisari:  { title: 'SARI-SARI STORE', board: true, time: 75, adaptive: true, store: true, thresholds: [250, 600, 1100] },
     tamaomali: { title: 'TAMA O MALI', board: true, time: 45, adaptive: true, op: 'mix', tf: true, thresholds: [300, 800, 1400] },
     tables:    { title: 'TIMES TABLES', questions: 12, lives: 3, hint: true },
-    hagdan:    { title: 'HAGDAN', lives: 3, climb: true, tapOnly: true }
+    hagdan:    { title: 'HAGDAN', lives: 3, climb: true, tapOnly: true },
+    review:    { title: 'ULITIN ANG MALI', tapOnly: true },
+    assign:    { title: 'TAKDANG-ARALIN', tapOnly: true }
   };
 
   // Hagdan (Level Up): every PER_STEP correct answers you climb one step and it gets harder
@@ -1065,7 +1101,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   const DEFAULT = {
     name: '', avatar: '🐒', id: '', xp: 0, sound: true, music: true, inputMode: 'tap',
     classic: {}, tables: {}, ladder: {}, best: {}, cards: [], local: {}, queue: [], passport: {},
-    dailyDone: '', stats: { games: 0, correct: 0, answered: 0, bestCombo: 0, daily: 0 }
+    dailyDone: '', streak: { last: '', count: 0, best: 0 }, hw: {}, stats: { games: 0, correct: 0, answered: 0, bestCombo: 0, daily: 0 }
   };
   let P = load();
 
@@ -1074,7 +1110,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     try { saved = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { /* private mode */ }
     const p = Object.assign({}, DEFAULT, saved);
     p.stats = Object.assign({}, DEFAULT.stats, saved.stats);
-    ['classic', 'tables', 'ladder', 'best', 'local', 'passport'].forEach((k) => { p[k] = Object.assign({}, p[k]); });
+    ['classic', 'tables', 'ladder', 'best', 'local', 'passport', 'streak', 'hw'].forEach((k) => { p[k] = Object.assign({}, p[k]); });
     p.cards = Array.isArray(p.cards) ? p.cards : [];
     p.queue = Array.isArray(p.queue) ? p.queue : [];
     if (!p.id) p.id = Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -1106,10 +1142,39 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
     return arr;
   }
-  function manilaDate() {
-    try { return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Manila' }).format(new Date()); }
-    catch (e) { return new Date().toISOString().slice(0, 10); }
+  function manilaDate(d = new Date()) {
+    try { return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Manila' }).format(d); }
+    catch (e) { return d.toISOString().slice(0, 10); }
   }
+  // Daily streak: +1 for each new day in a row you play, back to 1 if you skip a day
+  function bumpStreak() {
+    const today = manilaDate(), st = P.streak;
+    if (st.last === today) return null;
+    const yesterday = manilaDate(new Date(Date.now() - 864e5));
+    st.count = st.last === yesterday ? st.count + 1 : 1;
+    st.best = Math.max(st.best || 0, st.count);
+    st.last = today;
+    const bonus = st.count % 7 === 0 ? 100 : 0;   // a gift every 7 days in a row
+    P.xp += bonus;
+    return { count: st.count, bonus };
+  }
+  function streakNow() {
+    const st = P.streak;
+    const alive = st.last === manilaDate() || st.last === manilaDate(new Date(Date.now() - 864e5));
+    return alive ? st.count : 0;
+  }
+
+  // Assignment links look like  ?hw=alg-5-20  (topic, Hagdan step, number of questions)
+  function parseHW(code) {
+    const m = /^([a-z]+)-(\d{1,2})-(\d{1,2})$/.exec(String(code || '').toLowerCase());
+    if (!m || !HAGDAN_OPS[m[1]]) return null;
+    const step = +m[2], n = +m[3];
+    if (step < 1 || step > LADDER[m[1]].length || n < 5 || n > 50) return null;
+    return { op: m[1], step, n, code: `${m[1]}-${step}-${n}` };
+  }
+  const hwLabel = (h) => `${HAGDAN_OPS[h.op].name} · Step ${h.step}: ${LADDER[h.op][h.step - 1]} · ${h.n} tanong`;
+  const HW = parseHW(new URLSearchParams(location.search).get('hw'));
+
   function totalStars(p) {
     const sum = (o) => Object.values(o).reduce((a, b) => a + (b || 0), 0);
     return sum(p.classic) + sum(p.tables);
@@ -1562,6 +1627,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     if (id === 'cards') renderCards();
     if (id === 'hagdan') renderHagdan();
     if (id === 'passport') renderPassport();
+    if (id === 'teacher') renderTeacher();
   }
 
   function renderHome() {
@@ -1581,6 +1647,16 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     $('#home-rank-next').textContent = R.next ? `Next: ${R.next[1]} at ${R.next[0]}` : 'Pinakamataas na rank! 👑';
     $('#home-stars').textContent = totalStars(P);
     $('#home-cards').textContent = `${P.cards.length}/${CARDS.length}`;
+    const sc = streakNow(), playedToday = P.streak.last === manilaDate();
+    $('#home-streak').innerHTML = sc
+      ? `🔥 <b>${sc} araw</b> na sunod-sunod${playedToday ? ' ✅' : ' · maglaro ngayon para tumuloy!'}<small>Best: ${P.streak.best} araw · bonus tuwing 7 araw 🎁</small>`
+      : '🔥 Maglaro araw-araw para sa <b>streak</b>!<small>May bonus XP tuwing 7 araw na sunod-sunod 🎁</small>';
+    const hb = $('#hw-banner');
+    hb.classList.toggle('hidden', !HW);
+    if (HW) {
+      const done = P.hw[HW.code];
+      hb.innerHTML = `📌 TAKDANG-ARALIN<small>${hwLabel(HW)}${done ? ` · ✅ Tapos na (${done.acc}%), puwedeng ulitin` : ''}</small>`;
+    }
     $('#daily-sub').textContent = P.dailyDone === manilaDate()
       ? '✅ Done today · practice run (not ranked)'
       : 'Same 20 questions for everyone · first try counts';
@@ -1833,6 +1909,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     if (mode === 'tables') title = `TIMES TABLE · ${opts.table}`;
     if (mode === 'hagdan') { title = `HAGDAN · ${HAGDAN_OPS[G.op].name}`; G.step = 0; }
     if (mode === 'daily' && !G.ranked) title += ' · PRACTICE';
+    if (mode === 'review') G.total = opts.qs.length;
+    if (mode === 'assign') { G.total = opts.n; title = `📌 ${HAGDAN_OPS[opts.op].name} · STEP ${opts.step}`; }
     G.title = title;
     $('#hud-mode').textContent = M.time ? `${title} · ⏱ ${M.time}s` : title;
     $('#tfpad').classList.toggle('hidden', !M.tf);
@@ -1862,6 +1940,13 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     else if (G.M.store) q = storeQ(G.diff);
     else if (G.mode === 'daily') q = makeQ('mix', 2 + ((G.qIndex - 1) * 6) / 19);
     else if (G.M.climb) q = ladderQ(G.op, G.step);
+    else if (G.mode === 'assign') q = ladderQ(G.opts.op, G.opts.step - 1);
+    else if (G.mode === 'review') {
+      // Same question as before, with the choices shuffled again
+      q = Object.assign({}, G.opts.qs[G.qIndex - 1]);
+      delete q.shown;
+      q.choices = q.choices ? shuffle(q.choices.slice()) : null;
+    }
     else {
       // Survival: the floor keeps rising, so the longer you last the harder it gets
       if (G.M.survival) G.diff = Math.max(G.diff, Math.min(10, 2 + G.correct / 6));
@@ -1970,7 +2055,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     const t = (G.topics[topic] = G.topics[topic] || [0, 0]);
     t[1]++;
     if (ok) t[0]++;
-    else G.mistakes.push({ q: questionText(G.q), ans: answerText(G.q), given: timedOut ? '⏰ walang sagot' : given });
+    else G.mistakes.push({ q: questionText(G.q), ans: answerText(G.q), given: timedOut ? '⏰ walang sagot' : given, raw: G.q });
     G.locked = true;
     const stage = $('#stage');
     stage.classList.remove('good', 'bad');
@@ -2215,6 +2300,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
   // The menu a game was started from, so finishing or quitting goes back there instead of home
   function origin(mode) {
+    if (mode === 'review' && G && G.opts.from) return origin(G.opts.from);
     if (mode === 'classic') return ['classic', '⛵ LAKBAY'];
     if (mode === 'hagdan') return ['hagdan', '🪜 HAGDAN'];
     if (MINIS.some((m) => m.id === mode)) return ['mini', '🕹️ MINI GAMES'];
@@ -2276,6 +2362,16 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       if (G.score > rec.score) msg = '🎉 <b>Bagong record</b> for this hagdan!';
       P.ladder[G.op] = { step: Math.max(rec.step, G.step), score: Math.max(rec.score, G.score) };
       msg = `🪜 You reached <b>Step ${G.step + 1}: ${L[G.step]}</b>` + (msg ? '<br>' + msg : '');
+    } else if (mode === 'review') {
+      stars = !G.wrong ? 3 : G.correct / G.answered >= 0.7 ? 2 : G.correct ? 1 : 0;
+      title = G.wrong ? 'TAPOS ANG PRACTICE!' : 'NAITAMA MO LAHAT!';
+      msg = `🔁 Naitama mo ang <b>${G.correct}/${G.total}</b> sa mga dating mali.`;
+    } else if (mode === 'assign') {
+      stars = acc >= 90 ? 3 : acc >= 75 ? 2 : acc >= 50 ? 1 : 0;
+      title = 'TAPOS NA ANG TAKDANG-ARALIN!';
+      const when = new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila', dateStyle: 'medium', timeStyle: 'short' });
+      P.hw[G.opts.code] = { acc, score: G.score, date: manilaDate() };
+      msg = `<div class="hw-proof">📌 <b>${hwLabel(G.opts)}</b><br>👤 ${P.avatar} ${P.name || 'Player'}<br>✅ ${G.correct}/${G.total} tama · <b>${acc}%</b><br>🕒 ${when}</div>📸 I-screenshot ito at ipakita sa guro mo.`;
     } else {
       stars = M.thresholds.filter((t) => G.score >= t).length;
       title = mode === 'jeepney' ? 'LAST STOP!' : mode === 'daily' ? 'HAMON COMPLETE!' : M.survival ? 'UBOS ANG BUHAY!' : "TIME'S UP!";
@@ -2290,6 +2386,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     const xp = Math.floor(G.score / 10) + G.correct * 2;
     const lvlBefore = levelInfo(P.xp).lvl;
     P.xp += xp;
+    const streak = G.answered ? bumpStreak() : null;
     const lvlAfter = levelInfo(P.xp).lvl;
 
     let record = false;
@@ -2314,6 +2411,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     const parts = [];
     if (msg) parts.push(msg);
     if (record) parts.push('🎉 <b>Bagong record!</b> New personal best!');
+    if (streak) parts.push(`🔥 <b>${streak.count} araw</b> na sunod-sunod kang naglaro!` + (streak.bonus ? ` <b>+${streak.bonus} XP</b> bonus! 🎁` : ''));
     if (lvlAfter > lvlBefore) parts.push(`⬆️ Level up! You are now <b>Lv.${lvlAfter}</b>`);
     if (mode === 'ranked') {
       const R = rankOf(P.best.ranked || 0);
@@ -2350,6 +2448,9 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     if (next) nb.innerHTML = `⛵ NEXT DESTINATION<small>${ISLANDS[next - 1][1]} ${ISLANDS[next - 1][0]} →</small>`;
     if (nextTable) nb.innerHTML = `📚 NEXT TABLE<small>Table of ${nextTable} →</small>`;
     $('#btn-origin').textContent = origin(mode)[1];
+    const rb = $('#btn-retry');
+    rb.classList.toggle('hidden', !G.mistakes.length);
+    rb.innerHTML = `🔁 ULITIN ANG MGA MALI<small>${G.mistakes.length} tanong · sanayin ulit</small>`;
     show('results');
     if (stars > 0 || record) sfx.end(); else sfx.lose();
     if (fresh.length) setTimeout(sfx.card, 900);
@@ -2357,6 +2458,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     // Topic stats for the teacher report, e.g. "add 8/10, signed 3/6"
     const topics = Object.entries(G.topics).map(([k, [c, n]]) => `${k} ${c}/${n}`).join(', ');
     const result = { mode, score: G.score, correct: G.correct, answered: G.answered, accuracy: acc, combo: G.bestCombo, topics };
+    if (mode === 'assign') result.assignment = G.opts.code;
     if (M.board && G.ranked && G.score > 0) sendScore(result);
     else if (!M.board && API && G.answered) sendPractice(result);   // practice modes: report only, not on the leaderboard
   }
@@ -2526,6 +2628,29 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     }
   }
 
+  /* ---------------- teacher: assignment link maker ---------------- */
+  function renderTeacher() {
+    const topic = $('#t-topic'), step = $('#t-step');
+    if (!topic.options.length) {
+      Object.entries(HAGDAN_OPS).forEach(([k, o]) => topic.appendChild(new Option(`${o.sym} ${o.name}`, k)));
+      topic.onchange = () => { fillSteps(); makeLink(); };
+      step.onchange = makeLink;
+      $('#t-count').onchange = makeLink;
+    }
+    function fillSteps() {
+      step.innerHTML = '';
+      LADDER[topic.value].forEach((name, i) => step.appendChild(new Option(`Step ${i + 1}: ${name}`, i + 1)));
+    }
+    if (!step.options.length) fillSteps();
+    makeLink();
+  }
+  function makeLink() {
+    const code = `${$('#t-topic').value}-${$('#t-step').value}-${$('#t-count').value}`;
+    const base = location.href.split(/[?#]/)[0];
+    $('#t-link').value = `${base}?hw=${code}`;
+    $('#t-desc').textContent = hwLabel(parseHW(code));
+  }
+
   /* ---------------- wiring ---------------- */
   function go(target) {
     sfx.tap();
@@ -2559,6 +2684,21 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     else if (G && G.mode === 'tables') { tablePick = G.opts.table + 1; startGame('tables', { table: tablePick }); }
   };
   $('#btn-origin').onclick = () => { sfx.tap(); backToOrigin(); };
+  $('#btn-retry').onclick = () => {
+    if (!G || !G.mistakes.length) return;
+    startGame('review', { qs: shuffle(G.mistakes.map((m) => m.raw)), from: G.mode === 'review' ? G.opts.from : G.mode });
+  };
+  $('#hw-banner').onclick = () => {
+    if (!HW) return;
+    if (!P.name) { openNameModal(); return; }
+    startGame('assign', HW);
+  };
+  $('#t-copy').onclick = async () => {
+    const inp = $('#t-link');
+    try { await navigator.clipboard.writeText(inp.value); } catch (e) { inp.select(); document.execCommand('copy'); }
+    toast('📋 Nakopya ang link! I-send sa klase mo.');
+  };
+  $('#t-try').onclick = () => { const h = parseHW($('#t-link').value.split('hw=')[1]); if (h) startGame('assign', h); };
   $('#btn-res-board').onclick = () => openBoard(G && G.M.board ? G.mode : 'ranked');
   $('#btn-profile').onclick = openNameModal;
   $('#btn-sound').onclick = () => { P.sound = !P.sound; save(); renderHome(); };
