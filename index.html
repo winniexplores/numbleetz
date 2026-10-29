@@ -577,6 +577,29 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .new-stamp .stamp { width: 84px; flex: none; animation: stampin .5s cubic-bezier(.2, 1.6, .4, 1); }
 @keyframes stampin { from { transform: scale(2.4) rotate(-30deg); opacity: 0; } }
 
+.stamp { font: inherit; background: none; cursor: pointer; }
+.st-signs { display: flex; gap: 2px; margin-top: 3px; font-family: var(--num); font-size: 10px; font-weight: 700; }
+.st-signs span { width: 15px; height: 15px; line-height: 15px; border-radius: 50%; background: rgba(255, 255, 255, .08); color: rgba(255, 255, 255, .3); }
+.st-signs span.on { background: var(--c); color: #120c2c; }
+.stamp.silver { border-style: solid; box-shadow: 0 0 14px color-mix(in srgb, var(--c) 60%, transparent), inset 0 0 0 3px rgba(255, 255, 255, .15); }
+.stamp.gold { border: 3px solid #ffd23d; background: radial-gradient(circle, rgba(255, 210, 61, .28), rgba(255, 140, 30, .08)); box-shadow: 0 0 18px rgba(255, 210, 61, .7); }
+.stamp.picked { outline: 2px solid #fff; outline-offset: 3px; }
+.passport-facts { grid-column: 1 / -1; padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(255, 210, 61, .45); background: rgba(255, 210, 61, .07); }
+.pf-head { font-weight: 800; color: var(--yellow); margin-bottom: 8px; }
+.pf-row { display: flex; flex-direction: column; gap: 2px; padding: 7px 0; border-top: 1px solid rgba(255, 255, 255, .08); font-size: 14px; line-height: 1.4; }
+.pf-row b { color: var(--cyan); font-size: 12px; }
+.pf-row.locked span { color: var(--muted); font-style: italic; }
+.passport-rank { margin: 8px 0 0; font-size: 13px; color: var(--yellow); text-align: center; }
+.stamp .st-em { font-size: 22px; }
+
+.stamp { position: relative; }
+.stamp.gold::before { content: '👑'; position: absolute; top: -14px; left: 50%; transform: translateX(-50%) rotate(calc(var(--r) * -1)); font-size: 22px; filter: drop-shadow(0 0 6px #ffd23d); animation: crown 1.6s ease-in-out infinite; }
+.stamp.gold::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; background: linear-gradient(120deg, transparent 35%, rgba(255, 255, 255, .45) 50%, transparent 65%); background-size: 250% 100%; animation: shine 2.4s linear infinite; pointer-events: none; }
+@keyframes crown { 50% { margin-top: -4px; } }
+@keyframes shine { from { background-position: 150% 0; } to { background-position: -100% 0; } }
+.confetti { position: fixed; top: -20px; width: 9px; height: 14px; border-radius: 2px; z-index: 50; pointer-events: none; font-size: 20px; animation: fall 2s linear forwards; }
+@keyframes fall { to { transform: translate(var(--x), 105vh) rotate(720deg); } }
+
   </style>
 </head>
 <body>
@@ -652,10 +675,11 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         <div class="pc-sub">NumBleetz Lakbay Passport</div>
         <div class="pc-name" id="passport-name"></div>
       </div>
-      <div class="collect-head"><span>Mga stamp</span><b id="passport-count">0/18</b></div>
+      <div class="collect-head"><span>Mga tatak</span><b id="passport-count">0/90</b></div>
       <div class="cards-progress"><div id="passport-bar"></div></div>
+      <p class="passport-rank" id="passport-rank"></p>
       <div class="passport-grid" id="passport-grid"></div>
-      <p class="hint-text">Makakakuha ka ng stamp sa unang beses na matapos mo ang isang region, kahit anong sign ang gamit mo.</p>
+      <p class="hint-text">Bawat region ay may 5 tatak, isa kada sign (+ − × ÷ 🍧), at bawat tatak ay nagbubukas ng bagong <b>Alam mo ba?</b> fact. I-tap ang stamp para makita ang mga fact.</p>
     </section>
 
     <!-- ===================== HAGDAN (LEVEL UP) ===================== -->
@@ -1640,24 +1664,71 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     });
   }
 
+  // Party time: falling confetti over the whole screen
+  function confetti() {
+    const colors = ['#ffd23d', '#ff3df2', '#2ef2ff', '#3dff9a', '#fff'];
+    for (let i = 0; i < 70; i++) {
+      const c = el('div', 'confetti', i % 7 === 0 ? '👑' : '');
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = i % 7 === 0 ? 'none' : colors[i % colors.length];
+      c.style.animationDelay = Math.random() * 0.6 + 's';
+      c.style.animationDuration = 1.6 + Math.random() * 1.4 + 's';
+      c.style.setProperty('--x', (Math.random() * 160 - 80) + 'px');
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 3800);
+    }
+  }
+
+  // Which routes (+ − × ÷ 🍧) a region has been cleared on
+  const clearedOps = (lvl) => Object.keys(OPS).filter((op) => (P.classic[`${op}-${lvl}`] || 0) > 0);
+  let passportPick = 0;
+
   function renderPassport() {
     syncPassport();
     const grid = $('#passport-grid');
     grid.innerHTML = '';
+    let marks = 0;
     ISLANDS.forEach(([name, em, sub], i) => {
       const date = P.passport[i + 1];
-      const s = el('div', 'stamp' + (date ? ' got' : ''));
+      const got = clearedOps(i + 1);
+      marks += got.length;
+      const s = el('button', 'stamp' + (date ? ' got' : '') + (got.length === 5 ? ' gold' : got.length >= 3 ? ' silver' : '') + (passportPick === i + 1 ? ' picked' : ''));
       s.style.setProperty('--r', ((i * 37) % 17) - 8 + 'deg');
-      s.style.setProperty('--c', `var(--${['cyan', 'pink', 'yellow', 'green', 'purple'][i % 5]})`);
+      s.style.setProperty('--c', got.length === 5 ? '#ffd23d' : `var(--${['cyan', 'pink', 'yellow', 'green', 'purple'][i % 5]})`);
       s.appendChild(el('div', 'st-em', date ? em : '?'));
       s.appendChild(el('div', 'st-nm', name));
       s.appendChild(el('div', 'st-dt', date ? stampDate(date) : sub.split(' · ')[0]));
+      const signs = el('div', 'st-signs');
+      Object.entries(OPS).forEach(([op, o]) => signs.appendChild(el('span', got.includes(op) ? 'on' : '', o.sym)));
+      s.appendChild(signs);
+      s.onclick = () => { passportPick = passportPick === i + 1 ? 0 : i + 1; sfx.tap(); renderPassport(); };
       grid.appendChild(s);
+      // Show the picked region's facts under its row (after every 3rd stamp, or the last one)
+      const pick = passportPick - 1;
+      if (pick >= 0 && i === Math.min(ISLANDS.length - 1, Math.floor(pick / 3) * 3 + 2)) {
+        const [name, em] = ISLANDS[pick];
+        const got = clearedOps(pick + 1);
+        const i = pick;
+        // Facts open up one by one as you clear the region on each sign
+        const box = el('div', 'passport-facts');
+        box.appendChild(el('div', 'pf-head', `${em} ${name} · ${got.length}/5 tatak`));
+        Object.entries(OPS).forEach(([op, o], k) => {
+          const [label, text] = ISLANDS[i][3][k];
+          const row = el('div', 'pf-row' + (got.includes(op) ? '' : ' locked'));
+          row.appendChild(el('b', null, `${o.sym} ${label}`));
+          row.appendChild(el('span', null, got.includes(op) ? text : `🔒 Tapusin ang ${name} sa ${o.name} para mabuksan.`));
+          box.appendChild(row);
+        });
+        grid.appendChild(box);
+      }
     });
     $('#passport-name').textContent = `${P.avatar} ${P.name || 'Player'}`;
-    const n = Object.keys(P.passport).length;
-    $('#passport-count').textContent = `${n}/${ISLANDS.length}`;
-    $('#passport-bar').style.width = (n / ISLANDS.length) * 100 + '%';
+    const total = ISLANDS.length * 5;
+    $('#passport-count').textContent = `${marks}/${total} tatak`;
+    $('#passport-bar').style.width = (marks / total) * 100 + '%';
+    const golds = ISLANDS.filter((_, i) => clearedOps(i + 1).length === 5).length;
+    $('#passport-rank').textContent = golds === ISLANDS.length ? '🏅 Bayaning Manlalakbay! Ginto lahat ng 18!'
+      : `🥇 Gintong stamp: ${golds}/${ISLANDS.length} · tapusin ang isang region sa lahat ng 5 sign para maging ginto`;
   }
   const stampDate = (d) => {
     const [y, m, day] = d.split('-');
@@ -2177,6 +2248,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       title = failed ? 'UBOS ANG BUHAY!' : 'GALING MO!';
       const store = mode === 'classic' ? P.classic : P.tables;
       const key = mode === 'classic' ? `${G.op}-${G.opts.level}` : G.opts.table;
+      const firstClear = !failed && !(store[key] > 0);
       store[key] = Math.max(store[key] || 0, stars);
       if (failed) msg = "Sayang! Try again, kaya mo 'yan! 💪";
       else if (mode === 'classic' && G.opts.level < ISLANDS.length) msg = `⛵ Next region unlocked: <b>${ISLANDS[G.opts.level][0]}</b>`;
@@ -2185,6 +2257,10 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         P.passport[G.opts.level] = manilaDate();
         const [rn, re] = ISLANDS[G.opts.level - 1];
         msg += `<div class="new-stamp"><span class="stamp got" style="--c: var(--green); --r: -8deg"><span class="st-em">${re}</span><span class="st-nm">${rn}</span><span class="st-dt">${stampDate(P.passport[G.opts.level])}</span></span><b>🛂 Bagong stamp sa passport mo!</b></div>`;
+      } else if (mode === 'classic' && firstClear) {
+        const n = clearedOps(G.opts.level).length;
+        msg += `<div class="new-stamp"><b>🛂 Bagong tatak: ${OPS[G.op].sym} ${OPS[G.op].name} (${n}/5)${n === 5 ? '<br>👑 GINTO na ang stamp ng ' + ISLANDS[G.opts.level - 1][0] + '! Kumpleto ang 5!' : ''}</b></div>`;
+        if (n === 5) setTimeout(() => { confetti(); sfx.fever(); }, 400);
       }
       if (mode === 'classic') {
         const facts = ISLANDS[G.opts.level - 1][3];
