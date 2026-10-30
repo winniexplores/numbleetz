@@ -819,6 +819,13 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .res-cards .card .ci { font-size: 28px; }
 .res-cards .card .cd { display: none; }
 
+/* Filipino / English switch */
+.lang-chip { font-weight: 800; font-size: 12px; letter-spacing: 1px; min-width: 44px; }
+.lang-pick { display: flex; gap: 6px; justify-content: center; margin: 0 0 10px; }
+.lang-pick button { font: inherit; font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 999px; border: 2px solid rgba(155, 107, 255, .5); background: transparent; color: var(--muted); cursor: pointer; }
+.lang-pick button.on { background: #9b6bff; border-color: #c7adff; color: #fff; }
+body.lang-en .res-cards:not(:empty)::before { content: '🃏 New cards'; }
+
   </style>
 </head>
 <body>
@@ -836,6 +843,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
           <small class="home-title" id="home-title">Baguhan</small>
         </div>
         <div class="row-chips">
+          <button class="chip lang-chip" id="btn-lang" title="Language: Filipino / English">FIL</button>
           <button class="chip" id="btn-music" title="Music on/off">🎵</button>
           <button class="chip" id="btn-sound" title="Sound effects on/off">🔊</button>
         </div>
@@ -1060,6 +1068,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   <div class="modal hidden" id="modal-name">
     <div class="modal-box">
       <img class="modal-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM6YzJwYT0iaHR0cDovL2MycGEub3JnL21hbmlmZXN0Ij4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ051bSIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzlmZmNmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzJlZjJmZiIvPjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ0JsIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmYzZGYyIi8+PHN0b3Agb2Zmc2V0PSIwLjYiIHN0b3AtY29sb3I9IiNmZjNkNmUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmQyM2QiLz48L2xpbmVhckdyYWRpZW50Pgo8bGluZWFyR3JhZGllbnQgaWQ9ImdCb2x0IiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmNmIwIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZmZkMjNkIi8+PC9saW5lYXJHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJnQmciIGN4PSIwLjUiIGN5PSIwLjQ1IiByPSIwLjc1Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMxZDEzNTAiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwNzA2MWEiLz48L3JhZGlhbEdyYWRpZW50Pgo8ZmlsdGVyIGlkPSJnbG93IiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj48ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI3IiByZXN1bHQ9ImIiLz48ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImIiLz48ZmVNZXJnZU5vZGUgaW49ImIiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+PC9maWx0ZXI+CjxmaWx0ZXIgaWQ9Imdsb3dTIiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj48ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIzLjUiIHJlc3VsdD0iYiIvPjxmZU1lcmdlPjxmZU1lcmdlTm9kZSBpbj0iYiIvPjxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPjwvZmVNZXJnZT48L2ZpbHRlcj4KPGZpbHRlciBpZD0ibmVvbiIgeD0iLTUwJSIgeT0iLTEwMCUiIHdpZHRoPSIyMDAlIiBoZWlnaHQ9IjMwMCUiPgo8ZmVHYXVzc2lhbkJsdXIgaW49IlNvdXJjZUFscGhhIiBzdGREZXZpYXRpb249IjQiIHJlc3VsdD0iYSIvPjxmZUZsb29kIGZsb29kLWNvbG9yPSIjZmZmZmZmIi8+PGZlQ29tcG9zaXRlIGluMj0iYSIgb3BlcmF0b3I9ImluIiByZXN1bHQ9InciLz4KPGZlR2F1c3NpYW5CbHVyIGluPSJTb3VyY2VBbHBoYSIgc3RkRGV2aWF0aW9uPSIxMiIgcmVzdWx0PSJiIi8+PGZlRmxvb2QgZmxvb2QtY29sb3I9IiMyZWYyZmYiLz48ZmVDb21wb3NpdGUgaW4yPSJiIiBvcGVyYXRvcj0iaW4iIHJlc3VsdD0iYyIvPgo8ZmVHYXVzc2lhbkJsdXIgaW49IlNvdXJjZUFscGhhIiBzdGREZXZpYXRpb249IjI2IiByZXN1bHQ9ImQiLz48ZmVGbG9vZCBmbG9vZC1jb2xvcj0iIzNkN2JmZiIvPjxmZUNvbXBvc2l0ZSBpbjI9ImQiIG9wZXJhdG9yPSJpbiIgcmVzdWx0PSJlIi8+CjxmZU1lcmdlPjxmZU1lcmdlTm9kZSBpbj0iZSIvPjxmZU1lcmdlTm9kZSBpbj0iZSIvPjxmZU1lcmdlTm9kZSBpbj0iYyIvPjxmZU1lcmdlTm9kZSBpbj0iYyIvPjxmZU1lcmdlTm9kZSBpbj0idyIvPjxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPjwvZmVNZXJnZT48L2ZpbHRlcj4KPGZpbHRlciBpZD0icGlua0dsb3ciIHg9Ii0zMCUiIHk9Ii0xMDAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIzMDAlIj48ZmVHYXVzc2lhbkJsdXIgaW49IlNvdXJjZUFscGhhIiBzdGREZXZpYXRpb249IjciIHJlc3VsdD0iYiIvPjxmZUZsb29kIGZsb29kLWNvbG9yPSIjZmYzZGYyIi8+PGZlQ29tcG9zaXRlIGluMj0iYiIgb3BlcmF0b3I9ImluIiByZXN1bHQ9ImMiLz48ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImMiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+PC9maWx0ZXI+CjxmaWx0ZXIgaWQ9InN1bkdsb3ciIHg9Ii04MCUiIHk9Ii04MCUiIHdpZHRoPSIyNjAlIiBoZWlnaHQ9IjI2MCUiPjxmZUdhdXNzaWFuQmx1ciBpbj0iU291cmNlQWxwaGEiIHN0ZERldmlhdGlvbj0iOCIgcmVzdWx0PSJiIi8+PGZlRmxvb2QgZmxvb2QtY29sb3I9IiNmZmQyM2QiLz48ZmVDb21wb3NpdGUgaW4yPSJiIiBvcGVyYXRvcj0iaW4iIHJlc3VsdD0iYyIvPjxmZUdhdXNzaWFuQmx1ciBpbj0iU291cmNlQWxwaGEiIHN0ZERldmlhdGlvbj0iMjAiIHJlc3VsdD0iZCIvPjxmZUZsb29kIGZsb29kLWNvbG9yPSIjZmY5ZDAwIi8+PGZlQ29tcG9zaXRlIGluMj0iZCIgb3BlcmF0b3I9ImluIiByZXN1bHQ9ImUiLz48ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImUiLz48ZmVNZXJnZU5vZGUgaW49ImMiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+PC9maWx0ZXI+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ0JnMiIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzA3MDYxYSIvPjxzdG9wIG9mZnNldD0iMC41NSIgc3RvcC1jb2xvcj0iIzE0MGQzZCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzJhMGY0YSIvPjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTIiIGZpbGw9InVybCgjZ0JnMikiLz48Y2xpcFBhdGggaWQ9ImNsNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIvPjwvY2xpcFBhdGg+PGcgY2xpcC1wYXRoPSJ1cmwoI2NsNTEyKSI+PGxpbmUgeDE9Ii00NC4wIiB5MT0iNDIyIiB4Mj0iLTEyNDQuMCIgeTI9IjUxMiIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4zIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iLTE0LjAiIHkxPSI0MjIiIHgyPSItMTA5NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIxNi4wIiB5MT0iNDIyIiB4Mj0iLTk0NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI0Ni4wIiB5MT0iNDIyIiB4Mj0iLTc5NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI3Ni4wIiB5MT0iNDIyIiB4Mj0iLTY0NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIxMDYuMCIgeTE9IjQyMiIgeDI9Ii00OTQuMCIgeTI9IjUxMiIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4zIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iMTM2LjAiIHkxPSI0MjIiIHgyPSItMzQ0LjAiIHkyPSI1MTIiIHN0cm9rZT0iIzliNmJmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMyIgc3Ryb2tlLXdpZHRoPSIyIi8+PGxpbmUgeDE9IjE2Ni4wIiB5MT0iNDIyIiB4Mj0iLTE5NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIxOTYuMCIgeTE9IjQyMiIgeDI9Ii00NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIyMjYuMCIgeTE9IjQyMiIgeDI9IjEwNi4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIyNTYuMCIgeTE9IjQyMiIgeDI9IjI1Ni4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIyODYuMCIgeTE9IjQyMiIgeDI9IjQwNi4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIzMTYuMCIgeTE9IjQyMiIgeDI9IjU1Ni4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIzNDYuMCIgeTE9IjQyMiIgeDI9IjcwNi4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIzNzYuMCIgeTE9IjQyMiIgeDI9Ijg1Ni4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI0MDYuMCIgeTE9IjQyMiIgeDI9IjEwMDYuMCIgeTI9IjUxMiIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4zIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iNDM2LjAiIHkxPSI0MjIiIHgyPSIxMTU2LjAiIHkyPSI1MTIiIHN0cm9rZT0iIzliNmJmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMyIgc3Ryb2tlLXdpZHRoPSIyIi8+PGxpbmUgeDE9IjQ2Ni4wIiB5MT0iNDIyIiB4Mj0iMTMwNi4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI0OTYuMCIgeTE9IjQyMiIgeDI9IjE0NTYuMCIgeTI9IjUxMiIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4zIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iNTI2LjAiIHkxPSI0MjIiIHgyPSIxNjA2LjAiIHkyPSI1MTIiIHN0cm9rZT0iIzliNmJmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMyIgc3Ryb2tlLXdpZHRoPSIyIi8+PGxpbmUgeDE9IjU1Ni4wIiB5MT0iNDIyIiB4Mj0iMTc1Ni4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIwIiB5MT0iNDIyIiB4Mj0iNTEyIiB5Mj0iNDIyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjE1IiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iMCIgeTE9IjQzNiIgeDI9IjUxMiIgeTI9IjQzNiIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4yMSIgc3Ryb2tlLXdpZHRoPSIyIi8+PGxpbmUgeDE9IjAiIHkxPSI0NTQiIHgyPSI1MTIiIHkyPSI0NTQiIHN0cm9rZT0iIzliNmJmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMjciIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIwIiB5MT0iNDc4IiB4Mj0iNTEyIiB5Mj0iNDc4IiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMzIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iMCIgeTE9IjUwOCIgeDI9IjUxMiIgeTI9IjUwOCIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4zOSIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9nPgo8cmVjdCB4PSIxOCIgeT0iMTgiIHdpZHRoPSI0NzYiIGhlaWdodD0iNDc2IiByeD0iOTYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzliNmJmZiIgc3Ryb2tlLXdpZHRoPSI2IiBvcGFjaXR5PSIwLjkiIGZpbHRlcj0idXJsKCNwaW5rR2xvdykiLz4KPHJlY3QgeD0iMTIxLjAiIHk9Ijc1LjAiIHdpZHRoPSIxMTgiIGhlaWdodD0iMTE4IiByeD0iMjYiIGZpbGw9IiMxMjBjMzMiIHN0cm9rZT0iIzNkZmY5YSIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvd1MpIi8+CjxwYXRoIGQ9Ik0xNzkuOTk5OTk5OTk5OTk5OTcgMTY3LjUwNFExNzUuNzM2IDE2Ny41MDQgMTczLjk2OCAxNjYuMjA0UTE3Mi4yIDE2NC45MDQgMTcxLjgzNTk5OTk5OTk5OTk4IDE2Mi45MjhRMTcxLjQ3MTk5OTk5OTk5OTk4IDE2MC45NTIgMTcxLjQ3MTk5OTk5OTk5OTk4IDE1OC44NzJWMTI3Ljk4NDAwMDAwMDAwMDAxUTE3MS40NzE5OTk5OTk5OTk5OCAxMjUuOTA0IDE3MS44MzU5OTk5OTk5OTk5OCAxMjMuOThRMTcyLjIgMTIyLjA1NjAwMDAwMDAwMDAxIDE3NC4wMTk5OTk5OTk5OTk5OCAxMjAuODA4UTE3NS44Mzk5OTk5OTk5OTk5NyAxMTkuNTYgMTgwLjEwMzk5OTk5OTk5OTk4IDExOS41NlExODQuMzY4IDExOS41NiAxODYuMTM2IDEyMC44MDhRMTg3LjkwNCAxMjIuMDU2MDAwMDAwMDAwMDEgMTg4LjI2Nzk5OTk5OTk5OTk3IDEyNC4wMzIwMDAwMDAwMDAwMVExODguNjMxOTk5OTk5OTk5OTggMTI2LjAwODAwMDAwMDAwMDAxIDE4OC42MzE5OTk5OTk5OTk5OCAxMjguMDg4VjE1OC45NzZRMTg4LjYzMTk5OTk5OTk5OTk4IDE2MS4wNTYgMTg4LjI2Nzk5OTk5OTk5OTk3IDE2My4wMzJRMTg3LjkwNCAxNjUuMDA4IDE4Ni4xMzYgMTY2LjI1NlExODQuMzY4IDE2Ny41MDQgMTc5Ljk5OTk5OTk5OTk5OTk3IDE2Ny41MDRaTTE2My45ODM5OTk5OTk5OTk5OCAxNTIuMTEyUTE2Mi4xMTIgMTUyLjExMiAxNjAuMjQgMTUxLjc0OFExNTguMzY4IDE1MS4zODQwMDAwMDAwMDAwMSAxNTcuMTcxOTk5OTk5OTk5OTcgMTQ5LjU2NDAwMDAwMDAwMDAyUTE1NS45NzU5OTk5OTk5OTk5NyAxNDcuNzQ0IDE1NS45NzU5OTk5OTk5OTk5NyAxNDMuNDhRMTU1Ljk3NTk5OTk5OTk5OTk3IDEzOS4xMTIgMTU3LjI3NTk5OTk5OTk5OTk4IDEzNy4zNDRRMTU4LjU3NiAxMzUuNTc2IDE2MC42MDM5OTk5OTk5OTk5OCAxMzUuMjEyUTE2Mi42MzE5OTk5OTk5OTk5OCAxMzQuODQ4IDE2NC43MTIgMTM0Ljg0OEgxOTUuNDk1OTk5OTk5OTk5OThRMTk3LjU3NTk5OTk5OTk5OTk2IDEzNC44NDggMTk5LjU1MTk5OTk5OTk5OTk2IDEzNS4yMTJRMjAxLjUyNzk5OTk5OTk5OTk2IDEzNS41NzYgMjAyLjc3NTk5OTk5OTk5OTk1IDEzNy4zOTYwMDAwMDAwMDAwMlEyMDQuMDIzOTk5OTk5OTk5OTcgMTM5LjIxNiAyMDQuMDIzOTk5OTk5OTk5OTcgMTQzLjU4NFEyMDQuMDIzOTk5OTk5OTk5OTcgMTQ3Ljg0OCAyMDIuODI3OTk5OTk5OTk5OTcgMTQ5LjYxNlEyMDEuNjMxOTk5OTk5OTk5OTggMTUxLjM4NDAwMDAwMDAwMDAxIDE5OS44MTE5OTk5OTk5OTk5OCAxNTEuNzQ4UTE5Ny45OTIgMTUyLjExMiAxOTYuMDE1OTk5OTk5OTk5OTYgMTUyLjExMloiIGZpbGw9IiMzZGZmOWEiIGZpbHRlcj0idXJsKCNnbG93UykiLz4KPHJlY3QgeD0iMjczLjAiIHk9Ijc1LjAiIHdpZHRoPSIxMTgiIGhlaWdodD0iMTE4IiByeD0iMjYiIGZpbGw9IiMxMjBjMzMiIHN0cm9rZT0iI2ZmM2RmMiIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvd1MpIi8+CjxwYXRoIGQ9Ik0zMTMuNDg4IDE1Mi4zMlEzMTEuODI0IDE1Mi4zMiAzMDkuOTUyIDE1MS45NTYwMDAwMDAwMDAwMlEzMDguMDgwMDAwMDAwMDAwMDQgMTUxLjU5MiAzMDYuNzI4MDAwMDAwMDAwMDcgMTQ5LjcyMDAwMDAwMDAwMDAzUTMwNS4zNzYwMDAwMDAwMDAwMyAxNDcuODQ4IDMwNS4zNzYwMDAwMDAwMDAwMyAxNDMuMzc2UTMwNS4zNzYwMDAwMDAwMDAwMyAxMzkuMDA4IDMwNi43MjgwMDAwMDAwMDAwNyAxMzcuMjRRMzA4LjA4MDAwMDAwMDAwMDA0IDEzNS40NzIgMzEwLjAwNCAxMzUuMTA4UTMxMS45MjggMTM0Ljc0NCAzMTMuNTkyMDAwMDAwMDAwMDQgMTM0Ljc0NEgzNTAuNDA4UTM1Mi4xNzYwMDAwMDAwMDAwNCAxMzQuNzQ0IDM1NC4xIDEzNS4xMDhRMzU2LjAyNCAxMzUuNDcyIDM1Ny4zMjQgMTM3LjI5MlEzNTguNjI0IDEzOS4xMTIgMzU4LjYyNCAxNDMuNDhRMzU4LjYyNCAxNDcuOTUyIDM1Ny4zMjQgMTQ5Ljc3MlEzNTYuMDI0IDE1MS41OTIgMzU0LjE1MjAwMDAwMDAwMDA0IDE1MS45NTYwMDAwMDAwMDAwMlEzNTIuMjgwMDAwMDAwMDAwMDMgMTUyLjMyIDM1MC4zMDQwMDAwMDAwMDAwMyAxNTIuMzJaIiBmaWxsPSIjZmYzZGYyIiBmaWx0ZXI9InVybCgjZ2xvd1MpIi8+CjxyZWN0IHg9IjEyMS4wIiB5PSIyMjcuMCIgd2lkdGg9IjExOCIgaGVpZ2h0PSIxMTgiIHJ4PSIyNiIgZmlsbD0iIzEyMGMzMyIgc3Ryb2tlPSIjZmZkMjNkIiBzdHJva2Utd2lkdGg9IjYiIGZpbHRlcj0idXJsKCNnbG93UykiLz4KPHBhdGggZD0iTTE5Mi4yMiAyOTYuNTIgMjAwLjIyOCAzMDQuNTI4UTIwMi42MiAzMDYuNzEyIDIwMy40IDMwOC42MzU5OTk5OTk5OTk5N1EyMDQuMTggMzEwLjU2IDIwMy40NTIgMzEyLjQ4NDAwMDAwMDAwMDA0UTIwMi43MjQgMzE0LjQwOCAyMDAuNDM2IDMxNi42OTZRMTk4LjE0OCAzMTguOTg0IDE5Ni4yMjQgMzE5Ljc2NFExOTQuMyAzMjAuNTQ0IDE5Mi4zNzYgMzE5Ljc2NFExOTAuNDUyIDMxOC45ODQgMTg4LjE2NCAzMTYuNjk2TDE4MC4wNTIgMzA4LjU4NEwxNzEuOTQgMzE2LjY5NlExNjkuNjUyIDMxOC45ODQgMTY3LjcyOCAzMTkuNzY0UTE2NS44MDQgMzIwLjU0NCAxNjMuODggMzE5Ljc2NFExNjEuOTU2IDMxOC45ODQgMTU5LjY2OCAzMTYuNjk2UTE1Ny4zOCAzMTQuNDA4IDE1Ni42NTIgMzEyLjQ4NDAwMDAwMDAwMDA0UTE1NS45MjQgMzEwLjU2IDE1Ni43NTYgMzA4LjYzNTk5OTk5OTk5OTk3UTE1Ny41ODggMzA2LjcxMiAxNTkuODc2IDMwNC41MjhMMTY3Ljg4NDAwMDAwMDAwMDAxIDI5Ni41MkwxNTkuNTY0IDI4OC4yUTE1Ny4zOCAyODYuMDE2IDE1Ni42NTIgMjg0LjE0NFExNTUuOTI0IDI4Mi4yNzIgMTU2LjY1MiAyODAuMzQ3OTk5OTk5OTk5OTZRMTU3LjM4IDI3OC40MjQgMTU5LjY2OCAyNzYuMTM2UTE2Mi4wNiAyNzMuOTUyIDE2My45ODQgMjczLjIyNFExNjUuOTA4MDAwMDAwMDAwMDIgMjcyLjQ5NiAxNjcuODMyIDI3My4yMjRRMTY5Ljc1NiAyNzMuOTUyIDE3MS45NCAyNzYuMTM2TDE4MC4wNTIgMjg0LjI0OEwxODguMTY0IDI3Ni4xMzZRMTkwLjM0OCAyNzMuOTUyIDE5Mi4yNzIgMjczLjIyNFExOTQuMTk2IDI3Mi40OTYgMTk2LjE3MiAyNzMuMjI0UTE5OC4xNDggMjczLjk1MiAyMDAuNDM2IDI3Ni4xMzZRMjAyLjcyNCAyNzguNDI0IDIwMy40NTIgMjgwLjM0Nzk5OTk5OTk5OTk2UTIwNC4xOCAyODIuMjcyIDIwMy40NTIgMjg0LjE0NFEyMDIuNzI0IDI4Ni4wMTYgMjAwLjU0IDI4OC4yWiIgZmlsbD0iI2ZmZDIzZCIgZmlsdGVyPSJ1cmwoI2dsb3dTKSIvPgo8cmVjdCB4PSIyNzMuMCIgeT0iMjI3LjAiIHdpZHRoPSIxMTgiIGhlaWdodD0iMTE4IiByeD0iMjYiIGZpbGw9IiMxMjBjMzMiIHN0cm9rZT0iIzJlZjJmZiIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvd1MpIi8+CjxwYXRoIGQ9Ik0zMTYuODE2IDMwMi4zNDRRMzE1LjI1NiAzMDIuMzQ0IDMxMy40MzYgMzAxLjk4UTMxMS42MTYgMzAxLjYxNiAzMTAuMzY4IDI5OS45NTJRMzA5LjEyIDI5OC4yODggMzA5LjEyIDI5NC4zMzZRMzA5LjEyIDI5MC4zODQgMzEwLjQ3MiAyODguNzcyMDAwMDAwMDAwMDVRMzExLjgyNCAyODcuMTYgMzEzLjY5NiAyODYuODQ4UTMxNS41NjggMjg2LjUzNiAzMTcuMjMxOTk5OTk5OTk5OTcgMjg2LjUzNkgzNDYuODcxOTk5OTk5OTk5OTZRMzQ4LjUzNiAyODYuNTM2IDM1MC40MDggMjg2Ljg0OFEzNTIuMjggMjg3LjE2IDM1My41OCAyODguODI0UTM1NC44OCAyOTAuNDg4IDM1NC44OCAyOTQuNDRRMzU0Ljg4IDI5OC4yODggMzUzLjY4Mzk5OTk5OTk5OTk3IDI5OS45NTJRMzUyLjQ4OCAzMDEuNjE2IDM1MC42MTYgMzAxLjk4UTM0OC43NDM5OTk5OTk5OTk5NyAzMDIuMzQ0IDM0Ni43NjggMzAyLjM0NFpNMzMxLjg5NTk5OTk5OTk5OTk2IDMyMi43MjhRMzI3LjAwOCAzMjIuNzI4IDMyNS4wMzIgMzIwLjgwNFEzMjMuMDU2IDMxOC44OCAzMjMuMDU2IDMxNC4wOTZRMzIzLjA1NiAzMDkuMCAzMjUuMDMyIDMwNy4wMjRRMzI3LjAwOCAzMDUuMDQ4IDMzMi4wIDMwNS4wNDhRMzM2Ljg4OCAzMDUuMDQ4IDMzOC44MTIgMzA3LjAyNFEzNDAuNzM2IDMwOS4wIDM0MC43MzYgMzEzLjk5MlEzNDAuNzM2IDMxOC44OCAzMzguNzYgMzIwLjgwNFEzMzYuNzg0IDMyMi43MjggMzMxLjg5NTk5OTk5OTk5OTk2IDMyMi43MjhaTTMzMS44OTU5OTk5OTk5OTk5NiAyODMuODMyUTMyNy4wMDggMjgzLjgzMiAzMjUuMDMyIDI4MS45MDhRMzIzLjA1NiAyNzkuOTg0IDMyMy4wNTYgMjc1LjJRMzIzLjA1NiAyNzAuMTA0IDMyNS4wMzIgMjY4LjEyOFEzMjcuMDA4IDI2Ni4xNTIgMzMyLjAgMjY2LjE1MlEzMzYuODg4IDI2Ni4xNTIgMzM4LjgxMiAyNjguMTI4UTM0MC43MzYgMjcwLjEwNCAzNDAuNzM2IDI3NS4wOTZRMzQwLjczNiAyNzkuOTg0IDMzOC43NiAyODEuOTA4UTMzNi43ODQgMjgzLjgzMiAzMzEuODk1OTk5OTk5OTk5OTYgMjgzLjgzMloiIGZpbGw9IiMyZWYyZmYiIGZpbHRlcj0idXJsKCNnbG93UykiLz4KPGcgZmlsdGVyPSJ1cmwoI3N1bkdsb3cpIj48cG9seWdvbiBwb2ludHM9IjI5NS45LDkyLjAgMjI1LjEsMjI4LjkgMjc3LjUsMjI4LjkgMjUzLjQsMzI4LjAgMzUyLjUsMTc3LjAgMjk1LjksMTc3LjAgMzI0LjIsOTIuMCIgZmlsbD0idXJsKCNnQm9sdCkiIHN0cm9rZT0iIzA3MDYxYSIgc3Ryb2tlLXdpZHRoPSI3LjEiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L2c+CjxwYXRoIGQ9Ik02NC4wMjQ5OTk5OTk5OTk5OSA0NTIuMFY0MTYuMEg3Mi4wMjQ5OTk5OTk5OTk5OUw5Mi4xNzUgNDQwLjBWNDE2LjBIMTAwLjAyNVY0NTIuMEg5Mi4wMjQ5OTk5OTk5OTk5OUw3MS43NzQ5OTk5OTk5OTk5OSA0MjcuOVY0NTIuMFpNMTE1LjkyNDk5OTk5OTk5OTk4IDQ1Mi4wUTExMy45MjQ5OTk5OTk5OTk5OCA0NTIuMCAxMTIuMjI1IDQ1MS4wUTExMC41MjQ5OTk5OTk5OTk5OSA0NTAuMCAxMDkuNTI0OTk5OTk5OTk5OTkgNDQ4LjNRMTA4LjUyNDk5OTk5OTk5OTk5IDQ0Ni42IDEwOC41MjQ5OTk5OTk5OTk5OSA0NDQuNlY0MTYuMEgxMTYuMjc0OTk5OTk5OTk5OTlWNDQ0LjJRMTE2LjI3NDk5OTk5OTk5OTk5IDQ0NC4yIDExNi4yNzQ5OTk5OTk5OTk5OSA0NDQuMlExMTYuMjc0OTk5OTk5OTk5OTkgNDQ0LjIgMTE2LjI3NDk5OTk5OTk5OTk5IDQ0NC4ySDEzNi42NzQ5OTk5OTk5OTk5OFExMzYuNjc0OTk5OTk5OTk5OTggNDQ0LjIgMTM2LjY3NDk5OTk5OTk5OTk4IDQ0NC4yUTEzNi42NzQ5OTk5OTk5OTk5OCA0NDQuMiAxMzYuNjc0OTk5OTk5OTk5OTggNDQ0LjJWNDE2LjBIMTQ0LjUyNDk5OTk5OTk5OTk4VjQ0NC42UTE0NC41MjQ5OTk5OTk5OTk5OCA0NDYuNiAxNDMuNSA0NDguM1ExNDIuNDc1IDQ1MC4wIDE0MC44IDQ1MS4wUTEzOS4xMjUgNDUyLjAgMTM3LjEyNSA0NTIuMEgxMTUuOTI0OTk5OTk5OTk5OThaTTE1My4wMjUgNDUyLjBWNDE2LjBIMTYxLjAyNUwxNzMuMjI1IDQzMC41NUwxODUuMzc1IDQxNi4wSDE5My40MjVWNDUyLjBIMTg1LjYyNVY0MjcuODVMMTczLjIyNSA0NDIuNjVMMTYwLjc3NSA0MjcuOVY0NTIuMFpNMjAyLjU3NSA0NTIuMFY0MTYuMEgyMjkuNzc1UTIzMS43NzUgNDE2LjAgMjMzLjQ1IDQxNy4wUTIzNS4xMjUgNDE4LjAgMjM2LjE1IDQxOS42NzVRMjM3LjE3NSA0MjEuMzUgMjM3LjE3NSA0MjMuNFY0MzAuMTVRMjM3LjE3NSA0MzAuOCAyMzcuMTAwMDAwMDAwMDAwMDIgNDMxLjM3NVEyMzcuMDI1IDQzMS45NSAyMzYuODI1IDQzMi40NVEyMzcuNTc1IDQzMy40IDIzOC4wNzUgNDM0LjY1UTIzOC41NzUgNDM1LjkgMjM4LjU3NSA0MzcuMTVWNDQ0LjZRMjM4LjU3NSA0NDYuNiAyMzcuNTUgNDQ4LjNRMjM2LjUyNSA0NTAuMCAyMzQuODUwMDAwMDAwMDAwMDIgNDUxLjBRMjMzLjE3NSA0NTIuMCAyMzEuMTI1IDQ1Mi4wSDIwMi41NzVaTTIxMC4zMjUgNDQ0LjJIMjMwLjcyNVEyMzAuNzI1IDQ0NC4yIDIzMC43MjUgNDQ0LjJRMjMwLjcyNSA0NDQuMiAyMzAuNzI1IDQ0NC4yVjQzNy42UTIzMC43MjUgNDM3LjYgMjMwLjcyNSA0MzcuNlEyMzAuNzI1IDQzNy42IDIzMC43MjUgNDM3LjZIMjEwLjMyNVEyMTAuMzI1IDQzNy42IDIxMC4zMjUgNDM3LjZRMjEwLjMyNSA0MzcuNiAyMTAuMzI1IDQzNy42VjQ0NC4yUTIxMC4zMjUgNDQ0LjIgMjEwLjMyNSA0NDQuMlEyMTAuMzI1IDQ0NC4yIDIxMC4zMjUgNDQ0LjJaTTIxMC4zMjUgNDI5LjhIMjI5LjMyNVEyMjkuMzI1IDQyOS44IDIyOS4zMjUgNDI5LjhRMjI5LjMyNSA0MjkuOCAyMjkuMzI1IDQyOS44VjQyMy44UTIyOS4zMjUgNDIzLjggMjI5LjMyNSA0MjMuOFEyMjkuMzI1IDQyMy44IDIyOS4zMjUgNDIzLjhIMjEwLjMyNVEyMTAuMzI1IDQyMy44IDIxMC4zMjUgNDIzLjhRMjEwLjMyNSA0MjMuOCAyMTAuMzI1IDQyMy44VjQyOS44UTIxMC4zMjUgNDI5LjggMjEwLjMyNSA0MjkuOFEyMTAuMzI1IDQyOS44IDIxMC4zMjUgNDI5LjhaTTI0Ny4wNzUgNDUyLjBWNDE1Ljk1SDI1NC44MjVWNDQ0LjJIMjgzLjA3NVY0NTIuMFpNMjg5LjA3NDk5OTk5OTk5OTkzIDQ1Mi4wVjQxNi4wSDMyMi4zMjQ5OTk5OTk5OTk5M1Y0MjMuOEgyOTYuOTI0OTk5OTk5OTk5OTVWNDMwLjFIMzE3LjM3NDk5OTk5OTk5OTk0VjQzNy45SDI5Ni45MjQ5OTk5OTk5OTk5NVY0NDQuMkgzMjIuMzI0OTk5OTk5OTk5OTNWNDUyLjBaTTMzMC4zNzUgNDUyLjBWNDE2LjBIMzYzLjYyNVY0MjMuOEgzMzguMjI1VjQzMC4xSDM1OC42NzVWNDM3LjlIMzM4LjIyNVY0NDQuMkgzNjMuNjI1VjQ1Mi4wWk0zODMuODc1IDQ1Mi4wVjQyMy44SDM2OS43NzVWNDE2LjBINDA1Ljc3NVY0MjMuOEgzOTEuNjc0OTk5OTk5OTk5OTVWNDUyLjBaTTQxMi4yNzUwMDAwMDAwMDAwMyA0NTIuMFY0NDQuMDVMNDM2LjM3NSA0MjMuOEg0MTIuMjc1MDAwMDAwMDAwMDNWNDE2LjBINDQ4LjI3NTAwMDAwMDAwMDAzVjQyMy45NUw0MjQuMTc1IDQ0NC4ySDQ0OC4yNzUwMDAwMDAwMDAwM1Y0NTIuMFoiIGZpbGw9IiNmZmZmZmYiIGZpbHRlcj0idXJsKCNuZW9uKSIvPgo8L3N2Zz4=" alt="">
+      <div class="lang-pick" id="reg-lang"><button data-lang="fil">Filipino</button><button data-lang="en">English</button></div>
       <h3>MAG-REGISTER</h3>
       <p>Lalabas ang pangalan mo sa leaderboard. Gumamit ng nickname, hindi ang buong pangalan mo.</p>
       <input id="name-input" maxlength="16" placeholder="hal. Juan" autocomplete="off">
@@ -1170,6 +1179,363 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
   <script>
 /* ============================================================
+   NUMBLEETZ — Filipino / English switch
+   The game is written in Filipino. When English is on, the text on
+   screen is swapped using the lists below. To fix a translation, find
+   the Filipino on the left and edit the English on the right.
+   ============================================================ */
+(() => {
+  'use strict';
+
+  // Exact text → English (spaces at the ends don't matter)
+  const EXACT = {
+    // ---- home ----
+    'Baguhan': 'Beginner', 'Best sa Ranked': 'Ranked best',
+    '3 buhay · walang timer · pataasan ng score': '3 lives · no timer · go for the high score',
+    'Bagong hamon araw-araw': 'A new challenge every day',
+    'LAKBAY PILIPINAS': 'LAKBAY PILIPINAS', '18 region ng bansa': '18 regions of the Philippines',
+    '🪜 HAGDAN': '🪜 HAGDAN', 'Pahirap nang pahirap': 'Gets harder and harder',
+    '4 na mabilisang laro': '4 quick games',
+    '📲 I-install sa phone (gumagana kahit offline)': '📲 Install on your phone (works offline)',
+    '💬 May comment o suggestion ka?': '💬 Got a comment or suggestion?',
+    '👩‍🏫 Para sa guro: gumawa ng assignment link': '👩‍🏫 For teachers: make an assignment link',
+    'Walang ads · walang chat · puro math ✨': 'No ads · no chat · just math ✨',
+    '‹ BALIK': '‹ BACK',
+    'Palitan ang pangalan at avatar': 'Change your name and avatar',
+    // ---- Lakbay ----
+    'Pumili ng route, tapos libutin ang 18 region ng Pilipinas, mula Region I (Ilocos) hanggang BARMM. 15 tanong, 3 buhay. Kumuha ng ⭐ para mabuksan ang susunod na region at may bagong':
+      'Pick a route, then travel all 18 regions of the Philippines, from Region I (Ilocos) to BARMM. 15 questions, 3 lives. Earn ⭐ to open the next region and unlock a new',
+    'Alam mo ba?': 'Did you know?', 'ka.': 'fact.',
+    'Tapos na': 'Done', 'Bukas na': 'Open', 'Sarado pa': 'Locked',
+    'I-tap ang numero sa mapa para maglaro.': 'Tap a number on the map to play.',
+    'Mapa ng Pilipinas': 'Map of the Philippines', 'Philippine flag': 'Philippine flag',
+    'Pasyalan': 'Places to visit', 'Produkto': 'Products', 'Festival': 'Festival', 'Pagkain': 'Food',
+    'Kasaysayan': 'History', 'Kalikasan': 'Nature', 'Kultura': 'Culture',
+    // ---- teacher ----
+    '👩‍🏫 PARA SA GURO': '👩‍🏫 FOR TEACHERS',
+    'Gumawa ng link na naka-set na sa isang topic. Pag binuksan ito ng estudyante, may':
+      'Make a link that is set to one topic. When a student opens it, a',
+    '📌 Takdang-aralin': '📌 Homework',
+    'button sa home nila. Lalabas ang resulta sa Google Sheet mo (Mode:':
+      'button appears on their home screen. Results show up in your Google Sheet (Mode:',
+    'Hirap (step)': 'Difficulty (step)', 'Ilang tanong': 'How many questions', '▶ SUBUKAN': '▶ TRY IT',
+    '📋 Nakopya ang link! I-send sa klase mo.': '📋 Link copied! Send it to your class.',
+    // ---- passport ----
+    'REPUBLIKA NG PILIPINAS': 'REPUBLIC OF THE PHILIPPINES', 'Mga tatak': 'Stamps',
+    'Bawat region ay may 5 tatak, isa kada sign (+ − × ÷ 🍧), at bawat tatak ay nagbubukas ng bagong':
+      'Each region has 5 stamps, one per sign (+ − × ÷ 🍧), and each stamp unlocks a new',
+    'fact. I-tap ang stamp para makita ang mga fact.': 'fact. Tap a stamp to see its facts.',
+    '🏅 Bayaning Manlalakbay! Ginto lahat ng 18!': '🏅 Hero Traveler! All 18 are gold!',
+    // ---- hagdan / mini ----
+    'Pumili ng isang operation. Bawat 8 tamang sagot, aakyat ka ng isang step at hihirap ito: whole numbers, mas malalaking numero, signed numbers, tapos decimals. 3 buhay!':
+      'Pick one operation. Every 8 correct answers you climb a step and it gets harder: whole numbers, bigger numbers, signed numbers, then decimals. 3 lives!',
+    '▶ AKYAT NA!': '▶ CLIMB!', '▶ LARO NA!': '▶ PLAY!',
+    'Hindi pa nasusubukan. Kaya mo yan!': 'Not tried yet. You can do it!',
+    '⚡ BILIS': '⚡ SPEED', '❤️ 3 BUHAY': '❤️ 3 LIVES', '₱ PERA': '₱ MONEY', '👀 TUTOK': '👀 FOCUS',
+    '× SANAYAN': '× PRACTICE', '💡 MAY TULONG': '💡 WITH HINTS',
+    'Sumagot bago makarating ang jeep sa babaan! Pabilis nang pabilis ang bawat biyahe.':
+      'Answer before the jeep reaches the stop! Every ride gets faster.',
+    'Ikaw ang tindera! Kuwentahin ang presyo at ibigay ang tamang sukli sa loob ng 75 segundo.':
+      "You run the store! Work out the prices and give the right change in 75 seconds.",
+    'Tama o mali ang sagot? Bilisan mo, 45 segundo lang!': 'Is the answer right or wrong? Hurry, only 45 seconds!',
+    'Pumili ng table mula 2 hanggang 12 at sanayin ito. Kunin ang 3 stars sa bawat table!':
+      'Pick a table from 2 to 12 and practice it. Get 3 stars on every table!',
+    'TAMA O MALI': 'TRUE OR FALSE', '✅ Tama o Mali': '✅ True or False',
+    // ---- play ----
+    'SUNOD-SUNOD NA TAMA ·': 'CORRECT IN A ROW ·', '✓ TAMA': '✓ RIGHT', '✗ MALI': '✗ WRONG',
+    '💡 Tulong': '💡 Hint', '⌨️ I-type ang sagot': '⌨️ Type the answer', '👆 Pindutin ang sagot': '👆 Tap the answer',
+    'Sumagot bago maubos ang bar para tuloy ang combo': 'Answer before the bar runs out to keep your combo',
+    'AYOS!': 'NICE!', 'GALING!': 'GREAT!', 'Ang bilis!': 'So fast!', 'Konti na lang!': 'Almost there!',
+    "Kaya mo 'yan!": 'You can do it!', 'Kaya mo yan!': 'You can do it!', 'Laban lang!': 'Keep going!',
+    'Laban! 💪': 'Go! 💪', 'Game na! 🎮': "Let's go! 🎮",
+    '⏰ walang sagot': '⏰ no answer', 'Lumampas! 🚏': 'Missed the stop! 🚏', 'Ubos ang oras! ⏰': "Time's up! ⏰",
+    'Naputol ang combo! 💨': 'Combo broken! 💨',
+    'Aalis ka na? Hindi mase-save ang score mo.': "Leave now? Your score won't be saved.",
+    'Magkano lahat?': 'How much in all?', 'Magkano ang sukli?': 'How much change?',
+    'Kahit anong numero × 1, hindi nagbabago!': 'Any number × 1 stays the same!',
+    'Mga mali mo': 'Your mistakes', 'sagot mo:': 'your answer:',
+    // ---- results ----
+    'TAPOS NA!': 'FINISHED!', 'TAMA': 'CORRECT', '↻ ULIT': '↻ AGAIN',
+    'UBOS ANG BUHAY!': 'OUT OF LIVES!', 'GALING MO!': 'AWESOME!',
+    "Sayang! Try again, kaya mo 'yan! 💪": 'So close! Try again, you can do it! 💪',
+    'TAPOS ANG PRACTICE!': 'PRACTICE DONE!', 'NAITAMA MO LAHAT!': 'YOU FIXED THEM ALL!',
+    'TAPOS NA ANG TAKDANG-ARALIN!': 'HOMEWORK DONE!', 'PARA PO! 🛑': 'STOP PO! 🛑',
+    'TAPOS ANG HAMON!': 'CHALLENGE DONE!', 'UBOS ANG ORAS!': "TIME'S UP!",
+    '🛂 Na-stamp ang passport mo!': '🛂 Your passport got stamped!',
+    'Practice lang ito · ang unang laro mo ngayong araw lang ang bilang.': "This is practice · only your first game today counts.",
+    '📚 Basahin ulit ang "Alam mo ba?"': '📚 Read "Did you know?" again',
+    '🎉 Walang mali! Perfect!': '🎉 No mistakes! Perfect!',
+    '🃏 May bagong card ka!': '🃏 You got a new card!',
+    '⛵ SUSUNOD NA REGION': '⛵ NEXT REGION', '📚 SUSUNOD NA TABLE': '📚 NEXT TABLE',
+    '🔁 ULITIN ANG MGA MALI': '🔁 REDO YOUR MISTAKES', '⛵ LAKBAY': '⛵ LAKBAY',
+    '📸 I-screenshot ito at ipakita sa guro mo.': '📸 Take a screenshot and show it to your teacher.',
+    '🃏 Bagong cards': '🃏 New cards',
+    // ---- pop-ups ----
+    '📚 ALAM MO BA?': '📚 DID YOU KNOW?', 'ASTIG! TULOY ▶': 'COOL! NEXT ▶', 'TULOY ▶': 'NEXT ▶',
+    'Saang region ito?': 'Which region is this?', 'Laktawan': 'Skip',
+    '🎉 Tama! +30 XP bonus': '🎉 Correct! +30 XP bonus',
+    '✨ GAMITIN ITO!': '✨ USE IT!', 'MAMAYA NA': 'LATER', 'AYOS! ▶': 'NICE! ▶',
+    'Nabuksan mo na lahat! 👑': 'You unlocked everything! 👑',
+    // ---- leaderboard ----
+    'LAHAT': 'ALL TIME', 'NGAYONG LINGGO': 'THIS WEEK',
+    '📴 Offline ang leaderboard (wala pang naka-link na Google Sheet).': '📴 Leaderboard is offline (no Google Sheet linked yet).',
+    '📡 Ipinapadala ang score…': '📡 Sending your score…', '🌏 Na-save ang score!': '🌏 Score saved!',
+    '📶 Walang internet. Ipapadala ang score sa susunod.': "📶 No internet. Your score will be sent later.",
+    '📴 Offline: mga score lang sa phone na ito ang makikita.': '📴 Offline: showing scores on this phone only.',
+    'Wala pang score. Ikaw na ang mauna! 🚀': 'No scores yet. Be the first! 🚀',
+    '📶 Hindi maabot ang leaderboard. Mga score muna sa phone na ito ang makikita.': "📶 Can't reach the leaderboard. Showing scores on this phone for now.",
+    'I-refresh': 'Refresh',
+    // ---- register / save ----
+    'MAG-REGISTER': 'REGISTER',
+    'Lalabas ang pangalan mo sa leaderboard. Gumamit ng nickname, hindi ang buong pangalan mo.':
+      'Your name shows on the leaderboard. Use a nickname, not your full name.',
+    'Para sa registration, at para hindi mawala ang progress mo kahit magpalit ng phone. Puwede ang number ng magulang mo.':
+      "For registration, and so you don't lose your progress if you change phones. You can use your parent's number.",
+    'Nabasa ko ang privacy notice at pumapayag ako (at ang magulang ko).': 'I read the privacy notice and I (and my parent) agree.',
+    'LARO NA ▶': 'PLAY ▶', 'May naka-save ka na? Ibalik ang progress mo': 'Already saved before? Get your progress back',
+    'I-save ang XP, level, stars, passport at streak mo sa pangalang': 'Save your XP, level, stars, passport and streak under the name',
+    'para hindi mawala kahit magpalit ng phone.': "so it isn't lost if you change phones.",
+    '🔒 Privacy notice · basahin muna': '🔒 Privacy notice · read this first',
+    'Ano ang kinukuha?': 'What do we collect?',
+    'Pangalan (nickname), phone number, at progress sa laro (XP, level, stars, passport, streak).':
+      'Name (nickname), phone number, and game progress (XP, level, stars, passport, streak).',
+    'Para saan?': 'What for?',
+    'Para lang maibalik ang progress mo sa ibang phone. Hindi ka namin ite-text o tatawagan, at hindi ito ibibigay kaninuman.':
+      "Only to bring back your progress on another phone. We will never text or call you, and we won't give it to anyone.",
+    'Paano iniingatan?': 'How is it kept safe?',
+    'Hindi sine-save ang buong number. Naka-hash ito (ginawang code na hindi na mabasa), at huling 4 digits lang ang nakikita ng guro sa Google Sheet.':
+      "The full number is never saved. It is hashed (turned into a code that can't be read), and the teacher only sees the last 4 digits in the Google Sheet.",
+    'Gusto mong burahin?': 'Want it deleted?',
+    'Pindutin ang "Burahin ang naka-save ko" sa ibaba, o sabihan ang guro mo.': 'Tap "Delete my saved progress" below, or tell your teacher.',
+    'Kung wala ka pang 18, ipaalam muna sa magulang o guardian mo, at gamitin ang number nila kung wala kang sarili.':
+      "If you're under 18, tell your parent or guardian first, and use their number if you don't have your own.",
+    '💾 I-SAVE ANG PROGRESS': '💾 SAVE PROGRESS', 'Naka-save ka na dati?': 'Saved before?',
+    'Ilagay ang pangalan at phone number mo para bumalik ang progress.': 'Enter your name and phone number to get your progress back.',
+    '📥 IBALIK ANG PROGRESS': '📥 RESTORE PROGRESS', '🗑️ Burahin ang naka-save ko': '🗑️ Delete my saved progress',
+    '✕ ISARA': '✕ CLOSE', 'hal. Juan': 'e.g. Juan', 'Pangalan mo': 'Your name', '(wala pang pangalan)': '(no name yet)',
+    '📝 Mag-register muna bago maglaro 🙂': '📝 Please register before playing 🙂',
+    'Ilagay muna ang nickname mo 🙂': 'Enter your nickname first 🙂', 'Ilagay muna ang pangalan mo 🙂': 'Enter your name first 🙂',
+    '📶 Walang internet. Mag-register ka na lang pagbalik ng internet.': '📶 No internet. You can register when you are back online.',
+    '📶 Hindi pa ma-register ngayon. Puwede ka nang maglaro, at susubukan ulit mamaya.': "📶 Can't register right now. You can play, and we'll try again later.",
+    'Ilagay ang phone number mo 📱': 'Enter your phone number 📱',
+    'Mali ang phone number. Halimbawa: 0917 123 4567 📱': 'That phone number looks wrong. Example: 0917 123 4567 📱',
+    'I-check muna ang privacy notice ✅': 'Please tick the privacy notice first ✅',
+    '💾 Na-save na ang progress mo!': '💾 Your progress is saved!',
+    '⚠️ Naka-save ka na dati. Gamitin ang "Ibalik ang progress" sa ibaba para makuha ito.': '⚠️ You saved before. Use "Restore progress" below to get it back.',
+    '❌ Walang naka-save na ganyang pangalan at number. Tingnan kung tama ang sulat.': '❌ No saved progress with that name and number. Check the spelling.',
+    '🔒 Masyadong maraming mali. Subukan ulit pagkalipas ng 30 minuto.': '🔒 Too many tries. Try again in 30 minutes.',
+    '📶 Hindi maka-connect. Subukan ulit mamaya.': "📶 Can't connect. Try again later.",
+    'Ilagay ang pangalan at phone number mo 🙂': 'Enter your name and phone number 🙂',
+    '📴 Walang leaderboard link, kaya hindi pa puwede ang save code.': '📴 No leaderboard link yet, so saving is not available.',
+    'Papalitan nito ang progress sa phone na ito. Tuloy?': 'This will replace the progress on this phone. Continue?',
+    'Ilagay sa ibaba ang pangalan at number na buburahin 🙂': 'Enter the name and number to delete below 🙂',
+    '🗑️ Nabura na sa Sheet.': '🗑️ Deleted from the Sheet.',
+    '✅ Awtomatikong nase-save tuwing tapos ng laro.': '✅ Saves automatically after every game.',
+    'Sa ibang phone, ilagay lang ang pangalan at number na ito.': 'On another phone, just enter this name and number.',
+    '📴 Kailangan muna ng leaderboard link para sa save code.': '📴 A leaderboard link is needed to save.',
+    '📴 Kailangan muna ng leaderboard link para makapagpadala.': '📴 A leaderboard link is needed to send this.',
+    // ---- comments ----
+    'Ano ang masasabi mo sa laro? Babasahin ito ng gumawa ng NumBleetz.': 'What do you think of the game? The maker of NumBleetz will read this.',
+    '🐞 May mali': '🐞 Something is wrong', '❤️ Papuri': '❤️ Praise', '💬 Iba pa': '💬 Other',
+    'Huwag ilagay ang buong pangalan, address o phone number mo dito.': "Don't put your full name, address or phone number here.",
+    '📨 IPADALA': '📨 SEND', 'Isulat dito…': 'Write here…', 'Isulat muna ang comment mo ✏️': 'Write your comment first ✏️',
+    '📨 Salamat! Natanggap na ang comment mo.': '📨 Thank you! We got your comment.',
+    '⏳ Sandali lang, kakapadala mo lang. Subukan ulit mamaya.': '⏳ Wait a bit, you just sent one. Try again later.',
+    '📶 Hindi naipadala. Subukan ulit mamaya.': "📶 Couldn't send. Try again later.",
+    // ---- install ----
+    '📲 Na-install na ang NumBleetz!': '📲 NumBleetz is installed!',
+    'Sa Safari: pindutin ang Share ⬆️ tapos "Add to Home Screen" ➕': 'In Safari: tap Share ⬆️ then "Add to Home Screen" ➕',
+    // ---- data: titles, ranks, modes, cards, store ----
+    'Batang Matalino': 'Smart Kid', 'Batang Henyo': 'Kid Genius', 'Mandirigma ng Numero': 'Number Warrior',
+    'Sipnayan Bayani': 'Math Hero', 'Alamat ng Sipnayan': 'Math Legend',
+    'DAILY HAMON': 'DAILY CHALLENGE', '🌟 DAILY HAMON': '🌟 DAILY CHALLENGE', 'ULITIN ANG MALI': 'REDO MISTAKES', 'TAKDANG-ARALIN': 'HOMEWORK',
+    'Unang tamang sagot': 'First correct answer', 'Umabot sa 10 combo': 'Reach a 10 combo', '200 tamang sagot': '200 correct answers',
+    'Maka-500 sa Jeepney Rush': 'Score 500 in Jeepney Rush', 'Matapos ang isang region sa Halo-Halo route': 'Finish a region on the Halo-Halo route',
+    'Makaipon ng 15 stars': 'Collect 15 stars', 'Maka-600 sa Sari-Sari Store': 'Score 600 in Sari-Sari Store',
+    'Maka-800 sa Tama o Mali': 'Score 800 in True or False', 'Matapos ang isang Daily Hamon': 'Finish a Daily Challenge',
+    'Umabot sa 25 combo': 'Reach a 25 combo', '3 stars sa 6 na times table': '3 stars on 6 times tables',
+    'Matapos ang BARMM sa kahit anong route': 'Finish BARMM on any route', '1,000 tamang sagot': '1,000 correct answers',
+    'Maabot ang signed numbers step sa Hagdan': 'Reach the signed numbers step in Hagdan', 'Makaipon ng 100 stars': 'Collect 100 stars',
+    'Maabot ang HENYO rank': 'Reach the GENIUS rank', 'Maabot ang ALAMAT rank': 'Reach the LEGEND rank',
+    // ---- ops ----
+    'DAGDAG': 'ADDITION', 'BAWAS': 'SUBTRACTION', 'PARAMI': 'MULTIPLICATION', 'HATI': 'DIVISION'
+  };
+
+  // Text with numbers or names inside: [pattern, English]
+  const RULES = [
+    [/^(\d+) tanong$/, '$1 questions'],
+    [/^(.+) · Step (\d+): (.+) · (\d+) tanong$/, '$1 · Step $2: $3 · $4 questions'],
+    [/^title na "(.+)"$/, 'the title "$1"'],
+    [/^💵 Bayad: (.+)$/, '💵 Paid: $1'],
+    [/^Hatiin: (.+), tapos dagdagan ng (\d+)\.$/, 'Split it: $1, then add $2.'],
+    [/^Magsimula sa (\S+) at magbilang pataas nang (\S+)\.$/, 'Start at $1 and count up $2.'],
+    [/^Hatiin: (.+), tapos bawasan ng (\d+)\.$/, 'Split it: $1, then subtract $2.'],
+    [/^Magsimula sa (\S+) at magbilang pababa nang (\S+)\.$/, 'Start at $1 and count down $2.'],
+    [/^Hatiin: (.+), dagdagan ng (.+)\.$/, 'Split it: $1, plus $2.'],
+    [/^(.+)\. Dagdagan pa ng isang (\S+)\.$/, '$1. Add one more $2.'],
+    [/^Susunod: (.+) sa (.+) points$/, 'Next: $1 at $2 points'],
+    [/^Pinakamataas na rank! 👑$/, 'Highest rank! 👑'],
+    [/^araw · laro na!$/, 'days · play now!'], [/^araw$/, 'days'],
+    [/^Streak: (\d+) araw na sunod-sunod · pinakamahaba: (\d+) · may bonus XP tuwing 7 araw$/, 'Streak: $1 days in a row · longest: $2 · bonus XP every 7 days'],
+    [/^📌 TAKDANG-ARALIN$/, '📌 HOMEWORK'],
+    [/^✅ Tapos na · practice na lang$/, '✅ Done · practice only'],
+    [/^Tapusin muna ang (.+) ⛵$/, 'Finish $1 first ⛵'],
+    [/^Sayang! (.+) ang tamang sagot\.$/, 'So close! The answer is $1.'],
+    [/^🛂 Bagong stamp:$/, '🛂 New stamp:'],
+    [/^👑 GINTO na ang stamp ng$/, '👑 Your stamp for'],
+    [/^! Kumpleto ang 5 tatak!$/, ' is now GOLD! All 5 stamps done!'],
+    [/^Bagong tatak:$/, 'New stamp:'],
+    [/^🏷️ Bagong title:$/, '🏷️ New title:'],
+    [/^🎁 Bagong avatar!$/, '🎁 New avatar!'],
+    [/^Nabuksan din: (.+)$/, 'Also unlocked: $1'],
+    [/^Susunod na premyo: (.+) sa Lv\.(\d+)$/, 'Next prize: $1 at Lv.$2'],
+    [/^(.+) Ito na ang avatar mo!$/, '$1 This is your avatar now!'],
+    [/^(.+) · (\d+)\/5 tatak$/, '$1 · $2/5 stamps'],
+    [/^🔒 Tapusin ang (.+) sa (.+) para mabuksan\.$/, '🔒 Finish $1 on $2 to unlock.'],
+    [/^(\d+)\/(\d+) tatak$/, '$1/$2 stamps'],
+    [/^🥇 Gintong stamp: (\d+)\/(\d+) · tapusin ang isang region sa lahat ng 5 sign para maging ginto$/, '🥇 Gold stamps: $1/$2 · finish a region on all 5 signs to make it gold'],
+    [/^(\d+) (ENE|PEB|MAR|ABR|MAY|HUN|HUL|AGO|SET|OKT|NOB|DIS) (\d+)$/, (m, d, mo, y) => `${d} ${{ ENE: 'JAN', PEB: 'FEB', ABR: 'APR', HUN: 'JUN', HUL: 'JUL', AGO: 'AUG', SET: 'SEP', OKT: 'OCT', NOB: 'NOV', DIS: 'DEC' }[mo] || mo} ${y}`],
+    [/^🪜 STEP (\d+)! Akyat!$/, '🪜 STEP $1! Climb!'],
+    [/^(\d+) COMBO! Laban! 🔥$/, '$1 COMBO! Keep going! 🔥'],
+    [/^Mali \((.+)\)$/, 'Wrong ($1)'],
+    [/^Tanong #(\d+)$/, 'Question #$1'],
+    [/^🛶 Narating mo ang$/, '🛶 You reached'],
+    [/^! Kumpleto mo na ang 18 region ng Pilipinas, mula Region I hanggang BARMM!$/, '! You have finished all 18 regions of the Philippines, from Region I to BARMM!'],
+    [/^🛂 Bagong tatak: (.+) \((\d)\/5\)( · 👑 GINTO na!)?$/, (m, a, n, g) => `🛂 New stamp: ${a} (${n}/5)${g ? ' · 👑 Now GOLD!' : ''}`],
+    [/^Bagong record$/, 'New record'], [/^sa hagdang ito!$/, 'on this ladder!'],
+    [/^🪜 Naabot mo ang$/, '🪜 You reached'],
+    [/^🔁 Naitama mo ang$/, '🔁 You got'], [/^sa mga dating mali\.$/, 'of your old mistakes right.'],
+    [/^✅ (\d+)\/(\d+) tama ·$/, '✅ $1/$2 correct ·'],
+    [/^Bagong record!$/, 'New record!'], [/^Ito na ang pinakamataas mo!$/, 'This is your best ever!'],
+    [/^(\d+) araw$/, (m, n) => n + (n === '1' ? ' day' : ' days')], [/^na sunod-sunod kang naglaro!$/, 'of playing in a row!'],
+    [/^bonus!( 🎁)?$/, 'bonus!$1'],
+    [/^📝 Mga mali mo \((\d+)\)$/, '📝 Your mistakes ($1)'],
+    [/^\+(\d+) pa$/, '+$1 more'],
+    [/^(\d+) tanong · sanayin ulit$/, '$1 questions · practice again'],
+    [/^🌏 Global rank:$/, '🌏 Global rank:'],
+    [/^🌟 Hamon ngayong araw · (.+)$/, "🌟 Today's challenge · $1"],
+    [/^(\d+)% tama$/, '$1% correct'],
+    [/^✅ Naka-save ang progress mo bilang (.+) · (.+)$/, '✅ Progress saved as $1 · $2'],
+    [/^🔒 Mabubuksan sa Level (\d+)\. Maglaro pa para sa XP!$/, '🔒 Unlocks at Level $1. Keep playing for XP!'],
+    [/^Susunod: (.+) sa Lv\.(\d+)$/, 'Next: $1 at Lv.$2'],
+    [/^🎉 Maligayang pagbabalik, (.+)! Lv\.(\d+)$/, '🎉 Welcome back, $1! Lv.$2'],
+    [/^Buburahin ang naka-save na progress ni (.+) sa Google Sheet\. Mananatili ito sa phone na ito\. Tuloy\?$/, "This deletes $1's saved progress from the Google Sheet. It stays on this phone. Continue?"],
+    [/^(.+) · 📱 (.+) · ✅ Awtomatikong nase-save tuwing tapos ng laro\.$/, '$1 · 📱 $2 · ✅ Saves automatically after every game.'],
+    [/^📱 (.+) · ✅ Awtomatikong nase-save tuwing tapos ng laro\.$/, '📱 $1 · ✅ Saves automatically after every game.'],
+    [/^Lalabas ang resulta sa (.+)$/, 'Results go to $1']
+  ];
+
+  // Words swapped inside any text (done last)
+  const TERMS = [
+    [/\bBAGUHAN\b/g, 'ROOKIE'], [/\bMASIPAG\b/g, 'HARDWORKER'], [/\bMATALINO\b/g, 'SMART'],
+    [/\bHENYO\b/g, 'GENIUS'], [/\bBAYANI\b/g, 'HERO'], [/\bALAMAT\b/g, 'LEGEND'],
+    [/\bDAGDAG\b/g, 'ADDITION'], [/\bBAWAS\b/g, 'SUBTRACTION'], [/\bPARAMI\b/g, 'MULTIPLICATION'], [/\bHATI\b/g, 'DIVISION'],
+    [/\bBigas \(1 kilo\)/g, 'Rice (1 kilo)'], [/\bPandesal\b/g, 'Pandesal'], [/\bKendi\b/g, 'Candy'],
+    [/\bChichirya\b/g, 'Chips'], [/\bItlog\b/g, 'Egg'], [/\bKape\b/g, 'Coffee'], [/\bSardinas\b/g, 'Sardines'], [/\bSabon\b/g, 'Soap'],
+    [/ tatak\b/g, ' stamps'],
+    [/\bPasyalan\b/g, 'Places to visit'], [/\bProdukto\b/g, 'Products'], [/\bPagkain\b/g, 'Food'], [/\bKasaysayan\b/g, 'History'], [/\bKalikasan\b/g, 'Nature'], [/\bKultura\b/g, 'Culture'], [/\bDAILY HAMON\b/g, 'DAILY CHALLENGE'], [/\bTAMA O MALI\b/g, 'TRUE OR FALSE'],
+    [/\bTAKDANG-ARALIN\b/g, 'HOMEWORK']
+  ];
+
+  // "Alam mo ba?" in English, same order as the regions in game.js (5 per region: + − × ÷ 🍧)
+  const FACTS = [
+    ["Vigan is one of the Philippines' UNESCO World Heritage Sites! Walking along Calle Crisologo feels like stepping back into the Spanish era, and you can even ride a kalesa (horse carriage).","The name Pangasinan comes from the word \"asin\" (salt), so it means \"place of salt\". The province is known for making salt and bagoong (fermented fish paste)!","Every April, Dagupan, Pangasinan celebrates the Bangus Festival. Thousands of milkfish are grilled on a very long grill along the road!","Bagnet (crispy fried pork belly), Vigan longganisa (sausage), and Batac empanada: these are famous Ilocos treats!","It's called Hundred Islands, but it has 123 islands and islets at high tide and 124 at low tide! You'll find it in Alaminos, Pangasinan."],
+    ["In Batanes you can see the stone houses of the Ivatan and the wide hills of Racuh a Payaman, also called \"Marlboro Country\"!","Isabela is called the \"Corn Capital of the Philippines\" because it is one of the biggest sources of corn in the country!","A scarecrow is the star of Isabela's Bambanti Festival every January! \"Bambanti\" is the Ilocano word for it, and it is turned into colorful decorations.","Pancit batil patong is Tuguegarao's famous dish: noodles topped with an egg and served with soup!","In Callao Cave in Peñablanca, Cagayan, scientists found the bones of Homo luzonensis, an ancient kind of human that was announced to the world in 2019!"],
+    ["The Ifugao carved the terraced rice fields of Banaue into the mountainside using only their hands! They are known as the Rice Terraces of the Philippine Cordilleras, a UNESCO World Heritage Site.","La Trinidad, Benguet is famous for its strawberry farms, and many of the country's vegetables come from Benguet!","Every February, Baguio holds a parade of flower-covered floats for Panagbenga, the Flower Festival!","Sagada, Mountain Province has the \"Hanging Coffins\": coffins hung on the side of a cliff!","Mt. Pulag in Benguet is the highest mountain in Luzon, and it is famous for its \"sea of clouds\" view!"],
+    ["Central Luzon is called the \"Rice Granary of the Philippines\", and Nueva Ecija is one of its biggest rice-growing provinces!","San Fernando, Pampanga is called the \"Christmas Capital of the Philippines\" because it holds the Giant Lantern Festival every December!","Pampanga is called the \"Culinary Capital of the Philippines\", and sisig came from here!","After the huge 1991 eruption, the crater of Mt. Pinatubo became a beautiful lake that tourists love to visit!","The First Philippine Republic was inaugurated at Barasoain Church in Malolos, Bulacan in 1899!"],
+    ["In Intramuros, the old walled city, you can find Fort Santiago and San Agustin Church, a UNESCO World Heritage Site!","Marikina is called the \"Shoe Capital of the Philippines\" because so many people there make shoes!","Every January 9, millions of devotees join the Traslacion (grand procession) of the Black Nazarene in Quiapo!","Pateros is known for balut (boiled duck egg) and salted eggs!","Rizal Park (Luneta) used to be called Bagumbayan. This is where Jose Rizal was executed on December 30, 1896!"],
+    ["From Tagaytay you can see Taal Volcano, one of the smallest active volcanoes in the world, sitting in the middle of Taal Lake!","Batangas is famous for kapeng barako, a strong kind of coffee!","Every May 15, Lucban, Quezon holds the Pahiyas Festival. Houses are decorated with colorful kiping (rice wafers) and harvest crops!","Buko pie is a famous pasalubong (take-home treat) from Laguna!","Philippine independence was declared in Kawit, Cavite on June 12, 1898. Jose Rizal was born in Calamba, Laguna!"],
+    ["Palawan is home to the Puerto Princesa Underground River, one of the New 7 Wonders of Nature and a UNESCO World Heritage Site!","Romblon is called the \"Marble Capital of the Philippines\" because of its plentiful, beautiful marble!","During Holy Week, Marinduque holds the Moriones Festival, where participants wear masks of Roman soldiers!","Palawan is the country's top source of cashew: about 90% of the Philippines' supply comes from here! It's a popular pasalubong (take-home treat) too.","The tamaraw, a small relative of the carabao, is found only in Mindoro and nowhere else in the world!"],
+    ["Mayon Volcano is known for its almost perfect cone shape. At its foot are the Cagsawa Ruins, the remains of a church destroyed in the 1814 eruption!","Catanduanes is one of the country's biggest sources of abaca, and pili nuts are a well-known pasalubong (take-home treat) from Bicol!","Masbate is the \"Rodeo Capital of the Philippines\"! Every April it holds the Rodeo Festival with cowboys, roping, and bull riding.","Bicol Express and laing (taro leaves) are spicy dishes cooked with chili and coconut milk!","In Donsol, Sorsogon you can see butanding (whale sharks), the biggest fish in the world!"],
+    ["Boracay's White Beach in Aklan is world-famous for its fine white sand!","In Kalibo, Aklan, people weave piña cloth from pineapple leaf fibers. It is used to make barong Tagalog!","Every January, Kalibo, Aklan holds the Ati-Atihan Festival and Iloilo holds the Dinagyang Festival!","La Paz batchoy (a hearty noodle soup) came from Iloilo, and Guimaras is famous for its very sweet mangoes!","Miag-ao Church in Iloilo is one of the Philippines' UNESCO World Heritage Sites!"],
+    ["In Talisay, Negros Occidental you can see The Ruins, an old mansion called the \"Taj Mahal of Negros\"!","Negros is called the \"Sugarbowl of the Philippines\" because of its wide sugarcane fields!","Every October, Bacolod, the \"City of Smiles\", celebrates the MassKara Festival with smiling masks!","Bacolod is famous for chicken inasal (grilled chicken) and piaya, a flat bread filled with muscovado sugar!","The Negros Island Region is the country's newest region! It was created in 2024 as the 18th region, and it includes Negros Occidental, Negros Oriental and Siquijor."],
+    ["Bohol is home to the Chocolate Hills, more than 1,200 hills that turn chocolate brown in the dry season. You can also see the tarsier there!","The guitars of Lapu-Lapu City on Mactan Island, Cebu are known around the world!","Cebu's Sinulog Festival is held every third Sunday of January in honor of the Santo Niño!","Cebu lechon (roast pig) is very well known, and Bohol is famous for kalamay (a sticky sweet) served in a coconut shell!","In Mactan, Cebu, Lapu-Lapu defeated Magellan in 1521! Magellan's Cross was also planted in Cebu."],
+    ["The San Juanico Bridge connects Samar and Leyte, and it is more than 2 kilometers long!","In Basey, Samar, people weave colorful mats from tikog, a kind of grass!","Every June, Tacloban celebrates the Pintados-Kasadyaan Festival, where dancers copy the tattoos of the ancient \"Pintados\"!","Leyte's binagol is a sweet treat made from taro and placed in a coconut shell!","Gen. Douglas MacArthur returned to Palo, Leyte in 1944, and a monument stands there, the MacArthur Landing Memorial!"],
+    ["The sand of Great Santa Cruz Island in Zamboanga is pink because of crushed red coral!","Zamboanga City is called the \"Sardines Capital of the Philippines\" because of its many sardine factories!","Every October, Zamboanga celebrates the Hermosa Festival, and you can see colorful vintas (traditional sailboats) on the sea!","Many people in Zamboanga speak Chavacano, a mix of Spanish and local languages, so the city is called \"Asia's Latin City\"!","Jose Rizal was exiled to Dapitan, Zamboanga del Norte from 1892 to 1896, and there he taught and treated patients!"],
+    ["Camiguin, the \"Island Born of Fire\", has the Sunken Cemetery and White Island. Cagayan de Oro is famous for white water rafting!","Bukidnon has wide pineapple farms, and its pineapples are even exported to other countries!","Bukidnon's Kaamulan Festival celebrates the province's seven indigenous tribes!","Camiguin is famous for sweet lanzones, and it even holds a Lanzones Festival every October!","Iligan, the \"City of Majestic Waterfalls\", has Maria Cristina Falls, which generates electricity!"],
+    ["Mt. Apo, the highest mountain in the Philippines, is near Davao City, and the Island Garden City of Samal is right next to the city!","Davao is a major source of cacao, so some famous Filipino chocolates are made here!","Every August, Davao celebrates the Kadayawan Festival to give thanks for a good harvest!","Durian is Davao's famous fruit: it smells strong but tastes sweet!","The Philippine Eagle, the national bird of the Philippines, is cared for in Davao!"],
+    ["General Santos City is the \"Tuna Capital of the Philippines\", and huge amounts of tuna pass through its fish port!","At Lake Sebu, South Cotabato you can see the Seven Falls, with a zipline running above the waterfalls!","Every September, General Santos celebrates the Tuna Festival!","The T'boli of Lake Sebu weave t'nalak, a cloth made from abaca, and South Cotabato even has a T'nalak Festival!","The name SOCCSKSARGEN is made from its places: SOuth Cotabato, Cotabato, Sultan Kudarat, SARangani and GENeral Santos!"],
+    ["Siargao is called the \"Surfing Capital of the Philippines\" because of the big waves of Cloud 9!","Caraga is rich in minerals like nickel, especially in the Surigao provinces!","The Enchanted River in Hinatuan, Surigao del Sur is known for its very clear, blue water!","The Agusan Marsh is a wide wetland that is home to many birds and crocodiles!","Ancient boats called balangays were found in Butuan! The oldest one is about 1,700 years old."],
+    ["Tawi-Tawi is the southernmost tip of the Philippines. In Simunul, Tawi-Tawi stands the Sheikh Karimul Makhdum Mosque, the oldest mosque in the country!","Tawi-Tawi is called the \"Seaweed Capital of the Philippines\" because it is the country's biggest source of seaweed!","Every December, Cotabato City celebrates the Shariff Kabunsuan Festival with a parade of colorful boats on the river!","Pastil is rice topped with shredded chicken or beef, wrapped in banana leaf. It is famous in Maguindanao!","The Maranao of Lanao del Sur are known for okir, a traditional design, and for colorful malong (woven tube skirts) and brassware!"]
+  ];
+
+  let lang = 'fil';
+  try { lang = (JSON.parse(localStorage.getItem('numbleetz.v1') || '{}').lang) || 'fil'; } catch (e) { /* private mode */ }
+
+  function tr(s) {
+    if (lang !== 'en' || !s) return s;
+    const m = /^(\s*)([\s\S]*?)(\s*)$/.exec(s);
+    const core = m[2].replace(/\s+/g, ' ');
+    if (!core) return s;
+    let r = EXACT[core];
+    if (r == null) {
+      for (const [re, rep] of RULES) if (re.test(core)) { r = core.replace(re, rep); break; }
+    }
+    if (r == null) r = core;
+    for (const [re, rep] of TERMS) r = r.replace(re, rep);
+    return r === core ? s : m[1] + r + m[3];
+  }
+
+  // Remember the Filipino for every piece of text we change, so switching back is exact
+  const orig = new WeakMap(), shown = new WeakMap();
+  const ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+  const SKIP = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, INPUT: 1 };
+  function doText(n) {
+    if (n.parentNode && SKIP[n.parentNode.nodeName]) return;
+    const v = n.nodeValue;
+    if (shown.get(n) !== v) orig.set(n, v);   // the game wrote new Filipino text
+    const want = lang === 'en' ? tr(orig.get(n)) : orig.get(n);
+    shown.set(n, want);
+    if (want !== v) n.nodeValue = want;
+  }
+  function doAttrs(e) {
+    for (const a of ATTRS) {
+      if (!e.hasAttribute(a)) continue;
+      const k = 'i18n' + a.replace('-', ''), v = e.getAttribute(a);
+      if (e.dataset[k + 'Shown'] !== v) e.dataset[k] = v;
+      const want = lang === 'en' ? tr(e.dataset[k]) : e.dataset[k];
+      e.dataset[k + 'Shown'] = want;
+      if (want !== v) e.setAttribute(a, want);
+    }
+  }
+  function walk(root) {
+    if (root.nodeType === 3) return doText(root);
+    if (root.nodeType !== 1 || SKIP[root.nodeName] && root.nodeName !== 'INPUT') return;
+    doAttrs(root);
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
+    let n;
+    while ((n = w.nextNode())) n.nodeType === 3 ? doText(n) : doAttrs(n);
+  }
+  const mo = new MutationObserver((recs) => {
+    for (const r of recs) {
+      if (r.type === 'characterData') doText(r.target);
+      else if (r.type === 'attributes') doAttrs(r.target);
+      else r.addedNodes.forEach(walk);
+    }
+  });
+
+  function apply() {
+    document.documentElement.lang = lang === 'en' ? 'en' : 'fil';
+    document.body.classList.toggle('lang-en', lang === 'en');
+    walk(document.body);
+  }
+  function start() {
+    apply();
+    mo.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS });
+  }
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+
+  window.I18N = {
+    get lang() { return lang; },
+    set(l) { lang = l === 'en' ? 'en' : 'fil'; apply(); },
+    tr,
+    fact: (i, k, fil) => (lang === 'en' && FACTS[i] && FACTS[i][k]) || fil
+  };
+})();
+
+  </script>
+  <script>
+/* ============================================================
    NUMBLEETZ — game logic
    Plain JavaScript, no libraries. Settings live in config.js.
    ============================================================ */
@@ -1220,130 +1586,130 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   const REGION_ORDER_VERSION = 3;
   const ISLANDS = [
     ["Ilocos", '🏛️', "Region I · Vigan", [
-      ["🏝️ Pasyalan", "Ang Vigan ay UNESCO World Heritage Site. Sa Calle Crisologo makikita ang mga bahay at kalye mula pa noong panahon ng Kastila, at puwedeng sumakay sa kalesa."],
-      ["🛍️ Produkto", "Ang pangalang Pangasinan ay galing sa salitang \"asin\", dahil kilala ito sa paggawa ng asin at bagoong."],
-      ["🎉 Festival", "Tuwing Abril hanggang Mayo, ipinagdiriwang ng Dagupan, Pangasinan ang Bangus Festival na may mahabang ihawan ng bangus."],
-      ["🍲 Pagkain", "Kilala ang Ilocos sa bagnet, Vigan longganisa, at empanada ng Batac."],
-      ["🏝️ Pasyalan", "Sa Alaminos, Pangasinan makikita ang Hundred Islands National Park na may mahigit 100 maliliit na isla."]
+      ["🏝️ Pasyalan", "Ang Vigan ay isa sa mga UNESCO World Heritage Site ng Pilipinas! Sa Calle Crisologo, parang bumalik ka sa panahon ng Kastila, at puwede ka pang sumakay sa kalesa."],
+      ["🛍️ Produkto", "Ang pangalan ng Pangasinan ay galing sa salitang \"asin\", kaya ang ibig sabihin nito ay \"lugar ng asin\". Kilala ito sa paggawa ng asin at bagoong!"],
+      ["🎉 Festival", "Tuwing Abril, ipinagdiriwang ng Dagupan, Pangasinan ang Bangus Festival. Libu-libong bangus ang iniihaw sa napakahabang ihawan sa kalsada!"],
+      ["🍲 Pagkain", "Bagnet, Vigan longganisa, at empanada ng Batac: ito ang mga paboritong pagkain ng Ilocos!"],
+      ["🏝️ Pasyalan", "Hundred Islands ang pangalan, pero 123 ang mga isla at islet nito kapag high tide, at 124 kapag low tide! Matatagpuan ito sa Alaminos, Pangasinan."]
     ]],
     ["Cagayan Valley", '🌊', "Region II · Batanes", [
-      ["🏝️ Pasyalan", "Sa Batanes makikita ang mga bahay na bato ng mga Ivatan at ang malalawak na burol ng Racuh a Payaman, na tinatawag ding \"Marlboro Country\"."],
-      ["🛍️ Produkto", "Ang Isabela ay isa sa pinakamalalaking pinagkukunan ng mais sa buong bansa."],
-      ["🎉 Festival", "Tuwing Enero, ipinagdiriwang sa Isabela ang Bambanti Festival. Ang bambanti ay panakot-ibon na ginagawang makukulay na palamuti."],
-      ["🍲 Pagkain", "Sikat sa Tuguegarao ang pancit batil patong: pancit na may itlog sa ibabaw at may kasamang sabaw."],
-      ["📜 Kasaysayan", "Sa Callao Cave sa Peñablanca, Cagayan natagpuan ang mga buto ng Homo luzonensis, isang sinaunang uri ng tao."]
+      ["🏝️ Pasyalan", "Sa Batanes makikita ang mga bahay na bato ng mga Ivatan at ang malalawak na burol ng Racuh a Payaman, na tinatawag ding \"Marlboro Country\"!"],
+      ["🛍️ Produkto", "Tinaguriang \"Corn Capital of the Philippines\" ang Isabela dahil isa ito sa pinakamalalaking pinagkukunan ng mais sa bansa!"],
+      ["🎉 Festival", "Panakot-ibon ang bida sa Bambanti Festival ng Isabela tuwing Enero! \"Bambanti\" ang tawag dito sa Ilocano, at ginagawa itong makukulay na palamuti."],
+      ["🍲 Pagkain", "Pancit batil patong ang sikat na pagkain sa Tuguegarao: pancit na may itlog sa ibabaw at may kasamang sabaw!"],
+      ["📜 Kasaysayan", "Sa Callao Cave sa Peñablanca, Cagayan, natagpuan ang mga buto ng Homo luzonensis, isang sinaunang uri ng tao na inanunsyo ng mga siyentipiko noong 2019!"]
     ]],
     ["Cordillera (CAR)", '⛰️', "CAR · Banaue Rice Terraces", [
-      ["📜 Kasaysayan", "Ang Banaue Rice Terraces ay inukit ng mga Ifugao sa gilid ng bundok gamit lang ang kamay. Ang Rice Terraces ng Ifugao ay UNESCO World Heritage Site."],
-      ["🛍️ Produkto", "Sa La Trinidad, Benguet sikat ang mga strawberry farm, at sa Benguet nanggagaling ang maraming gulay ng bansa."],
-      ["🎉 Festival", "Tuwing Pebrero, ipinagdiriwang sa Baguio ang Panagbenga, ang Flower Festival na may parada ng mga float na puno ng bulaklak."],
-      ["🏝️ Pasyalan", "Sa Sagada, Mountain Province makikita ang \"Hanging Coffins\", mga kabaong na isinasabit sa gilid ng bangin."],
-      ["🌿 Kalikasan", "Ang Mt. Pulag sa Benguet ang pinakamataas na bundok sa Luzon at sikat sa tanawing \"sea of clouds\"."]
+      ["📜 Kasaysayan", "Inukit ng mga Ifugao sa gilid ng bundok, gamit lang ang kamay, ang hagdan-hagdang palayan ng Banaue! Kilala ang mga ito bilang Rice Terraces of the Philippine Cordilleras, isang UNESCO World Heritage Site."],
+      ["🛍️ Produkto", "Sikat ang mga strawberry farm sa La Trinidad, Benguet, at sa Benguet nanggagaling ang maraming gulay ng bansa!"],
+      ["🎉 Festival", "Tuwing Pebrero, may parada ng mga float na puno ng bulaklak sa Baguio para sa Panagbenga, ang Flower Festival!"],
+      ["🏝️ Pasyalan", "Sa Sagada, Mountain Province, may \"Hanging Coffins\": mga kabaong na isinasabit sa gilid ng bangin!"],
+      ["🌿 Kalikasan", "Ang Mt. Pulag sa Benguet ang pinakamataas na bundok sa Luzon, at sikat sa tanawing \"sea of clouds\"!"]
     ]],
     ["Central Luzon", '🌾', "Region III · Rice Granary", [
-      ["🛍️ Produkto", "Tinatawag ang Central Luzon na \"Rice Granary of the Philippines\", at ang Nueva Ecija ang isa sa pinakamalalaking taniman ng palay."],
-      ["🎉 Festival", "Sa San Fernando, Pampanga ginaganap ang Giant Lantern Festival tuwing Disyembre, kaya tinatawag itong \"Christmas Capital of the Philippines\"."],
-      ["🍲 Pagkain", "Ang Pampanga ay tinatawag na \"Culinary Capital of the Philippines\". Dito nagmula ang sisig!"],
-      ["🏝️ Pasyalan", "Ang bunganga ng Bulkang Pinatubo ay isa nang magandang lawa na dinarayo ng mga turista."],
-      ["📜 Kasaysayan", "Sa Barasoain Church sa Malolos, Bulacan pinasinayaan ang Unang Republika ng Pilipinas noong 1899."]
+      ["🛍️ Produkto", "Tinaguriang \"Rice Granary of the Philippines\" ang Central Luzon, at ang Nueva Ecija ang isa sa pinakamalalaking taniman ng palay!"],
+      ["🎉 Festival", "Tinatawag na \"Christmas Capital of the Philippines\" ang San Fernando, Pampanga dahil dito ginaganap ang Giant Lantern Festival tuwing Disyembre!"],
+      ["🍲 Pagkain", "Tinatawag na \"Culinary Capital of the Philippines\" ang Pampanga, at dito nagmula ang sisig!"],
+      ["🏝️ Pasyalan", "Matapos ang malakas na pagsabog noong 1991, naging magandang lawa ang bunganga ng Bulkang Pinatubo na dinarayo ng mga turista!"],
+      ["📜 Kasaysayan", "Sa Barasoain Church sa Malolos, Bulacan pinasinayaan ang Unang Republika ng Pilipinas noong 1899!"]
     ]],
     ["Metro Manila (NCR)", '🌆', "NCR · Intramuros", [
-      ["🏝️ Pasyalan", "Sa Intramuros, ang lumang lungsod na napapaligiran ng pader, makikita ang Fort Santiago at ang San Agustin Church, isang UNESCO World Heritage Site."],
-      ["🛍️ Produkto", "Ang Marikina ay tinatawag na \"Shoe Capital of the Philippines\" dahil sa dami ng gumagawa ng sapatos."],
-      ["🎉 Festival", "Tuwing Enero 9, ginaganap sa Quiapo ang Traslacion ng Itim na Nazareno, na dinadaluhan ng milyun-milyong deboto."],
-      ["🍲 Pagkain", "Kilala ang Pateros sa balut at itlog na maalat."],
-      ["📜 Kasaysayan", "Sa Bagumbayan, na ngayon ay Rizal Park (Luneta), binaril si Jose Rizal noong Disyembre 30, 1896."]
+      ["🏝️ Pasyalan", "Sa Intramuros, ang lumang lungsod na napapaligiran ng pader, makikita ang Fort Santiago at ang San Agustin Church, isang UNESCO World Heritage Site!"],
+      ["🛍️ Produkto", "Tinatawag na \"Shoe Capital of the Philippines\" ang Marikina dahil sa dami ng gumagawa ng sapatos doon!"],
+      ["🎉 Festival", "Tuwing Enero 9, milyun-milyong deboto ang sumasama sa Traslacion ng Itim na Nazareno sa Quiapo!"],
+      ["🍲 Pagkain", "Kilala ang Pateros sa balut at itlog na maalat!"],
+      ["📜 Kasaysayan", "Dating tinatawag na Bagumbayan ang Rizal Park (Luneta). Dito binaril si Jose Rizal noong Disyembre 30, 1896!"]
     ]],
     ["CALABARZON", '🌋', "Region IV-A · Taal Volcano", [
-      ["🏝️ Pasyalan", "Mula sa Tagaytay, tanaw ang Bulkang Taal, isa sa pinakamaliliit na aktibong bulkan sa mundo, na nasa gitna ng Lawa ng Taal."],
-      ["🛍️ Produkto", "Sikat ang Batangas sa kapeng barako, isang matapang na klase ng kape."],
-      ["🎉 Festival", "Tuwing Mayo 15, ginaganap sa Lucban, Quezon ang Pahiyas Festival. Pinapalamutian ang mga bahay ng makukulay na kiping at ani."],
-      ["🍲 Pagkain", "Sikat na pasalubong mula sa Laguna ang buko pie."],
-      ["📜 Kasaysayan", "Sa Kawit, Cavite idineklara ang kalayaan ng Pilipinas noong Hunyo 12, 1898. Sa Calamba, Laguna naman ipinanganak si Jose Rizal."]
+      ["🏝️ Pasyalan", "Mula sa Tagaytay, tanaw ang Bulkang Taal, isa sa pinakamaliliit na aktibong bulkan sa mundo, na nasa gitna ng Lawa ng Taal!"],
+      ["🛍️ Produkto", "Sikat ang Batangas sa kapeng barako, isang matapang na klase ng kape!"],
+      ["🎉 Festival", "Tuwing Mayo 15, ginaganap sa Lucban, Quezon ang Pahiyas Festival. Pinapalamutian ng makukulay na kiping at ani ang mga bahay!"],
+      ["🍲 Pagkain", "Sikat na pasalubong mula sa Laguna ang buko pie!"],
+      ["📜 Kasaysayan", "Sa Kawit, Cavite idineklara ang kalayaan ng Pilipinas noong Hunyo 12, 1898. Sa Calamba, Laguna naman ipinanganak si Jose Rizal!"]
     ]],
     ["MIMAROPA", '🐠', "Region IV-B · Palawan", [
-      ["🏝️ Pasyalan", "Nasa Palawan ang Puerto Princesa Underground River, isa sa New 7 Wonders of Nature at UNESCO World Heritage Site."],
-      ["🛍️ Produkto", "Ang Romblon ay tinatawag na \"Marble Capital of the Philippines\" dahil sa dami at ganda ng marmol nito."],
-      ["🎉 Festival", "Tuwing Semana Santa, ginaganap sa Marinduque ang Moriones Festival, kung saan nagsusuot ng maskara ng sundalong Romano."],
-      ["🛍️ Produkto", "Malaking pinagkukunan ng kasoy (cashew) sa bansa ang Palawan. Sikat itong pasalubong!"],
-      ["🌿 Kalikasan", "Sa Mindoro lang sa buong mundo matatagpuan ang tamaraw, isang maliit na kamag-anak ng kalabaw."]
+      ["🏝️ Pasyalan", "Nasa Palawan ang Puerto Princesa Underground River, isa sa New 7 Wonders of Nature at UNESCO World Heritage Site!"],
+      ["🛍️ Produkto", "Tinatawag na \"Marble Capital of the Philippines\" ang Romblon dahil sa dami at ganda ng marmol nito!"],
+      ["🎉 Festival", "Tuwing Semana Santa, ginaganap sa Marinduque ang Moriones Festival, kung saan nagsusuot ng maskara ng sundalong Romano ang mga kalahok!"],
+      ["🛍️ Produkto", "Palawan ang pinakamalaking pinagkukunan ng kasoy (cashew) sa bansa: halos 90% ng supply ng Pilipinas ay galing dito! Sikat din itong pasalubong."],
+      ["🌿 Kalikasan", "Sa Mindoro lang sa buong mundo matatagpuan ang tamaraw, isang maliit na kamag-anak ng kalabaw!"]
     ]],
     ["Bicol", '🌶️', "Region V · Mayon Volcano", [
-      ["🏝️ Pasyalan", "Kilala ang Bulkang Mayon sa halos perpektong hugis-apa (cone). Sa paanan nito ang Cagsawa Ruins, labi ng simbahang nasira sa pagputok noong 1814."],
-      ["🛍️ Produkto", "Ang Catanduanes ay isa sa pinakamalalaking pinagkukunan ng abaka sa bansa. Ang pili nut naman ay kilalang pasalubong ng Bicol."],
-      ["🎉 Festival", "Ang Masbate ay \"Rodeo Capital of the Philippines\". Tuwing taon ay may Rodeo Festival na may mga cowboy at karera ng baka."],
-      ["🍲 Pagkain", "Ang Bicol Express at laing ay maaanghang na ulam na gawa sa sili at gata."],
-      ["🌿 Kalikasan", "Sa Donsol, Sorsogon makikita ang mga butanding (whale shark), ang pinakamalaking isda sa mundo."]
+      ["🏝️ Pasyalan", "Kilala ang Bulkang Mayon sa halos perpektong hugis-apa (cone). Sa paanan nito ang Cagsawa Ruins, labi ng simbahang nasira sa pagputok noong 1814!"],
+      ["🛍️ Produkto", "Isa ang Catanduanes sa pinakamalalaking pinagkukunan ng abaka sa bansa, at kilalang pasalubong ng Bicol ang pili nut!"],
+      ["🎉 Festival", "Ang Masbate ay \"Rodeo Capital of the Philippines\"! Tuwing Abril, may Rodeo Festival na may mga cowboy, roping, at bull riding."],
+      ["🍲 Pagkain", "Maaanghang na ulam na gawa sa sili at gata ang Bicol Express at laing!"],
+      ["🌿 Kalikasan", "Sa Donsol, Sorsogon makikita ang butanding (whale shark), ang pinakamalaking isda sa mundo!"]
     ]],
     ["Western Visayas", '🏖️', "Region VI · Boracay", [
-      ["🏝️ Pasyalan", "Sikat sa buong mundo ang White Beach ng Boracay, Aklan dahil sa pino at puting buhangin nito."],
-      ["🛍️ Produkto", "Sa Kalibo, Aklan hinahabi ang telang piña, na gawa sa hibla ng dahon ng pinya. Ito ang ginagamit sa mga barong Tagalog."],
-      ["🎉 Festival", "Tuwing Enero, ginaganap ang Ati-Atihan Festival ng Kalibo, Aklan at ang Dinagyang Festival ng Iloilo."],
-      ["🍲 Pagkain", "Sa Iloilo nagmula ang La Paz batchoy. Ang Guimaras naman ay sikat sa napakatatamis nitong mangga."],
-      ["📜 Kasaysayan", "Sa Miag-ao, Iloilo makikita ang Miag-ao Church, isang UNESCO World Heritage Site."]
+      ["🏝️ Pasyalan", "Sikat sa buong mundo ang White Beach ng Boracay, Aklan dahil sa pino at puting buhangin nito!"],
+      ["🛍️ Produkto", "Sa Kalibo, Aklan hinahabi ang telang piña, na gawa sa hibla ng dahon ng pinya. Ginagamit ito sa mga barong Tagalog!"],
+      ["🎉 Festival", "Tuwing Enero, ginaganap ang Ati-Atihan Festival ng Kalibo, Aklan at ang Dinagyang Festival ng Iloilo!"],
+      ["🍲 Pagkain", "Sa Iloilo nagmula ang La Paz batchoy, at sikat ang Guimaras sa napakatatamis nitong mangga!"],
+      ["📜 Kasaysayan", "Isa ang Miag-ao Church sa Iloilo sa mga UNESCO World Heritage Site ng Pilipinas!"]
     ]],
     ["Negros Island", '🎭', "NIR · Bacolod", [
-      ["🏝️ Pasyalan", "Sa Talisay, Negros Occidental makikita ang The Ruins, isang lumang mansyon na tinatawag na \"Taj Mahal ng Negros\"."],
-      ["🛍️ Produkto", "Tinatawag ang Negros na \"Sugarbowl of the Philippines\" dahil sa malalawak na taniman ng tubó."],
-      ["🎉 Festival", "Tuwing Oktubre, ipinagdiriwang sa Bacolod, ang \"City of Smiles\", ang MassKara Festival na may mga nakangiting maskara."],
-      ["🍲 Pagkain", "Sikat sa Bacolod ang chicken inasal at ang piaya, isang flat na tinapay na may palamang muscovado."],
-      ["📜 Kasaysayan", "Ang Negros Island Region ang pinakabagong rehiyon ng bansa (2024). Kasama rito ang Negros Occidental, Negros Oriental at Siquijor."]
+      ["🏝️ Pasyalan", "Sa Talisay, Negros Occidental makikita ang The Ruins, isang lumang mansyon na tinatawag na \"Taj Mahal ng Negros\"!"],
+      ["🛍️ Produkto", "Tinatawag na \"Sugarbowl of the Philippines\" ang Negros dahil sa malalawak na taniman ng tubó!"],
+      ["🎉 Festival", "Tuwing Oktubre, ipinagdiriwang sa Bacolod, ang \"City of Smiles\", ang MassKara Festival na may mga nakangiting maskara!"],
+      ["🍲 Pagkain", "Sikat sa Bacolod ang chicken inasal at ang piaya, isang flat na tinapay na may palamang muscovado!"],
+      ["📜 Kasaysayan", "Ang Negros Island Region ang pinakabagong rehiyon ng bansa! Itinatag ito noong 2024 bilang ika-18 rehiyon, at kasama rito ang Negros Occidental, Negros Oriental at Siquijor."]
     ]],
     ["Central Visayas", '🍫', "Region VII · Cebu at Bohol", [
-      ["🏝️ Pasyalan", "Nasa Bohol ang Chocolate Hills, mahigit 1,200 na burol na nagiging kulay tsokolate tuwing tag-init. Dito rin makikita ang tarsier."],
-      ["🛍️ Produkto", "Sikat sa buong mundo ang mga gitarang gawa sa Mactan, Cebu."],
-      ["🎉 Festival", "Ang Sinulog Festival ng Cebu ay ginaganap tuwing ikatlong Linggo ng Enero bilang parangal sa Santo Niño."],
-      ["🍲 Pagkain", "Kilalang-kilala ang lechon ng Cebu. Sa Bohol naman sikat ang kalamay na nakalagay sa bao ng niyog."],
-      ["📜 Kasaysayan", "Sa Mactan, Cebu natalo ni Lapu-Lapu si Magellan noong 1521. Itinanim din sa Cebu ang Krus ni Magellan."]
+      ["🏝️ Pasyalan", "Nasa Bohol ang Chocolate Hills, mahigit 1,200 na burol na nagiging kulay tsokolate tuwing tag-init. Dito rin makikita ang tarsier!"],
+      ["🛍️ Produkto", "Sa Lapu-Lapu City sa Mactan, Cebu ginagawa ang mga gitarang kilala sa buong mundo!"],
+      ["🎉 Festival", "Ginaganap ang Sinulog Festival ng Cebu tuwing ikatlong Linggo ng Enero bilang parangal sa Santo Niño!"],
+      ["🍲 Pagkain", "Kilalang-kilala ang lechon ng Cebu, at sikat naman sa Bohol ang kalamay na nakalagay sa bao ng niyog!"],
+      ["📜 Kasaysayan", "Sa Mactan, Cebu natalo ni Lapu-Lapu si Magellan noong 1521! Itinanim din sa Cebu ang Krus ni Magellan."]
     ]],
     ["Eastern Visayas", '🌉', "Region VIII · San Juanico Bridge", [
-      ["🏝️ Pasyalan", "Ang San Juanico Bridge ang nagdudugtong sa Samar at Leyte. Mahigit 2 kilometro ang haba nito."],
-      ["🛍️ Produkto", "Sa Basey, Samar hinahabi ang makukulay na banig mula sa tikog, isang uri ng damo."],
-      ["🎉 Festival", "Tuwing Hunyo, ipinagdiriwang sa Tacloban ang Pintados-Kasadyaan Festival. Ginagaya ng mga mananayaw ang mga tattoo ng sinaunang \"Pintados\"."],
-      ["🍲 Pagkain", "Ang binagol ng Leyte ay matamis na kakanin na gawa sa gabi at inilalagay sa bao ng niyog."],
-      ["📜 Kasaysayan", "Sa Palo, Leyte bumalik si Gen. Douglas MacArthur noong 1944. May monumento roon, ang MacArthur Landing Memorial."]
+      ["🏝️ Pasyalan", "Ang San Juanico Bridge ang nagdudugtong sa Samar at Leyte, at mahigit 2 kilometro ang haba nito!"],
+      ["🛍️ Produkto", "Sa Basey, Samar hinahabi ang makukulay na banig mula sa tikog, isang uri ng damo!"],
+      ["🎉 Festival", "Tuwing Hunyo, ipinagdiriwang sa Tacloban ang Pintados-Kasadyaan Festival, kung saan ginagaya ng mga mananayaw ang mga tattoo ng sinaunang \"Pintados\"!"],
+      ["🍲 Pagkain", "Gawa sa gabi at inilalagay sa bao ng niyog ang binagol ng Leyte, isang matamis na kakanin!"],
+      ["📜 Kasaysayan", "Sa Palo, Leyte bumalik si Gen. Douglas MacArthur noong 1944, at may monumento roon, ang MacArthur Landing Memorial!"]
     ]],
     ["Zamboanga Peninsula", '⛵', "Region IX · Vinta", [
-      ["🏝️ Pasyalan", "Kulay-rosas ang buhangin ng Great Santa Cruz Island sa Zamboanga dahil sa durog na pulang korales."],
-      ["🛍️ Produkto", "Ang Zamboanga City ay tinatawag na \"Sardines Capital of the Philippines\" dahil sa dami ng pagawaan ng sardinas."],
-      ["🎉 Festival", "Tuwing Oktubre, ipinagdiriwang ang Zamboanga Hermosa Festival. Makikita ang makukulay na vinta sa dagat."],
-      ["🎨 Kultura", "Chavacano ang wika ng maraming taga-Zamboanga, halo ng Espanyol at mga katutubong wika, kaya tinatawag itong \"Asia's Latin City\"."],
-      ["📜 Kasaysayan", "Sa Dapitan, Zamboanga del Norte ipinatapon si Jose Rizal mula 1892 hanggang 1896. Doon siya nagturo at nanggamot."]
+      ["🏝️ Pasyalan", "Kulay-rosas ang buhangin ng Great Santa Cruz Island sa Zamboanga dahil sa durog na pulang korales!"],
+      ["🛍️ Produkto", "Tinatawag na \"Sardines Capital of the Philippines\" ang Zamboanga City dahil sa dami ng pagawaan ng sardinas!"],
+      ["🎉 Festival", "Tuwing Oktubre, ipinagdiriwang ang Zamboanga Hermosa Festival, at makikita sa dagat ang makukulay na vinta!"],
+      ["🎨 Kultura", "Chavacano ang wika ng maraming taga-Zamboanga, halo ng Espanyol at mga katutubong wika, kaya tinatawag ang lungsod na \"Asia's Latin City\"!"],
+      ["📜 Kasaysayan", "Sa Dapitan, Zamboanga del Norte ipinatapon si Jose Rizal mula 1892 hanggang 1896, at doon siya nagturo at nanggamot!"]
     ]],
     ["Northern Mindanao", '🍍', "Region X · Bukidnon at Camiguin", [
-      ["🏝️ Pasyalan", "Sa Camiguin, ang \"Island Born of Fire\", makikita ang Sunken Cemetery at ang White Island. Sikat naman sa Cagayan de Oro ang white water rafting."],
-      ["🛍️ Produkto", "Sa Bukidnon makikita ang malalawak na taniman ng pinya na iniluluwas pa sa ibang bansa."],
-      ["🎉 Festival", "Ang Kaamulan Festival ng Bukidnon ay pagdiriwang ng pitong katutubong tribu ng probinsya."],
-      ["🍲 Pagkain", "Sikat ang Camiguin sa matatamis na lanzones, at may Lanzones Festival pa sila tuwing Oktubre."],
-      ["🌿 Kalikasan", "Sa Iligan, ang \"City of Majestic Waterfalls\", makikita ang Maria Cristina Falls na pinagkukunan ng kuryente."]
+      ["🏝️ Pasyalan", "Sa Camiguin, ang \"Island Born of Fire\", makikita ang Sunken Cemetery at ang White Island. Sikat naman sa Cagayan de Oro ang white water rafting!"],
+      ["🛍️ Produkto", "Sa Bukidnon makikita ang malalawak na taniman ng pinya na iniluluwas pa sa ibang bansa!"],
+      ["🎉 Festival", "Pagdiriwang ng pitong katutubong tribu ng Bukidnon ang Kaamulan Festival!"],
+      ["🍲 Pagkain", "Sikat ang Camiguin sa matatamis na lanzones, at may Lanzones Festival pa sila tuwing Oktubre!"],
+      ["🌿 Kalikasan", "Sa Iligan, ang \"City of Majestic Waterfalls\", makikita ang Maria Cristina Falls na pinagkukunan ng kuryente!"]
     ]],
     ["Davao Region", '🦅', "Region XI · Mt. Apo", [
-      ["🏝️ Pasyalan", "Malapit sa Davao City ang Mt. Apo, ang pinakamataas na bundok sa Pilipinas. Katabi rin ng lungsod ang Island Garden City of Samal."],
-      ["🛍️ Produkto", "Malaking pinagkukunan ng cacao ang Davao, kaya dito gawa ang ilang sikat na Filipino chocolate."],
-      ["🎉 Festival", "Tuwing Agosto, ipinagdiriwang ang Kadayawan Festival ng Davao bilang pasasalamat sa masaganang ani."],
+      ["🏝️ Pasyalan", "Malapit sa Davao City ang Mt. Apo, ang pinakamataas na bundok sa Pilipinas, at katabi rin ng lungsod ang Island Garden City of Samal!"],
+      ["🛍️ Produkto", "Malaking pinagkukunan ng cacao ang Davao, kaya dito ginagawa ang ilang sikat na Filipino chocolate!"],
+      ["🎉 Festival", "Tuwing Agosto, ipinagdiriwang ang Kadayawan Festival ng Davao bilang pasasalamat sa masaganang ani!"],
       ["🍲 Pagkain", "Durian ang sikat na prutas ng Davao: matapang ang amoy pero matamis ang lasa!"],
-      ["🌿 Kalikasan", "Sa Davao inaalagaan ang Philippine Eagle, ang pambansang ibon ng Pilipinas."]
+      ["🌿 Kalikasan", "Sa Davao inaalagaan ang Philippine Eagle, ang pambansang ibon ng Pilipinas!"]
     ]],
     ["SOCCSKSARGEN", '🐟', "Region XII · General Santos", [
-      ["🛍️ Produkto", "Ang General Santos City ay \"Tuna Capital of the Philippines\". Dumadaan sa fish port nito ang napakaraming tuna."],
-      ["🏝️ Pasyalan", "Sa Lake Sebu, South Cotabato makikita ang Seven Falls, na may zipline sa ibabaw ng mga talon."],
-      ["🎉 Festival", "Tuwing Setyembre, ipinagdiriwang ng General Santos ang Tuna Festival."],
-      ["🎨 Kultura", "Hinahabi ng mga T'boli ng Lake Sebu ang t'nalak, telang gawa sa abaka. May T'nalak Festival pa ang South Cotabato!"],
-      ["📜 Kasaysayan", "Ang SOCCSKSARGEN ay galing sa SOuth Cotabato, Cotabato, Sultan Kudarat, SARangani at GENeral Santos."]
+      ["🛍️ Produkto", "Ang General Santos City ay \"Tuna Capital of the Philippines\", at napakaraming tuna ang dumadaan sa fish port nito!"],
+      ["🏝️ Pasyalan", "Sa Lake Sebu, South Cotabato makikita ang Seven Falls, na may zipline sa ibabaw ng mga talon!"],
+      ["🎉 Festival", "Tuwing Setyembre, ipinagdiriwang ng General Santos ang Tuna Festival!"],
+      ["🎨 Kultura", "Hinahabi ng mga T'boli ng Lake Sebu ang t'nalak, telang gawa sa abaka, at may T'nalak Festival pa ang South Cotabato!"],
+      ["📜 Kasaysayan", "Hango sa mga lugar ang pangalang SOCCSKSARGEN: SOuth Cotabato, Cotabato, Sultan Kudarat, SARangani at GENeral Santos!"]
     ]],
     ["Caraga", '🏄', "Region XIII · Siargao", [
-      ["🏝️ Pasyalan", "Ang Siargao ay tinaguriang \"Surfing Capital of the Philippines\" dahil sa malalaking alon ng Cloud 9."],
-      ["🛍️ Produkto", "Mayaman ang Caraga sa mineral gaya ng nickel, lalo na sa mga probinsya ng Surigao."],
-      ["🏝️ Pasyalan", "Kilala ang Enchanted River sa Hinatuan, Surigao del Sur sa napakalinaw at asul nitong tubig."],
-      ["🌿 Kalikasan", "Ang Agusan Marsh ay malawak na latian na tirahan ng maraming ibon at buwaya."],
-      ["📜 Kasaysayan", "Sa Butuan natagpuan ang mga balangay, mga sinaunang bangka na mahigit 1,000 taon na ang edad."]
+      ["🏝️ Pasyalan", "Tinaguriang \"Surfing Capital of the Philippines\" ang Siargao dahil sa malalaking alon ng Cloud 9!"],
+      ["🛍️ Produkto", "Mayaman ang Caraga sa mineral gaya ng nickel, lalo na sa mga probinsya ng Surigao!"],
+      ["🏝️ Pasyalan", "Kilala ang Enchanted River sa Hinatuan, Surigao del Sur sa napakalinaw at asul nitong tubig!"],
+      ["🌿 Kalikasan", "Ang Agusan Marsh ay malawak na latian na tirahan ng maraming ibon at buwaya!"],
+      ["📜 Kasaysayan", "Sa Butuan natagpuan ang mga balangay, mga sinaunang bangka! Ang pinakamatanda ay mga 1,700 taon na."]
     ]],
     ["BARMM", '🛶', "BARMM · Tawi-Tawi", [
-      ["📜 Kasaysayan", "Nasa Tawi-Tawi ang pinakatimog na dulo ng Pilipinas. Sa Simunul, Tawi-Tawi itinayo ang Sheikh Karimul Makhdum Mosque, ang pinakaunang mosque sa bansa."],
-      ["🛍️ Produkto", "Ang Tawi-Tawi ay isa sa pinakamalalaking pinagkukunan ng seaweed sa Pilipinas."],
-      ["🎉 Festival", "Tuwing Disyembre, ipinagdiriwang sa Maguindanao ang Shariff Kabunsuan Festival na may parada ng mga bangka sa ilog."],
-      ["🍲 Pagkain", "Ang pastil ay kanin na may ginutay na manok o baka, binalot sa dahon ng saging. Sikat ito sa Maguindanao."],
-      ["🎨 Kultura", "Kilala ang mga Maranao ng Lanao del Sur sa okir, isang tradisyonal na disenyo, at sa makukulay na malong at gawang tanso (brass)."]
+      ["📜 Kasaysayan", "Nasa Tawi-Tawi ang pinakatimog na dulo ng Pilipinas. Sa Simunul, Tawi-Tawi itinayo ang Sheikh Karimul Makhdum Mosque, ang pinakaunang mosque sa bansa!"],
+      ["🛍️ Produkto", "Tinaguriang \"Seaweed Capital of the Philippines\" ang Tawi-Tawi dahil ito ang pinakamalaking pinagkukunan ng seaweed sa bansa!"],
+      ["🎉 Festival", "Tuwing Disyembre, ipinagdiriwang sa Cotabato City ang Shariff Kabunsuan Festival na may parada ng makukulay na bangka sa ilog!"],
+      ["🍲 Pagkain", "Ang pastil ay kanin na may ginutay na manok o baka, binalot sa dahon ng saging. Sikat ito sa Maguindanao!"],
+      ["🎨 Kultura", "Kilala ang mga Maranao ng Lanao del Sur sa okir, isang tradisyonal na disenyo, at sa makukulay na malong at gawang tanso (brass)!"]
     ]]
   ];
   const RANKS = [
@@ -2149,7 +2515,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     // Wrong choices: regions close by on the map, so it takes real geography to answer
     const near = ISLANDS.map((_, j) => j).filter((j) => j !== ri).sort((a, b) => Math.abs(a - ri) - Math.abs(b - ri)).slice(0, 5);
     const opts = shuffle([ri].concat(shuffle(near, Math.random).slice(0, 2)), Math.random);
-    const [label, text] = ISLANDS[ri][3][fi];
+    const [label, fil] = ISLANDS[ri][3][fi];
+    const text = I18N.fact(ri, fi, fil);
     box.appendChild(el('div', 'quiz-head', '🧠 BONUS QUIZ · +30 XP'));
     box.appendChild(el('div', 'quiz-q', 'Saang region ito?'));
     box.appendChild(el('div', 'quiz-fact', `${label}: ${maskRegion(text, ISLANDS[ri][0])}`));
@@ -2303,7 +2670,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         const box = el('div', 'passport-facts');
         box.appendChild(el('div', 'pf-head', `${em} ${name} · ${got.length}/5 tatak`));
         Object.entries(OPS).forEach(([op, o], k) => {
-          const [label, text] = ISLANDS[i][3][k];
+          const [label, fil] = ISLANDS[i][3][k];
+          const text = I18N.fact(i, k, fil);
           const row = el('div', 'pf-row' + (got.includes(op) ? '' : ' locked'));
           row.appendChild(el('b', null, `${o.sym} ${label}`));
           row.appendChild(el('span', null, got.includes(op) ? text : `🔒 Tapusin ang ${name} sa ${o.name} para mabuksan.`));
@@ -2833,7 +3201,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
   function quitGame() {
     if (!G || G.over) return;
-    if (!confirm('Aalis ka na? Hindi mase-save ang score mo.')) return;
+    if (!confirm(I18N.tr('Aalis ka na? Hindi mase-save ang score mo.'))) return;
     G.over = true;
     backToOrigin();
   }
@@ -2870,7 +3238,9 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       }
       if (mode === 'classic') {
         const facts = ISLANDS[G.opts.level - 1][3];
-        const [label, text] = facts[Object.keys(OPS).indexOf(G.op)] || facts[0];
+        const fi = facts[Object.keys(OPS).indexOf(G.op)] ? Object.keys(OPS).indexOf(G.op) : 0;
+        const [label, fil] = facts[fi];
+        const text = I18N.fact(G.opts.level - 1, fi, fil);
         const isl = ISLANDS[G.opts.level - 1];
         if (failed) msg += `<div class="fact"><div class="fact-head"><b>📚 Alam mo ba?</b><span>${label}</span></div>${text}</div>`;
         else {
@@ -3212,7 +3582,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     const name = cleanName($('#cloud-name').value), phone = cleanPhone($('#cloud-pin2').value);
     if (!name || !phone) { toast('Ilagay ang pangalan at phone number mo 🙂'); return; }
     if (!API) { toast('📴 Walang leaderboard link, kaya hindi pa puwede ang save code.'); return; }
-    if (P.xp > 0 && !confirm('Papalitan nito ang progress sa phone na ito. Tuloy?')) return;
+    if (P.xp > 0 && !confirm(I18N.tr('Papalitan nito ang progress sa phone na ito. Tuloy?'))) return;
     try {
       const j = await postScore({ action: 'load', name, phone });
       if (!j.ok) throw new Error(j.error);
@@ -3233,7 +3603,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     const name = mine ? c.name : cleanName($('#cloud-name').value);
     const phone = mine ? c.phone : cleanPhone($('#cloud-pin2').value);
     if (!name || !phone) { toast('Ilagay sa ibaba ang pangalan at number na buburahin 🙂', 3000); return; }
-    if (!confirm(`Buburahin ang naka-save na progress ni ${name} sa Google Sheet. Mananatili ito sa phone na ito. Tuloy?`)) return;
+    if (!confirm(I18N.tr(`Buburahin ang naka-save na progress ni ${name} sa Google Sheet. Mananatili ito sa phone na ito. Tuloy?`))) return;
     try {
       const j = await postScore({ action: 'delete', name, phone });
       if (!j.ok) throw new Error(j.error);
@@ -3415,6 +3785,20 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   $('#cloud-load').onclick = cloudLoad;
   $('#cloud-delete').onclick = cloudDelete;
   $('#cloud-close').onclick = () => { $('#modal-cloud').classList.add('hidden'); if (needsRegister()) openNameModal(); };
+  // Filipino / English switch (the words themselves live in lang.js)
+  function setLang(l) {
+    P.lang = l === 'en' ? 'en' : 'fil';
+    save();
+    I18N.set(P.lang);
+    renderLang();
+  }
+  function renderLang() {
+    $('#btn-lang').textContent = P.lang === 'en' ? 'EN' : 'FIL';
+    $$('#reg-lang button').forEach((b) => b.classList.toggle('on', b.dataset.lang === (P.lang || 'fil')));
+  }
+  $('#btn-lang').onclick = () => { sfx.tap(); setLang(P.lang === 'en' ? 'fil' : 'en'); toast(P.lang === 'en' ? '🌐 English' : '🌐 Filipino', 1200); };
+  $$('#reg-lang button').forEach((b) => { b.onclick = () => { sfx.tap(); setLang(b.dataset.lang); }; });
+  renderLang();
   $('#btn-sound').onclick = () => { P.sound = !P.sound; save(); renderHome(); };
   $('#btn-music').onclick = () => {
     P.music = !P.music;
