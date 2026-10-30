@@ -662,6 +662,26 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .linkish { background: none; border: 0; color: var(--muted); font-size: 12px; text-decoration: underline; cursor: pointer; padding: 4px; }
 .modal-box { max-height: calc(100dvh - 32px); overflow-y: auto; }
 
+/* compact home (fits one phone screen) */
+#screen-home .logo-img { width: min(78%, 300px); margin: -8px auto -14px; }
+#screen-home .rank-card { padding: 9px 12px; gap: 12px; margin-top: 4px; }
+#screen-home .rank-badge { width: 44px; height: 44px; font-size: 23px; }
+#screen-home .rank-info { flex: 1; min-width: 0; }
+#screen-home .rank-sub, #screen-home .rank-next { font-size: 12px; }
+.rank-streak { flex: none; display: flex; flex-direction: column; align-items: center; min-width: 54px; padding: 4px 6px; border-radius: 12px; border: 1px solid rgba(255, 140, 40, .5); background: rgba(255, 120, 30, .14); font-size: 15px; line-height: 1.1; }
+.rank-streak b { font-family: var(--display); font-size: 18px; color: #ffb347; }
+.rank-streak small { font-size: 10px; color: var(--muted); white-space: nowrap; }
+.rank-streak.done { border-color: var(--green); }
+#screen-home .menu { gap: 10px; margin-top: 0; }
+#screen-home .menu .row .btn { font-size: 14px; padding: 10px 8px; }
+#screen-home .btn.big { padding: 12px 10px; }
+.mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mode-grid .btn.big { font-size: 15px; line-height: 1.15; min-height: 84px; }
+.mode-grid .btn.big small { font-size: 11px; }
+.mode-grid .ph-flag { margin-bottom: 3px; }
+#screen-home .install-btn { width: fit-content; margin: 12px auto 0; padding: 7px 14px; font-size: 13px; border-radius: 999px; }
+#screen-home .teacher-link { margin-top: 10px; }
+
   </style>
 </head>
 <body>
@@ -697,23 +717,24 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
           <div class="rank-sub">Best sa Ranked <b id="home-rank-best">0</b> · ⭐ <b id="home-stars">0</b></div>
           <div class="rank-next" id="home-rank-next"></div>
         </div>
+        <div class="rank-streak" id="home-streak"></div>
       </button>
-
-      <div class="streak" id="home-streak"></div>
-      <button class="install-btn hidden" id="btn-install">📲 I-INSTALL SA PHONE<small>Para parang app at gumagana kahit walang internet</small></button>
 
       <nav class="menu">
         <button class="btn big yellow hidden" id="hw-banner"></button>
-        <button class="btn big pink" data-go="ranked">🏆 RANKED<small>3 buhay · walang timer · patagalan, pataasan ng score</small></button>
-        <button class="btn big blue" data-go="daily">🌟 DAILY HAMON<small id="daily-sub">Parehong 20 tanong para sa lahat</small></button>
-        <button class="btn big cyan" data-go="classic"><svg class="ph-flag" viewBox="0 0 30 15" aria-label="Philippine flag"><rect width="30" height="7.5" fill="#0038a8"/><rect y="7.5" width="30" height="7.5" fill="#ce1126"/><path d="M0 0 L13 7.5 L0 15 Z" fill="#fff"/><circle cx="4.6" cy="7.5" r="1.7" fill="#fcd116"/><g fill="#fcd116"><circle cx="1.6" cy="2.2" r=".7"/><circle cx="1.6" cy="12.8" r=".7"/><circle cx="10.6" cy="7.5" r=".7"/></g></svg> LAKBAY PILIPINAS<small>18 region · Batanes hanggang Tawi-Tawi</small></button>
-        <button class="btn big green" data-go="hagdan">🪜 HAGDAN · LEVEL UP<small>Isang operation · humihirap habang umaakyat</small></button>
-        <button class="btn big purple" data-go="mini">🕹️ MINI GAMES<small>Jeepney Rush · Sari-Sari · Tama o Mali · Tables</small></button>
+        <button class="btn big pink" data-go="ranked">🏆 RANKED<small>3 buhay · walang timer · pataasan ng score</small></button>
+        <div class="mode-grid">
+        <button class="btn big blue" data-go="daily">🌟 DAILY HAMON<small id="daily-sub">Bagong hamon araw-araw</small></button>
+        <button class="btn big cyan" data-go="classic"><svg class="ph-flag" viewBox="0 0 30 15" aria-label="Philippine flag"><rect width="30" height="7.5" fill="#0038a8"/><rect y="7.5" width="30" height="7.5" fill="#ce1126"/><path d="M0 0 L13 7.5 L0 15 Z" fill="#fff"/><circle cx="4.6" cy="7.5" r="1.7" fill="#fcd116"/><g fill="#fcd116"><circle cx="1.6" cy="2.2" r=".7"/><circle cx="1.6" cy="12.8" r=".7"/><circle cx="10.6" cy="7.5" r=".7"/></g></svg><span>LAKBAY PILIPINAS</span><small>18 region ng bansa</small></button>
+        <button class="btn big green" data-go="hagdan">🪜 HAGDAN<small>Pahirap nang pahirap</small></button>
+        <button class="btn big purple" data-go="mini">🕹️ MINI GAMES<small>4 na mabilisang laro</small></button>
+        </div>
         <div class="row">
           <button class="btn yellow" data-go="board">📊 LEADERBOARD</button>
           <button class="btn green" data-go="cards">🃏 CARDS <span id="home-cards">0/0</span></button>
         </div>
       </nav>
+      <button class="install-btn hidden" id="btn-install">📲 I-install sa phone (gumagana kahit offline)</button>
       <button class="teacher-link" data-go="teacher">👩‍🏫 Para sa guro: gumawa ng assignment link</button>
       <p class="foot">Walang ads · walang chat · puro math ✨</p>
     </section>
@@ -1750,9 +1771,10 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     $('#home-stars').textContent = totalStars(P);
     $('#home-cards').textContent = `${P.cards.length}/${CARDS.length}`;
     const sc = streakNow(), playedToday = P.streak.last === manilaDate();
-    $('#home-streak').innerHTML = sc
-      ? `🔥 <b>${sc} araw</b> na sunod-sunod${playedToday ? ' ✅' : ' · maglaro ngayon para tumuloy!'}<small>Pinakamahaba: ${P.streak.best} araw · bonus tuwing 7 araw 🎁</small>`
-      : '🔥 Maglaro araw-araw para sa <b>streak</b>!<small>May bonus XP tuwing 7 araw na sunod-sunod 🎁</small>';
+    const sh = $('#home-streak');
+    sh.innerHTML = `🔥<b>${sc}</b><small>araw${sc && !playedToday ? ' · laro na!' : ''}</small>`;
+    sh.classList.toggle('done', playedToday);
+    sh.title = `Streak: ${sc} araw na sunod-sunod · pinakamahaba: ${P.streak.best} · may bonus XP tuwing 7 araw`;
     const hb = $('#hw-banner');
     hb.classList.toggle('hidden', !HW);
     if (HW) {
@@ -1760,8 +1782,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       hb.innerHTML = `📌 TAKDANG-ARALIN<small>${hwLabel(HW)}${done ? ` · ✅ Tapos na (${done.acc}%), puwedeng ulitin` : ''}</small>`;
     }
     $('#daily-sub').textContent = P.dailyDone === manilaDate()
-      ? '✅ Tapos ka na ngayon · practice na lang'
-      : 'Parehong 20 tanong · unang laro lang ang bilang';
+      ? '✅ Tapos na · practice na lang'
+      : 'Bagong hamon araw-araw';
   }
 
   let classicOp = 'add';
