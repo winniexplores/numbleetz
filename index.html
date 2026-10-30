@@ -699,6 +699,64 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .reg-done { font-size: 13px; color: var(--green); }
 #modal-name .modal-icon { width: 64px; height: 64px; margin-bottom: 0; }
 
+/* avatar tokens */
+.av-tok {
+  --h: 200; --ring: #2ef2ff;
+  position: relative; display: inline-grid; place-items: center; width: 1.62em; height: 1.62em; border-radius: 50%;
+  line-height: 1; vertical-align: middle; isolation: isolate;
+  background: radial-gradient(circle at 32% 26%, hsl(var(--h) 95% 78%) 0%, hsl(var(--h) 85% 52%) 38%, hsl(var(--h) 75% 26%) 78%, hsl(var(--h) 70% 14%) 100%);
+  box-shadow: 0 0 0 .07em var(--ring), 0 0 .38em var(--ring), inset 0 -.14em .26em rgba(0,0,0,.45), inset 0 .1em .18em rgba(255,255,255,.45);
+  text-shadow: 0 .05em .08em rgba(0,0,0,.4);
+}
+.av-tok::after { content: ''; position: absolute; left: 18%; top: 9%; width: 38%; height: 22%; border-radius: 50%; background: rgba(255,255,255,.35); filter: blur(1px); z-index: -1; }
+.av-tok.r-rare { --ring: #3dff9a; }
+.av-tok.r-epic { --ring: #c77dff; }
+.av-tok.r-leg { --ring: #ffd23d; }
+.av-tok.r-leg::before {
+  content: ''; position: absolute; inset: -.12em; border-radius: 50%; z-index: -2;
+  background: conic-gradient(#ffd23d, #ff3df2, #2ef2ff, #3dff9a, #ffd23d); animation: spin 3s linear infinite;
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - .13em), #000 calc(100% - .12em));
+          mask: radial-gradient(farthest-side, transparent calc(100% - .13em), #000 calc(100% - .12em));
+  filter: drop-shadow(0 0 .2em rgba(255, 210, 61, .8));
+}
+.av-tok.r-leg { box-shadow: inset 0 -.14em .26em rgba(0,0,0,.45), inset 0 .1em .18em rgba(255,255,255,.45); }
+@media (prefers-reduced-motion: reduce) { .av-tok.r-leg::before { animation: none; } }
+#home-avatar.av-tok { font-size: 17px; margin: -4px 2px -4px -4px; }
+.hype-avatar.av-tok { filter: none; }
+.board .av.av-tok { font-size: 19px; }
+.avatars button { background: transparent; padding: 6px 0; font-size: 24px; display: grid; place-items: center; }
+.avatars button.active { background: var(--panel); }
+.avatars button.locked span.av-tok { filter: grayscale(1) brightness(.6); opacity: .5; }
+.avatars button .av-tok { box-shadow: 0 0 0 .07em var(--ring), inset 0 -.14em .26em rgba(0,0,0,.45), inset 0 .1em .18em rgba(255,255,255,.45); }
+.avatars button.active .av-tok { box-shadow: 0 0 0 .07em var(--ring), 0 0 .45em var(--ring), inset 0 -.14em .26em rgba(0,0,0,.45), inset 0 .1em .18em rgba(255,255,255,.45); }
+.avatars button.locked small { z-index: 2; }
+
+/* level up */
+.levelup { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 16px; background: radial-gradient(circle at 50% 40%, rgba(50, 18, 105, .97), rgba(4, 3, 14, .98)); }
+.levelup.hidden { display: none; }
+.lu-box { position: relative; width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; animation: luPop .45s cubic-bezier(.2, 1.6, .4, 1); }
+.lu-rays { position: absolute; left: 50%; top: 46%; width: 520px; height: 520px; margin: -260px 0 0 -260px; z-index: -1; pointer-events: none; opacity: .35;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 210, 61, .5) 0deg 10deg, transparent 10deg 30deg); border-radius: 50%;
+  -webkit-mask: radial-gradient(circle, #000 20%, transparent 68%); mask: radial-gradient(circle, #000 20%, transparent 68%); animation: spin 14s linear infinite; }
+.lu-title { font-family: var(--display); font-weight: 900; font-size: 40px; letter-spacing: .08em; color: #fff; text-shadow: 0 0 10px var(--yellow), 0 0 30px #ff9d00; animation: luPulse 1.2s ease-in-out infinite; }
+.lu-lvl { font-family: var(--display); font-weight: 900; font-size: 64px; line-height: 1; color: var(--yellow); text-shadow: 0 0 16px var(--yellow); }
+.lu-name { font-weight: 800; font-size: 17px; color: var(--cyan); }
+.lu-av { font-size: 76px; margin: 10px 0 4px; }
+.lu-av.hidden { display: none; }
+.lu-av.reveal { animation: luReveal 1s cubic-bezier(.2, 1.4, .4, 1) .25s both; }
+.lu-unlock { font-size: 15px; font-weight: 700; }
+.lu-unlock small { display: block; color: var(--muted); font-weight: 600; margin-top: 4px; }
+.lu-unlock b { margin-left: 4px; padding: 2px 8px; border-radius: 99px; font-size: 12px; letter-spacing: .08em; }
+.rar-rare { background: #3dff9a; color: #062; }
+.rar-epic { background: #c77dff; color: #2a0050; }
+.rar-leg { background: linear-gradient(90deg, #ffd23d, #ff3df2, #2ef2ff); color: #1a0030; }
+.lu-box .btn.big { width: 100%; margin-top: 6px; }
+.lu-box .btn.small.hidden { display: none; }
+@keyframes luPop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes luPulse { 50% { transform: scale(1.06); } }
+@keyframes luReveal { 0% { transform: scale(0) rotate(-540deg); opacity: 0; } 70% { transform: scale(1.15) rotate(10deg); opacity: 1; } 100% { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .lu-rays, .lu-title, .lu-av.reveal, .lu-box { animation: none; } }
+
   </style>
 </head>
 <body>
@@ -760,7 +818,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     <!-- ===================== CLASSIC SELECT ===================== -->
     <section id="screen-classic" class="screen">
       <header class="bar"><button class="back" data-go="home">‹ BALIK</button><h3><svg class="ph-flag" viewBox="0 0 30 15" aria-label="Philippine flag"><rect width="30" height="7.5" fill="#0038a8"/><rect y="7.5" width="30" height="7.5" fill="#ce1126"/><path d="M0 0 L13 7.5 L0 15 Z" fill="#fff"/><circle cx="4.6" cy="7.5" r="1.7" fill="#fcd116"/><g fill="#fcd116"><circle cx="1.6" cy="2.2" r=".7"/><circle cx="1.6" cy="12.8" r=".7"/><circle cx="10.6" cy="7.5" r=".7"/></g></svg> LAKBAY PILIPINAS</h3><span></span></header>
-      <p class="hint-text">Pumili ng route, tapos libutin ang 18 region ng Pilipinas, mula Batanes hanggang Tawi-Tawi. 15 tanong, 3 buhay. Kumuha ng ⭐ para mabuksan ang susunod na region at may bagong <b>Alam mo ba?</b> ka.</p>
+      <p class="hint-text">Pumili ng route, tapos libutin ang 18 region ng Pilipinas, mula Region I (Ilocos) hanggang BARMM. 15 tanong, 3 buhay. Kumuha ng ⭐ para mabuksan ang susunod na region at may bagong <b>Alam mo ba?</b> ka.</p>
       <div class="ops" id="classic-ops"></div>
       <div class="map-wrap">
         <svg id="ph-map" class="ph-map" viewBox="0 0 200 334" role="img" aria-label="Mapa ng Pilipinas"></svg>
@@ -999,6 +1057,20 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     </div>
   </div>
 
+  <!-- Level up -->
+  <div class="levelup hidden" id="levelup">
+    <div class="lu-box">
+      <div class="lu-rays" aria-hidden="true"></div>
+      <div class="lu-title">LEVEL UP!</div>
+      <div class="lu-lvl" id="lu-lvl">Lv.2</div>
+      <div class="lu-name" id="lu-name"></div>
+      <span class="lu-av" id="lu-av"></span>
+      <div class="lu-unlock" id="lu-unlock"></div>
+      <button class="btn pink big" id="lu-use">✨ GAMITIN ITO!</button>
+      <button class="btn ghost small" id="lu-later">MAMAYA NA</button>
+    </div>
+  </div>
+
   <div class="toast hidden" id="toast"></div>
 
   <script>
@@ -1042,22 +1114,29 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     pemdas: { sym: '( )', name: 'PEMDAS', color: 'pink' },
     alg: { sym: 'x', name: 'ALGEBRA', color: 'yellow' }
   });
-  // The 18 regions of the Philippines, Batanes to Tawi-Tawi: [name, emoji, region · landmark, "Alam mo ba?" facts]
+  // The 18 regions of the Philippines in official order (Region I, II, CAR, III, NCR, IV-A … BARMM): [name, emoji, region · landmark, "Alam mo ba?" facts]
+  // Old saves used another order; OLD_REGION_ORDERS moves their progress (see load)
   // Each region has 5 facts [label, text], one per route, in the order + − × ÷ Halo-Halo
+  // Region order of older versions, so saved progress can follow each region to its new place
+  const OLD_REGION_ORDERS = {
+    1: ["Cagayan Valley", "Ilocos", "Cordillera (CAR)", "Central Luzon", "Metro Manila (NCR)", "CALABARZON", "MIMAROPA", "Bicol", "Western Visayas", "Negros Island", "Central Visayas", "Eastern Visayas", "Zamboanga Peninsula", "Northern Mindanao", "Caraga", "Davao Region", "SOCCSKSARGEN", "BARMM"],
+    2: ["Ilocos", "Cagayan Valley", "Central Luzon", "Metro Manila (NCR)", "Cordillera (CAR)", "CALABARZON", "MIMAROPA", "Bicol", "Western Visayas", "Negros Island", "Central Visayas", "Eastern Visayas", "Zamboanga Peninsula", "Northern Mindanao", "Davao Region", "SOCCSKSARGEN", "Caraga", "BARMM"]
+  };
+  const REGION_ORDER_VERSION = 3;
   const ISLANDS = [
-    ["Cagayan Valley", '🌊', "Region II · Batanes", [
-      ["🏝️ Pasyalan", "Sa Batanes makikita ang mga bahay na bato ng mga Ivatan at ang malalawak na burol ng Racuh a Payaman, na tinatawag ding \"Marlboro Country\"."],
-      ["🛍️ Produkto", "Ang Isabela ay isa sa pinakamalalaking pinagkukunan ng mais sa buong bansa."],
-      ["🎉 Festival", "Tuwing Enero, ipinagdiriwang sa Isabela ang Bambanti Festival. Ang bambanti ay panakot-ibon na ginagawang makukulay na palamuti."],
-      ["🍲 Pagkain", "Sikat sa Tuguegarao ang pancit batil patong: pancit na may itlog sa ibabaw at may kasamang sabaw."],
-      ["📜 Kasaysayan", "Sa Callao Cave sa Peñablanca, Cagayan natagpuan ang mga buto ng Homo luzonensis, isang sinaunang uri ng tao."]
-    ]],
     ["Ilocos", '🏛️', "Region I · Vigan", [
       ["🏝️ Pasyalan", "Ang Vigan ay UNESCO World Heritage Site. Sa Calle Crisologo makikita ang mga bahay at kalye mula pa noong panahon ng Kastila, at puwedeng sumakay sa kalesa."],
       ["🛍️ Produkto", "Ang pangalang Pangasinan ay galing sa salitang \"asin\", dahil kilala ito sa paggawa ng asin at bagoong."],
       ["🎉 Festival", "Tuwing Abril hanggang Mayo, ipinagdiriwang ng Dagupan, Pangasinan ang Bangus Festival na may mahabang ihawan ng bangus."],
       ["🍲 Pagkain", "Kilala ang Ilocos sa bagnet, Vigan longganisa, at empanada ng Batac."],
       ["🏝️ Pasyalan", "Sa Alaminos, Pangasinan makikita ang Hundred Islands National Park na may mahigit 100 maliliit na isla."]
+    ]],
+    ["Cagayan Valley", '🌊', "Region II · Batanes", [
+      ["🏝️ Pasyalan", "Sa Batanes makikita ang mga bahay na bato ng mga Ivatan at ang malalawak na burol ng Racuh a Payaman, na tinatawag ding \"Marlboro Country\"."],
+      ["🛍️ Produkto", "Ang Isabela ay isa sa pinakamalalaking pinagkukunan ng mais sa buong bansa."],
+      ["🎉 Festival", "Tuwing Enero, ipinagdiriwang sa Isabela ang Bambanti Festival. Ang bambanti ay panakot-ibon na ginagawang makukulay na palamuti."],
+      ["🍲 Pagkain", "Sikat sa Tuguegarao ang pancit batil patong: pancit na may itlog sa ibabaw at may kasamang sabaw."],
+      ["📜 Kasaysayan", "Sa Callao Cave sa Peñablanca, Cagayan natagpuan ang mga buto ng Homo luzonensis, isang sinaunang uri ng tao."]
     ]],
     ["Cordillera (CAR)", '⛰️', "CAR · Banaue Rice Terraces", [
       ["📜 Kasaysayan", "Ang Banaue Rice Terraces ay inukit ng mga Ifugao sa gilid ng bundok gamit lang ang kamay. Ang Rice Terraces ng Ifugao ay UNESCO World Heritage Site."],
@@ -1087,7 +1166,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       ["🍲 Pagkain", "Sikat na pasalubong mula sa Laguna ang buko pie."],
       ["📜 Kasaysayan", "Sa Kawit, Cavite idineklara ang kalayaan ng Pilipinas noong Hunyo 12, 1898. Sa Calamba, Laguna naman ipinanganak si Jose Rizal."]
     ]],
-    ["MIMAROPA", '🐠', "MIMAROPA · Palawan", [
+    ["MIMAROPA", '🐠', "Region IV-B · Palawan", [
       ["🏝️ Pasyalan", "Nasa Palawan ang Puerto Princesa Underground River, isa sa New 7 Wonders of Nature at UNESCO World Heritage Site."],
       ["🛍️ Produkto", "Ang Romblon ay tinatawag na \"Marble Capital of the Philippines\" dahil sa dami at ganda ng marmol nito."],
       ["🎉 Festival", "Tuwing Semana Santa, ginaganap sa Marinduque ang Moriones Festival, kung saan nagsusuot ng maskara ng sundalong Romano."],
@@ -1143,13 +1222,6 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       ["🍲 Pagkain", "Sikat ang Camiguin sa matatamis na lanzones, at may Lanzones Festival pa sila tuwing Oktubre."],
       ["🌿 Kalikasan", "Sa Iligan, ang \"City of Majestic Waterfalls\", makikita ang Maria Cristina Falls na pinagkukunan ng kuryente."]
     ]],
-    ["Caraga", '🏄', "Region XIII · Siargao", [
-      ["🏝️ Pasyalan", "Ang Siargao ay tinaguriang \"Surfing Capital of the Philippines\" dahil sa malalaking alon ng Cloud 9."],
-      ["🛍️ Produkto", "Mayaman ang Caraga sa mineral gaya ng nickel, lalo na sa mga probinsya ng Surigao."],
-      ["🏝️ Pasyalan", "Kilala ang Enchanted River sa Hinatuan, Surigao del Sur sa napakalinaw at asul nitong tubig."],
-      ["🌿 Kalikasan", "Ang Agusan Marsh ay malawak na latian na tirahan ng maraming ibon at buwaya."],
-      ["📜 Kasaysayan", "Sa Butuan natagpuan ang mga balangay, mga sinaunang bangka na mahigit 1,000 taon na ang edad."]
-    ]],
     ["Davao Region", '🦅', "Region XI · Mt. Apo", [
       ["🏝️ Pasyalan", "Malapit sa Davao City ang Mt. Apo, ang pinakamataas na bundok sa Pilipinas. Katabi rin ng lungsod ang Island Garden City of Samal."],
       ["🛍️ Produkto", "Malaking pinagkukunan ng cacao ang Davao, kaya dito gawa ang ilang sikat na Filipino chocolate."],
@@ -1163,6 +1235,13 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       ["🎉 Festival", "Tuwing Setyembre, ipinagdiriwang ng General Santos ang Tuna Festival."],
       ["🎨 Kultura", "Hinahabi ng mga T'boli ng Lake Sebu ang t'nalak, telang gawa sa abaka. May T'nalak Festival pa ang South Cotabato!"],
       ["📜 Kasaysayan", "Ang SOCCSKSARGEN ay galing sa SOuth Cotabato, Cotabato, Sultan Kudarat, SARangani at GENeral Santos."]
+    ]],
+    ["Caraga", '🏄', "Region XIII · Siargao", [
+      ["🏝️ Pasyalan", "Ang Siargao ay tinaguriang \"Surfing Capital of the Philippines\" dahil sa malalaking alon ng Cloud 9."],
+      ["🛍️ Produkto", "Mayaman ang Caraga sa mineral gaya ng nickel, lalo na sa mga probinsya ng Surigao."],
+      ["🏝️ Pasyalan", "Kilala ang Enchanted River sa Hinatuan, Surigao del Sur sa napakalinaw at asul nitong tubig."],
+      ["🌿 Kalikasan", "Ang Agusan Marsh ay malawak na latian na tirahan ng maraming ibon at buwaya."],
+      ["📜 Kasaysayan", "Sa Butuan natagpuan ang mga balangay, mga sinaunang bangka na mahigit 1,000 taon na ang edad."]
     ]],
     ["BARMM", '🛶', "BARMM · Tawi-Tawi", [
       ["📜 Kasaysayan", "Nasa Tawi-Tawi ang pinakatimog na dulo ng Pilipinas. Sa Simunul, Tawi-Tawi itinayo ang Sheikh Karimul Makhdum Mosque, ang pinakaunang mosque sa bansa."],
@@ -1241,7 +1320,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     { id: 'parol', e: '🌟', n: 'Parol', d: 'Matapos ang isang Daily Hamon', c: 'yellow', t: (p) => p.stats.daily >= 1 },
     { id: 'mayon', e: '🌋', n: 'Mayon', d: 'Umabot sa 25 combo', c: 'red', t: (p) => p.stats.bestCombo >= 25 },
     { id: 'vinta', e: '⛵', n: 'Vinta', d: '3 stars sa 6 na times table', c: 'cyan', t: (p) => Object.values(p.tables).filter((s) => s >= 3).length >= 6 },
-    { id: 'chocohills', e: '🍫', n: 'Chocolate Hills', d: 'Marating ang Tawi-Tawi sa kahit anong route', c: 'pink', t: (p) => Object.keys(p.classic).some((k) => k.endsWith('-' + ISLANDS.length) && p.classic[k] > 0) },
+    { id: 'chocohills', e: '🍫', n: 'Chocolate Hills', d: 'Matapos ang BARMM sa kahit anong route', c: 'pink', t: (p) => Object.keys(p.classic).some((k) => k.endsWith('-' + ISLANDS.length) && p.classic[k] > 0) },
     { id: 'banaue', e: '🌾', n: 'Banaue', d: '1,000 tamang sagot', c: 'green', t: (p) => p.stats.correct >= 1000 },
     { id: 'agila', e: '🦅', n: 'Philippine Eagle', d: 'Maabot ang HENYO rank', c: 'cyan', t: (p) => (p.best.ranked || 0) >= 1600 },
     { id: 'sarimanok', e: '🐓', n: 'Sarimanok', d: 'Maabot ang ALAMAT rank', c: 'pink', t: (p) => (p.best.ranked || 0) >= 3500 },
@@ -1257,6 +1336,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     dailyDone: '', streak: { last: '', count: 0, best: 0 }, hw: {}, stats: { games: 0, correct: 0, answered: 0, bestCombo: 0, daily: 0 }
   };
   let P = load();
+  save();   // keep any one-time fixes load() made
 
   function load() {
     let saved = {};
@@ -1267,6 +1347,14 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     p.cards = Array.isArray(p.cards) ? p.cards : [];
     p.queue = Array.isArray(p.queue) ? p.queue : [];
     if (!p.id) p.id = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    const old = OLD_REGION_ORDERS[p.regionOrder || 1];
+    if (old) {   // regions were in another order when this was saved: move progress by region name
+      const to = (n) => ISLANDS.findIndex((x) => x[0] === old[n - 1]) + 1 || n;
+      const move = (o, keyOf) => Object.fromEntries(Object.entries(o).map(([k, v]) => [keyOf(k), v]));
+      p.classic = move(p.classic, (k) => k.replace(/-(\d+)$/, (_, n) => '-' + to(+n)));
+      p.passport = move(p.passport, (k) => String(to(+k)));
+    }
+    p.regionOrder = REGION_ORDER_VERSION;
     return p;
   }
   function save() {
@@ -1336,6 +1424,20 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     const lvl = Math.floor(Math.sqrt(xp / 40)) + 1;
     const lo = 40 * (lvl - 1) ** 2, hi = 40 * lvl ** 2;
     return { lvl, pct: ((xp - lo) / (hi - lo)) * 100 };
+  }
+  // Avatar tokens: each avatar gets its own color, and a ring that shows how rare it is
+  const ALL_AVATARS = AVATARS.map((a) => [1, a]).concat(LEVEL_AVATARS);
+  function avRarity(a) {
+    const hit = ALL_AVATARS.find((x) => x[1] === a), need = hit ? hit[0] : 1;
+    return need >= 12 ? 'leg' : need >= 6 ? 'epic' : need >= 2 ? 'rare' : 'common';
+  }
+  function setAv(node, a) {
+    const i = Math.max(0, ALL_AVATARS.findIndex((x) => x[1] === a));
+    node.classList.remove('r-common', 'r-rare', 'r-epic', 'r-leg');
+    node.classList.add('av-tok', 'r-' + avRarity(a));
+    node.style.setProperty('--h', (i * 137) % 360);
+    node.textContent = a || '🙂';
+    return node;
   }
   const titleOf = (lvl) => TITLES.filter((t) => lvl >= t[0]).pop()[1];
   // Everything that unlocks after lvlFrom, up to and including lvlTo
@@ -1424,7 +1526,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     end: () => notes([72, 76, 79, 84, 79, 84], 0.11, 'triangle', 0.07, 0.2),
     lose: () => notes([67, 63, 60, 55], 0.16, 'triangle', 0.06, 0.25),
     comboLost: () => beep(700, 0.35, 'triangle', 0.05, 0, 180),
-    fever: () => notes([72, 79, 84, 88, 91, 96, 100], 0.045, 'square', 0.04, 0.1)
+    fever: () => notes([72, 79, 84, 88, 91, 96, 100], 0.045, 'square', 0.04, 0.1),
+    levelup: () => { beep(260, 0.5, 'sine', 0.06, 0, 1040); notes([60, 64, 67, 72, 76, 79, 84, 88, 91, 96], 0.07, 'square', 0.045, 0.3); }
   };
 
   // Looping background music: C–G–Am–F progression with bass, arpeggio and hi-hats
@@ -1800,7 +1903,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     $('#game-title').textContent = CFG.GAME_NAME;
     $('#game-tagline').textContent = CFG.TAGLINE;
     $('#home-name').textContent = P.name || 'Player';
-    $('#home-avatar').textContent = P.avatar;
+    setAv($('#home-avatar'), P.avatar);
     const L = levelInfo(P.xp);
     $('#home-level').textContent = L.lvl;
     $('#home-title').textContent = titleOf(L.lvl);
@@ -1845,7 +1948,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     ISLANDS.forEach(([name, em, sub], i) => {
       const lvl = i + 1;
       const stars = P.classic[`${classicOp}-${lvl}`] || 0;
-      const unlocked = lvl === 1 || (P.classic[`${classicOp}-${lvl - 1}`] || 0) > 0;
+      const unlocked = lvl === 1 || (P.classic[`${classicOp}-${lvl - 1}`] || 0) > 0 || (P.classic[`${classicOp}-${lvl}`] || 0) > 0;
       const b = el('button', 'island' + (unlocked ? '' : ' locked'));
       b.appendChild(el('span', 'num', lvl));
       b.appendChild(el('span', 'em', unlocked ? em : '🔒'));
@@ -1882,8 +1985,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   ];
   const PH_DOTS = [[121.9, 20.4, 3], [122.0, 13.4, 3], [124.7, 9.2, 2.5], [126.05, 9.85, 3], [121.0, 6.0, 3], [120.4, 5.6, 2.5], [119.9, 5.1, 3]];
   // Where each region's marker sits, same order as ISLANDS
-  const REGION_PINS = [[121.8, 17.2], [120.5, 17.6], [121.1, 16.8], [120.8, 15.5], [121.0, 14.6], [121.7, 14.1], [120.9, 12.9], [123.4, 13.4],
-    [122.4, 11.2], [123.0, 10.1], [123.8, 10.2], [124.9, 11.6], [122.9, 7.8], [124.8, 8.2], [125.7, 8.9], [125.8, 7.3], [124.8, 6.5], [120.0, 5.2]];
+  const REGION_PINS = [[120.5, 17.6], [121.8, 17.2], [121.1, 16.8], [120.8, 15.5], [121.0, 14.6], [121.7, 14.1], [120.9, 12.9], [123.4, 13.4],
+    [122.4, 11.2], [123.0, 10.1], [123.8, 10.2], [124.9, 11.6], [122.9, 7.8], [124.8, 8.2], [125.8, 7.3], [124.8, 6.5], [125.7, 8.9], [120.0, 5.2]];
   const mx = (lon) => ((lon - 116.8) * 20).toFixed(1);
   const my = (lat) => ((21.2 - lat) * 20).toFixed(1);
 
@@ -1938,6 +2041,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   function renderQuiz(lvl) {
     const box = $('#res-quiz');
     box.innerHTML = '';
+    box.classList.remove('done');   // otherwise the next quiz can't be answered
     if (!lvl) return;
     const pool = [];
     ISLANDS.forEach((isl, i) => clearedOps(i + 1).forEach((op) => {
@@ -1969,6 +2073,35 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     });
     box.appendChild(row);
   }
+  // Big full-screen moment when a player levels up, showing what they unlocked
+  let luPick = null;
+  function showLevelUp(from, to) {
+    const avs = LEVEL_AVATARS.filter((a) => a[0] > from && a[0] <= to).map((a) => a[1]);
+    const newTitle = TITLES.some((t) => t[0] > from && t[0] <= to);
+    luPick = avs.length ? avs[avs.length - 1] : null;
+    $('#lu-lvl').textContent = 'Lv.' + to;
+    $('#lu-name').textContent = (newTitle ? '🏷️ Bagong title: ' : '') + titleOf(to);
+    const av = $('#lu-av');
+    av.classList.toggle('hidden', !luPick);
+    if (luPick) {
+      setAv(av, luPick);
+      av.classList.remove('reveal'); void av.offsetWidth; av.classList.add('reveal');
+    }
+    const r = luPick ? avRarity(luPick) : '';
+    $('#lu-unlock').innerHTML = luPick
+      ? `🎁 Bagong avatar! <b class="rar-${r}">${{ rare: 'RARE', epic: 'EPIC', leg: 'LEGENDARY' }[r] || ''}</b>` + (avs.length > 1 ? `<small>Nabuksan din: ${avs.slice(0, -1).join(' ')}</small>` : '')
+      : (() => { const nx = nextUnlock(to); return nx ? `Susunod na premyo: ${nx.what} sa Lv.${nx.lvl}` : 'Nabuksan mo na lahat! 👑'; })();
+    $('#lu-use').textContent = luPick ? '✨ GAMITIN ITO!' : 'AYOS! ▶';
+    $('#lu-later').classList.toggle('hidden', !luPick);
+    $('#levelup').classList.remove('hidden');
+    sfx.levelup();
+    confetti();
+  }
+  function closeLevelUp(use) {
+    if (use && luPick) { P.avatar = luPick; save(); renderHome(); toast(`${luPick} Ito na ang avatar mo!`); }
+    $('#levelup').classList.add('hidden');
+  }
+
   function confettiSmall() {
     const r = $('#res-quiz').getBoundingClientRect();
     for (let i = 0; i < 16; i++) {
@@ -2153,7 +2286,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     $('#float-layer').innerHTML = '';
     show('play');
     sfx.start();
-    $('#hype-avatar').textContent = P.avatar;
+    setAv($('#hype-avatar'), P.avatar);
     cheer(pick(['Laban! 💪', 'Kaya mo yan!', 'Game na! 🎮'], Math.random), 'var(--cyan)');
     nextQ();
     requestAnimationFrame(tick);
@@ -2571,7 +2704,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       store[key] = Math.max(store[key] || 0, stars);
       if (failed) msg = "Sayang! Try again, kaya mo 'yan! 💪";
       else if (mode === 'classic' && G.opts.level < ISLANDS.length) msg = `⛵ Bukas na ang susunod na region: <b>${ISLANDS[G.opts.level][0]}</b>`;
-      else if (mode === 'classic') msg = `🛶 Narating mo ang <b>Tawi-Tawi</b>! Kumpleto mo na ang 18 region, mula Batanes hanggang Tawi-Tawi!`;
+      else if (mode === 'classic') msg = `🛶 Narating mo ang <b>Tawi-Tawi</b>! Kumpleto mo na ang 18 region ng Pilipinas, mula Region I hanggang BARMM!`;
       if (mode === 'classic' && !failed && !P.passport[G.opts.level]) {
         P.passport[G.opts.level] = manilaDate();
         const [rn, re] = ISLANDS[G.opts.level - 1];
@@ -2650,7 +2783,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       const got = unlocksBetween(lvlBefore, lvlAfter);
       parts.push(`⬆️ Level up! <b>Lv.${lvlAfter}</b> ka na · <b>${titleOf(lvlAfter)}</b>` +
         (got.length ? `<br>🎁 Bagong unlock: <b>${got.join(' ')}</b> <small>(palitan sa pangalan mo sa home)</small>` : ''));
-      if (got.length) setTimeout(confettiSmall, 300);
+      setTimeout(() => showLevelUp(lvlBefore, lvlAfter), 700);
     }
     if (mode === 'ranked') {
       const R = rankOf(P.best.ranked || 0);
@@ -2809,7 +2942,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     rows.forEach((r, i) => {
       const li = el('li', String(r.name || '').trim().toLowerCase() === me ? 'me' : '');
       li.appendChild(el('span', 'pos', medals[i] || i + 1));
-      li.appendChild(el('span', 'av', r.avatar || '🙂'));
+      li.appendChild(setAv(el('span', 'av'), r.avatar));
       const nm = el('span', 'nm', r.name);
       const extra = [];
       if (r.accuracy != null && r.accuracy !== '') extra.push(`${r.accuracy}% tama`);
@@ -2841,9 +2974,9 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     const box = $('#avatar-pick');
     box.innerHTML = '';
     const lvl = levelInfo(P.xp).lvl;
-    AVATARS.map((a) => [1, a]).concat(LEVEL_AVATARS).forEach(([need, a]) => {
+    ALL_AVATARS.forEach(([need, a]) => {
       const b = el('button', a === avatarPick ? 'active' : '');
-      b.appendChild(el('span', null, a));
+      b.appendChild(setAv(el('span'), a));
       if (lvl >= need) b.onclick = () => { avatarPick = a; renderAvatars(); };
       else {
         b.classList.add('locked');
@@ -3114,6 +3247,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   $('#btn-profile').onclick = openNameModal;
   $('.level-chip').onclick = openNameModal;
   $('#btn-cloud').onclick = openCloud;
+  $('#lu-use').onclick = () => closeLevelUp(true);
+  $('#lu-later').onclick = () => closeLevelUp(false);
   $('#reg-privacy').innerHTML = $('#cloud-new .privacy').innerHTML;
   $('#cloud-save').onclick = () => cloudSave(false);
   $('#cloud-load').onclick = cloudLoad;
