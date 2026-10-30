@@ -777,6 +777,48 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .fact-again { display: block; margin: 10px auto 0; padding: 8px 14px; border-radius: 999px; border: 1px solid rgba(255, 210, 61, .5); background: rgba(255, 210, 61, .1); color: var(--yellow); font: 700 14px var(--body); }
 .quiz-q { font-weight: 800; font-size: 20px; text-align: center; color: var(--text); margin-bottom: 4px; }
 
+/* passport stamp pop-up */
+.sp-box { border-color: var(--green); box-shadow: 0 0 30px rgba(61, 255, 154, .35); align-items: center; text-align: center; }
+.sp-box .fp-title { color: var(--green); text-shadow: 0 0 12px var(--green); }
+.sp-page { width: 100%; padding: 26px 0; border-radius: 16px; background: repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 22px, rgba(255,255,255,.07) 22px 23px), #1d2340; border: 1px solid rgba(255,255,255,.12); display: grid; place-items: center; }
+.sp-stamp { width: 150px; --r: -10deg; opacity: 0; }
+.sp-stamp .st-em { font-size: 44px; }
+.sp-stamp .st-nm { font-size: 15px; }
+.sp-stamp .st-dt { font-size: 12px; }
+.sp-stamp.slam { animation: slam .45s cubic-bezier(.5, 0, .7, 1.4) forwards; }
+.sp-stamp.gold { box-shadow: 0 0 22px var(--yellow); }
+@keyframes slam { 0% { opacity: 0; transform: scale(3) rotate(-35deg); } 60% { opacity: 1; transform: scale(.88) rotate(var(--r)); } 100% { opacity: 1; transform: scale(1) rotate(var(--r)); } }
+.fp-box.thud { animation: thud .3s; }
+@keyframes thud { 30% { transform: translateY(5px) scale(.99); } 60% { transform: translateY(-2px); } }
+.sp-dots { display: flex; gap: 8px; }
+.sp-dots span { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; border: 2px solid rgba(255,255,255,.2); color: var(--muted); font-weight: 900; }
+.sp-dots span.on { border-color: var(--green); color: #062; background: var(--green); box-shadow: 0 0 10px var(--green); }
+.sp-dots span.new { animation: dotPop .5s .75s both; }
+@keyframes dotPop { 0% { transform: scale(0); } 70% { transform: scale(1.35); } 100% { transform: none; } }
+.sp-msg { font-size: 17px; }
+@media (prefers-reduced-motion: reduce) { .sp-stamp.slam, .fp-box.thud, .sp-dots span.new { animation: none; opacity: 1; } }
+
+/* results: calmer score, and a solid "next" button so kids know what to tap */
+.res-score { color: #f4f1ff; text-shadow: 0 0 6px rgba(46, 242, 255, .45); }
+#btn-next { background: linear-gradient(180deg, #4dffaa, #19c977); color: #04241a; text-shadow: none; border-color: #8dffc8;
+  box-shadow: 0 0 18px rgba(61, 255, 154, .55), 0 5px 0 #0e8a52; animation: nextPulse 1.8s ease-in-out infinite; }
+#btn-next small { color: #0a4a30; font-weight: 800; }
+#btn-next:active { transform: translateY(3px); box-shadow: 0 0 12px rgba(61, 255, 154, .5), 0 2px 0 #0e8a52; }
+@keyframes nextPulse { 50% { box-shadow: 0 0 30px rgba(61, 255, 154, .85), 0 5px 0 #0e8a52; } }
+@media (prefers-reduced-motion: reduce) { #btn-next { animation: none; } }
+
+.res-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
+.res-perfect { font-weight: 800; color: var(--yellow); margin-bottom: 4px; }
+#res-extra .fact-again { margin-top: 0; }
+#res-extra:empty { display: none; }
+
+/* results: new cards sit below the buttons as a compact strip */
+.res-cards:not(:empty)::before { content: '🃏 Bagong cards'; width: 100%; text-align: center; font-size: 12px; letter-spacing: 1px; color: var(--muted); margin-bottom: 2px; }
+.res-cards { margin-top: 14px; }
+.res-cards .card { width: 84px; padding: 8px 4px; }
+.res-cards .card .ci { font-size: 28px; }
+.res-cards .card .cd { display: none; }
+
   </style>
 </head>
 <body>
@@ -974,16 +1016,23 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         <div><b id="res-combo">0</b><small>BEST COMBO</small></div>
         <div><b id="res-xp">+0</b><small>XP</small></div>
       </div>
+      <!-- what you earned -->
       <div class="res-msg" id="res-msg"></div>
-      <button class="btn green big hidden" id="btn-next"></button>
-      <button class="btn pink big hidden" id="btn-retry"></button>
-      <div class="res-review" id="res-review"></div>
-      <div class="res-cards" id="res-cards"></div>
-      <div class="row">
-        <button class="btn cyan" id="btn-again">↻ ULIT</button>
-        <button class="btn purple" id="btn-origin">⌂ HOME</button>
+      <!-- what to do next: the main button first -->
+      <div class="res-actions">
+        <button class="btn green big hidden" id="btn-next"></button>
+        <button class="btn pink big hidden" id="btn-retry"></button>
+        <div class="row">
+          <button class="btn cyan" id="btn-again">↻ ULIT</button>
+          <button class="btn purple" id="btn-origin">⌂ HOME</button>
+        </div>
+        <button class="btn yellow" id="btn-res-board">📊 LEADERBOARD</button>
+        <div id="res-extra"></div>
       </div>
-      <button class="btn yellow" id="btn-res-board">📊 LEADERBOARD</button>
+      <!-- new cards, kept small so the next button stays on screen -->
+      <div class="res-cards" id="res-cards"></div>
+      <!-- learn from mistakes -->
+      <div class="res-review" id="res-review"></div>
     </section>
 
     <!-- ===================== LEADERBOARD ===================== -->
@@ -1090,6 +1139,17 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   <!-- Bonus quiz after the "Alam mo ba?" -->
   <div class="factpop hidden" id="quizpop">
     <div class="fp-box quiz" id="res-quiz"></div>
+  </div>
+
+  <!-- Passport stamp after the bonus quiz -->
+  <div class="factpop hidden" id="stamppop">
+    <div class="fp-box sp-box">
+      <div class="fp-title">🛂 PASSPORT</div>
+      <div class="sp-page"><span class="stamp got sp-stamp" id="sp-stamp"></span></div>
+      <div class="sp-dots" id="sp-dots"></div>
+      <div class="sp-msg" id="sp-msg"></div>
+      <button class="btn green big" id="sp-ok">TULOY ▶</button>
+    </div>
   </div>
 
   <!-- Level up -->
@@ -1562,6 +1622,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     lose: () => notes([67, 63, 60, 55], 0.16, 'triangle', 0.06, 0.25),
     comboLost: () => beep(700, 0.35, 'triangle', 0.05, 0, 180),
     fever: () => notes([72, 79, 84, 88, 91, 96, 100], 0.045, 'square', 0.04, 0.1),
+    stamp: () => { beep(110, 0.18, 'square', 0.09, 0, 55); beep(70, 0.25, 'sine', 0.12); },
     levelup: () => { beep(260, 0.5, 'sine', 0.06, 0, 1040); notes([60, 64, 67, 72, 76, 79, 84, 88, 91, 96], 0.07, 'square', 0.045, 0.3); }
   };
 
@@ -2103,7 +2164,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         $$('.quiz-opts button')[opts.indexOf(ri)].classList.add('good');
         if (ok) { P.xp += 30; P.quiz = (P.quiz || 0) + 1; save(); sfx.combo(); confettiSmall(); }
         else sfx.bad();
-        box.appendChild(el('div', 'quiz-res', ok ? '🎉 Tama! +30 XP bonus' : `Sayang! ${ISLANDS[ri][1]} ${ISLANDS[ri][0]} ang tamang sagot. Walang bawas, subukan ulit sa susunod! 💪`));
+        box.appendChild(el('div', 'quiz-res', ok ? '🎉 Tama! +30 XP bonus' : `Sayang! ${ISLANDS[ri][1]} ${ISLANDS[ri][0]} ang tamang sagot.`));
         const go = el('button', 'btn yellow', 'TULOY ▶');
         go.onclick = closeQuiz;
         box.appendChild(go);
@@ -2135,6 +2196,32 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     $('#fp-text').textContent = text;
     $('#factpop').classList.remove('hidden');
     sfx.card();
+  }
+
+  // The passport stamp lands with a thump: a new region stamp, or one more sign (tatak) on it
+  function showStamp(lvl, op, isNew) {
+    const [name, em] = ISLANDS[lvl - 1];
+    const done = clearedOps(lvl), n = done.length, gold = n >= 5;
+    const st = $('#sp-stamp');
+    st.className = 'stamp got sp-stamp' + (gold ? ' gold' : '');
+    st.style.setProperty('--c', gold ? 'var(--yellow)' : 'var(--green)');
+    st.innerHTML = `<span class="st-em">${em}</span><span class="st-nm">${name}</span><span class="st-dt">${stampDate(P.passport[lvl])}</span>`;
+    $('#sp-dots').innerHTML = Object.keys(OPS).map((o) =>
+      `<span class="${done.includes(o) ? 'on' : ''}${o === op ? ' new' : ''}">${OPS[o].sym}</span>`).join('');
+    $('#sp-msg').innerHTML = isNew ? `🛂 Bagong stamp: <b>${name}</b>!`
+      : gold ? `👑 GINTO na ang stamp ng <b>${name}</b>! Kumpleto ang 5 tatak!`
+      : `Bagong tatak: <b>${OPS[op].sym} ${OPS[op].name}</b> (${n}/5)`;
+    $('#stamppop').classList.remove('hidden');
+    st.classList.remove('slam');
+    setTimeout(() => {
+      st.classList.add('slam');
+      setTimeout(() => {
+        sfx.stamp();
+        $('#stamppop .fp-box').classList.add('thud');
+        setTimeout(() => $('#stamppop .fp-box').classList.remove('thud'), 300);
+        if (gold) { confetti(); sfx.fever(); } else confettiSmall();
+      }, 280);
+    }, 350);
   }
 
   // Big full-screen moment when a player levels up, showing what they unlocked
@@ -2753,7 +2840,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
   /* ---------------- results ---------------- */
   function endGame() {
-    let popFact = null, popLevel = null;
+    let popFact = null, popLevel = null, popStamp = null;
     if (!G || G.over) return;
     G.over = true;
     const { mode, M } = G;
@@ -2769,16 +2856,17 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       const firstClear = !failed && !(store[key] > 0);
       store[key] = Math.max(store[key] || 0, stars);
       if (failed) msg = "Sayang! Try again, kaya mo 'yan! 💪";
-      else if (mode === 'classic' && G.opts.level < ISLANDS.length) msg = `⛵ Bukas na ang susunod na region: <b>${ISLANDS[G.opts.level][0]}</b>`;
+      else if (mode === 'classic' && G.opts.level < ISLANDS.length) msg = '';   // the SUSUNOD NA REGION button already says it
       else if (mode === 'classic') msg = `🛶 Narating mo ang <b>Tawi-Tawi</b>! Kumpleto mo na ang 18 region ng Pilipinas, mula Region I hanggang BARMM!`;
       if (mode === 'classic' && !failed && !P.passport[G.opts.level]) {
         P.passport[G.opts.level] = manilaDate();
-        const [rn, re] = ISLANDS[G.opts.level - 1];
-        msg += `<div class="new-stamp"><span class="stamp got" style="--c: var(--green); --r: -8deg"><span class="st-em">${re}</span><span class="st-nm">${rn}</span><span class="st-dt">${stampDate(P.passport[G.opts.level])}</span></span><b>🛂 Bagong stamp sa passport mo!</b></div>`;
+        const lvl = G.opts.level, op = G.op;
+        popStamp = () => showStamp(lvl, op, true);
+        msg += '<div class="new-stamp"><b>🛂 Na-stamp ang passport mo!</b></div>';
       } else if (mode === 'classic' && firstClear) {
-        const n = clearedOps(G.opts.level).length;
-        msg += `<div class="new-stamp"><b>🛂 Bagong tatak: ${OPS[G.op].sym} ${OPS[G.op].name} (${n}/5)${n === 5 ? '<br>👑 GINTO na ang stamp ng ' + ISLANDS[G.opts.level - 1][0] + '! Kumpleto ang 5!' : ''}</b></div>`;
-        if (n === 5) setTimeout(() => { confetti(); sfx.fever(); }, 400);
+        const n = clearedOps(G.opts.level).length, lvl = G.opts.level, op = G.op;
+        popStamp = () => showStamp(lvl, op, false);
+        msg += `<div class="new-stamp"><b>🛂 Bagong tatak: ${OPS[G.op].sym} ${OPS[G.op].name} (${n}/5)${n === 5 ? ' · 👑 GINTO na!' : ''}</b></div>`;
       }
       if (mode === 'classic') {
         const facts = ISLANDS[G.opts.level - 1][3];
@@ -2787,7 +2875,6 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         if (failed) msg += `<div class="fact"><div class="fact-head"><b>📚 Alam mo ba?</b><span>${label}</span></div>${text}</div>`;
         else {
           popFact = () => showFact(isl, label, text);
-          msg += `<button class="fact-again" id="fact-again">📚 Basahin ulit ang "Alam mo ba?"</button>`;
         }
       }
       else msg = `Times table ${G.opts.table}: ${'★'.repeat(stars)}`;
@@ -2857,13 +2944,13 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     }
     if (mode === 'daily' && !G.ranked) parts.push('Practice lang ito · ang unang laro mo ngayong araw lang ang bilang.');
     $('#res-msg').innerHTML = parts.join('<br>');
-    // One thing at a time: "Alam mo ba?" → bonus quiz → LEVEL UP
+    // One thing at a time: "Alam mo ba?" → bonus quiz → passport stamp → LEVEL UP
     const popQuiz = renderQuiz(mode === 'classic' && stars > 0 ? G.opts.level : 0) ? () => $('#quizpop').classList.remove('hidden') : null;
     popQueue.length = 0;
-    popQueue.push(...[popFact, popQuiz, popLevel].filter(Boolean));
+    popQueue.push(...[popFact, popQuiz, popStamp, popLevel].filter(Boolean));
     if (popQueue.length) setTimeout(nextPop, 800);
-    const again = $('#fact-again');
-    if (again) again.onclick = popFact;
+    $('#res-extra').innerHTML = popFact ? '<button class="fact-again" id="fact-again">📚 Basahin ulit ang "Alam mo ba?"</button>' : '';
+    if (popFact) $('#fact-again').onclick = popFact;
     const rv = $('#res-review');
     rv.innerHTML = '';
     if (G.mistakes.length) {
@@ -2879,7 +2966,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       });
       if (G.mistakes.length > 10) rv.appendChild(el('div', 'rv-more', `+${G.mistakes.length - 10} pa`));
     } else if (G.answered) {
-      rv.appendChild(el('h4', null, '🎉 Walang mali! Perfect!'));
+      $('#res-msg').insertAdjacentHTML('afterbegin', '<div class="res-perfect">🎉 Walang mali! Perfect!</div>');
     }
     const rc = $('#res-cards');
     rc.innerHTML = '';
@@ -3320,6 +3407,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   $('.level-chip').onclick = openNameModal;
   $('#btn-cloud').onclick = openCloud;
   $('#lu-use').onclick = () => closeLevelUp(true);
+  $('#sp-ok').onclick = () => { $('#stamppop').classList.add('hidden'); nextPop(); };
   $('#fp-ok').onclick = () => { $('#factpop').classList.add('hidden'); nextPop(); };
   $('#lu-later').onclick = () => closeLevelUp(false);
   $('#reg-privacy').innerHTML = $('#cloud-new .privacy').innerHTML;
