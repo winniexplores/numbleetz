@@ -845,6 +845,53 @@ body.lang-en .res-cards:not(:empty)::before { content: '🃏 New cards'; }
 .tour-btns { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .tour-skip { background: none; border: 0; color: var(--muted); font: inherit; text-decoration: underline; cursor: pointer; }
 .tour-btns .btn { flex: 0 0 auto; padding: 10px 18px; }
+/* Play screen: question in the middle, answers in thumb reach, hype shrunk into a strip */
+#screen-play { gap: 10px; }
+#screen-play .hype { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 12px; row-gap: 2px; align-items: center; justify-items: start; min-height: 0; padding: 8px 14px; border-radius: 18px; background: rgba(255,255,255,.04); border: 1px solid var(--line); text-align: left; }
+#screen-play .hype-avatar { grid-row: 1 / 3; }
+#screen-play .hype-avatar.av-tok { width: 56px !important; height: 56px !important; font-size: 32px !important; }
+#screen-play .hype-combo { display: flex; align-items: center; gap: 10px; }
+#screen-play .hype-combo b { font-size: 38px; display: inline; }
+#screen-play .hype-combo span { font-size: 10px; max-width: 140px; line-height: 1.35; }
+#screen-play .hype-cheer { font-size: 17px !important; min-height: 0; margin: 0; }
+#screen-play .stage { margin-top: auto; margin-bottom: auto; padding: 30px 14px 18px; }
+#screen-play .question { font-size: clamp(48px, 14vw, 64px); }
+#screen-play .choices { margin-top: 28px; }
+#screen-play .choices button { min-height: 100px; }
+
+/* ☰ button */
+.menu-chip { font-size: 20px; font-weight: 800; min-width: 44px; justify-content: center; }
+
+/* ☰ menu that slides in from the right */
+.drawer-bg { position: fixed; inset: 0; z-index: 70; background: rgba(5, 3, 20, .6); }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; z-index: 71; width: min(320px, 86vw); padding: 16px 14px calc(16px + env(safe-area-inset-bottom)); overflow-y: auto;
+  background: #120c33; border-left: 2px solid var(--purple); box-shadow: -10px 0 30px rgba(0, 0, 0, .5);
+  transform: translateX(105%); transition: transform .28s ease; display: flex; flex-direction: column; gap: 6px; }
+.drawer.open { transform: none; }
+.drawer-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.drawer-head b { font-family: var(--display); letter-spacing: .12em; color: var(--pink); text-shadow: 0 0 8px var(--pink); }
+.drawer-x { background: none; border: 1px solid var(--line); color: var(--text); border-radius: 10px; width: 36px; height: 36px; font-size: 16px; cursor: pointer; }
+.dr-label { font-size: 11px; letter-spacing: .14em; color: var(--muted); margin: 10px 4px 2px; font-weight: 800; }
+.dr-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left;
+  background: rgba(255, 255, 255, .05); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px;
+  color: var(--text); font: inherit; font-weight: 700; font-size: 15px; cursor: pointer; }
+.dr-item:active { transform: scale(.98); }
+.dr-profile { justify-content: flex-start; }
+.dr-profile .dr-av { font-size: 30px; }
+.dr-profile .dr-av.av-tok { width: 48px; height: 48px; font-size: 28px; flex: none; }
+.dr-profile small { display: block; font-weight: 600; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.dr-toggle .sw { position: relative; width: 44px; height: 24px; border-radius: 99px; background: #3a3360; flex: none; transition: background .2s; }
+.dr-toggle .sw::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: left .2s; }
+.dr-toggle.on .sw { background: var(--green); }
+.dr-toggle.on .sw::after { left: 23px; }
+.dr-lang { flex-wrap: wrap; cursor: default; }
+.dr-lang .lang-pick { margin: 0; }
+.dr-lang .lang-pick button { padding: 5px 11px; }
+.dr-foot { text-align: center; color: var(--muted); font-size: 12px; margin-top: 12px; }
+
+/* Mode button turns solid for a moment when tapped */
+.btn.pressed { background: var(--c); color: #0b0820; text-shadow: none; transform: scale(1.04); box-shadow: 0 0 30px var(--c), 0 0 60px color-mix(in srgb, var(--c) 50%, transparent); transition: transform .12s, background .12s; }
+.btn.pressed small { color: rgba(11, 8, 32, .8); }
 
   </style>
 </head>
@@ -862,11 +909,7 @@ body.lang-en .res-cards:not(:empty)::before { content: '🃏 New cards'; }
           <div class="xpbar"><div id="home-xp"></div></div>
           <small class="home-title" id="home-title">Baguhan</small>
         </div>
-        <div class="row-chips">
-          <button class="chip lang-chip" id="btn-lang" title="Language: Filipino / English">FIL</button>
-          <button class="chip" id="btn-music" title="Music on/off">🎵</button>
-          <button class="chip" id="btn-sound" title="Sound effects on/off">🔊</button>
-        </div>
+        <button class="chip menu-chip" id="btn-menu" title="Menu at settings" aria-label="Menu">☰</button>
       </header>
 
       <div class="logo">
@@ -899,11 +942,6 @@ body.lang-en .res-cards:not(:empty)::before { content: '🃏 New cards'; }
           <button class="btn green" data-go="cards">🃏 CARDS <span id="home-cards">0/0</span></button>
         </div>
       </nav>
-      <button class="install-btn hidden" id="btn-install">📲 I-install sa phone (gumagana kahit offline)</button>
-      <button class="howto-btn" id="btn-howto">❓ Paano maglaro?</button>
-      <button class="teacher-link fb-link" id="btn-feedback">💬 May comment o suggestion ka?</button>
-      <button class="teacher-link" data-go="teacher">👩‍🏫 Para sa guro: gumawa ng assignment link</button>
-      <p class="foot">Walang ads · walang chat · puro math ✨</p>
     </section>
 
     <!-- ===================== CLASSIC SELECT ===================== -->
@@ -1137,6 +1175,29 @@ body.lang-en .res-cards:not(:empty)::before { content: '🃏 New cards'; }
   </div>
 
   <!-- Comments & suggestions -->
+  <!-- ☰ Menu: settings and everything that isn't a game mode -->
+  <div class="drawer-bg hidden" id="drawer-bg"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-head">
+      <b>☰ MENU</b>
+      <button class="drawer-x" id="drawer-close" aria-label="Isara">✕</button>
+    </div>
+    <button class="dr-item dr-profile" id="dr-profile"><span class="dr-av" id="dr-av">🐒</span><span><b id="dr-name">Player</b><small>Palitan ang pangalan at avatar</small></span></button>
+    <div class="dr-label">SETTINGS</div>
+    <button class="dr-item dr-toggle" id="btn-music"><span>🎵 Music</span><i class="sw"></i></button>
+    <button class="dr-item dr-toggle" id="btn-sound"><span>🔊 Sound effects</span><i class="sw"></i></button>
+    <div class="dr-item dr-lang"><span>🌐 Wika</span><div class="lang-pick" id="menu-lang"><button data-lang="fil">Filipino</button><button data-lang="en">English</button></div></div>
+    <div class="dr-label">TULONG</div>
+    <button class="dr-item" id="btn-howto">❓ Paano maglaro</button>
+    <button class="dr-item" id="dr-tour">🧭 Ipakita ulit ang tour</button>
+    <button class="dr-item" id="dr-cloud">💾 Progress at privacy</button>
+    <button class="dr-item" id="btn-feedback">💬 Comments at suggestions</button>
+    <button class="dr-item hidden" id="btn-install">📲 I-install sa phone</button>
+    <div class="dr-label">PARA SA GURO</div>
+    <button class="dr-item" data-go="teacher">👩‍🏫 Gumawa ng assignment link</button>
+    <p class="dr-foot">Walang ads · walang chat · puro math ✨</p>
+  </aside>
+
   <!-- How to play: open any time from the home screen -->
   <div class="modal hidden" id="modal-howto">
     <div class="modal-box howto">
@@ -1400,6 +1461,13 @@ body.lang-en .res-cards:not(:empty)::before { content: '🃏 New cards'; }
     '📲 Na-install na ang NumBleetz!': '📲 NumBleetz is installed!',
     'Sa Safari: pindutin ang Share ⬆️ tapos "Add to Home Screen" ➕': 'In Safari: tap Share ⬆️ then "Add to Home Screen" ➕',
     // ---- how to play + tour ----
+    '☰ MENU': '☰ MENU', 'SETTINGS': 'SETTINGS', 'TULONG': 'HELP', 'PARA SA GURO': 'FOR TEACHERS', 'Isara': 'Close', 'Menu at settings': 'Menu and settings',
+    '🎵 Music': '🎵 Music', '🔊 Sound effects': '🔊 Sound effects', '🌐 Wika': '🌐 Language',
+    '❓ Paano maglaro': '❓ How to play', '🧭 Ipakita ulit ang tour': '🧭 Show the tour again', '💾 Progress at privacy': '💾 Progress and privacy',
+    '💬 Comments at suggestions': '💬 Comments and suggestions', '📲 I-install sa phone': '📲 Install on your phone',
+    '👩‍🏫 Gumawa ng assignment link': '👩‍🏫 Make an assignment link',
+    '☰ Nandito ang settings: music, sounds, wika (Filipino o English), paano maglaro at iba pa. Handa ka na? Laro na!':
+      "☰ Settings live here: music, sounds, language (Filipino or English), how to play and more. Ready? Let's play!",
     '❓ Paano maglaro?': '❓ How to play?', '❓ PAANO MAGLARO': '❓ HOW TO PLAY',
     '👆 Paano sumagot': '👆 How to answer',
     'May tanong sa gitna ng screen. Pindutin ang tamang sagot sa 3 pagpipilian. Puwede ring i-type ang sagot gamit ang ⌨️ button sa ibaba.':
@@ -2460,8 +2528,10 @@ body.lang-en .res-cards:not(:empty)::before { content: '🃏 New cards'; }
     $('#home-level').textContent = L.lvl;
     $('#home-title').textContent = titleOf(L.lvl);
     $('#home-xp').style.width = L.pct + '%';
-    $('#btn-sound').textContent = P.sound ? '🔊' : '🔇';
-    $('#btn-music').style.opacity = P.music ? 1 : 0.4;
+    $('#btn-sound').classList.toggle('on', !!P.sound);
+    $('#btn-music').classList.toggle('on', !!P.music);
+    setAv($('#dr-av'), P.avatar);
+    $('#dr-name').textContent = P.name || 'Player';
     const best = P.best.ranked || 0, R = rankOf(best);
     $('#home-rank-badge').textContent = R.icon;
     $('#home-rank-name').textContent = R.name;
@@ -3644,8 +3714,7 @@ body.lang-en .res-cards:not(:empty)::before { content: '🃏 New cards'; }
     ['.menu [data-go=daily]', '🌟 DAILY HAMON: bagong hamon araw-araw. Maglaro araw-araw para tumaas ang 🔥 streak mo!'],
     ['.menu [data-go=hagdan]', '🪜 HAGDAN: pumili ng isang operation at umakyat. Pahirap nang pahirap!'],
     ['.menu [data-go=mini]', '🕹️ MINI GAMES: Jeepney Rush, Sari-Sari Store, Tama o Mali at Times Tables.'],
-    ['#btn-lang', '🌐 Filipino o English? Pindutin ito para magpalit ng wika.'],
-    ['#btn-howto', '❓ Kapag nalito ka, nandito ang gabay kung paano maglaro. Handa ka na? Laro na!']
+    ['#btn-menu', '☰ Nandito ang settings: music, sounds, wika (Filipino o English), paano maglaro at iba pa. Handa ka na? Laro na!']
   ];
   let tourAt = 0;
   function startTour() {
@@ -3883,8 +3952,39 @@ body.lang-en .res-cards:not(:empty)::before { content: '🃏 New cards'; }
   });
   document.addEventListener('click', (e) => {
     const b = e.target.closest('[data-go]');
-    if (b) go(b.dataset.go);
+    if (!b || b.classList.contains('pressed')) return;
+    closeDrawer();
+    // Mode buttons light up solid for a moment so kids see what they picked
+    if (b.classList.contains('btn') && b.closest('#screen-home')) {
+      b.classList.add('pressed');
+      sfx.tap();
+      setTimeout(() => { b.classList.remove('pressed'); go(b.dataset.go); }, 260);
+    } else go(b.dataset.go);
   });
+
+  /* ---------------- ☰ menu ---------------- */
+  function openDrawer() {
+    renderHome();
+    $('#drawer-bg').classList.remove('hidden');
+    $('#drawer').classList.add('open');
+    $('#drawer').setAttribute('aria-hidden', 'false');
+  }
+  function closeDrawer() {
+    $('#drawer-bg').classList.add('hidden');
+    $('#drawer').classList.remove('open');
+    $('#drawer').setAttribute('aria-hidden', 'true');
+  }
+  $('#btn-menu').onclick = () => { sfx.tap(); openDrawer(); };
+  $('#drawer-close').onclick = closeDrawer;
+  $('#drawer-bg').onclick = closeDrawer;
+  // swipe right to close
+  let drX = null;
+  $('#drawer').addEventListener('touchstart', (e) => { drX = e.touches[0].clientX; }, { passive: true });
+  $('#drawer').addEventListener('touchend', (e) => { if (drX != null && e.changedTouches[0].clientX - drX > 60) closeDrawer(); drX = null; });
+  $('#dr-profile').onclick = () => { closeDrawer(); $('#btn-profile').click(); };
+  $('#dr-tour').onclick = () => { closeDrawer(); startTour(); };
+  $('#dr-cloud').onclick = () => { closeDrawer(); openCloud(); };
+  ['#btn-howto', '#btn-feedback', '#btn-install'].forEach((id) => $(id).addEventListener('click', closeDrawer));
   $('#keypad').addEventListener('click', (e) => { const b = e.target.closest('[data-k]'); if (b) press(b.dataset.k); });
   $('#choices').addEventListener('click', (e) => pickChoice(e.target.closest('button')));
   $('#btn-input').onclick = toggleInput;
@@ -3933,11 +4033,9 @@ body.lang-en .res-cards:not(:empty)::before { content: '🃏 New cards'; }
     renderLang();
   }
   function renderLang() {
-    $('#btn-lang').textContent = P.lang === 'en' ? 'EN' : 'FIL';
-    $$('#reg-lang button').forEach((b) => b.classList.toggle('on', b.dataset.lang === (P.lang || 'fil')));
+    $$('#reg-lang button, #menu-lang button').forEach((b) => b.classList.toggle('on', b.dataset.lang === (P.lang || 'fil')));
   }
-  $('#btn-lang').onclick = () => { sfx.tap(); setLang(P.lang === 'en' ? 'fil' : 'en'); toast(P.lang === 'en' ? '🌐 English' : '🌐 Filipino', 1200); };
-  $$('#reg-lang button').forEach((b) => { b.onclick = () => { sfx.tap(); setLang(b.dataset.lang); }; });
+  $$('#reg-lang button, #menu-lang button').forEach((b) => { b.onclick = () => { sfx.tap(); setLang(b.dataset.lang); }; });
   renderLang();
   $('#btn-sound').onclick = () => { P.sound = !P.sound; save(); renderHome(); };
   $('#btn-music').onclick = () => {
