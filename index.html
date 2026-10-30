@@ -637,6 +637,31 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .install-btn { display: block; width: 100%; margin: 10px 0 0; padding: 10px 14px; border-radius: 14px; border: 1px solid rgba(46, 242, 255, .5); background: rgba(46, 242, 255, .08); color: var(--cyan); font: inherit; font-weight: 800; font-size: 15px; cursor: pointer; }
 .install-btn small { display: block; color: var(--muted); font-weight: 600; font-size: 12px; margin-top: 2px; }
 
+/* level unlocks */
+.level-chip { flex-wrap: wrap; row-gap: 2px; }
+.home-title { flex-basis: 100%; font-size: 10px; color: var(--yellow); letter-spacing: .3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lvl-info { margin: 4px 0 8px; font-size: 14px; }
+.lvl-info small { display: block; opacity: .75; font-size: 12px; margin-top: 2px; }
+.avatars button { position: relative; }
+.avatars button.locked span { filter: grayscale(1); opacity: .35; }
+.avatars button.locked small { position: absolute; left: 0; right: 0; bottom: 2px; font-size: 10px; font-weight: 700; color: var(--yellow); text-shadow: 0 1px 3px #000; }
+.level-chip { cursor: pointer; }
+
+/* save code */
+#modal-cloud .modal-box { gap: 10px; }
+.cloud-new { display: flex; flex-direction: column; gap: 10px; }
+.cloud-new.hidden { display: none; }
+.cloud-hr { width: 100%; border: 0; border-top: 1px solid rgba(255,255,255,.12); margin: 4px 0; }
+.cloud-code { font-family: var(--display); font-size: 26px; letter-spacing: .06em; word-break: break-word; color: var(--yellow); text-shadow: 0 0 12px var(--yellow); text-align: center; padding: 8px; border: 2px dashed var(--yellow); border-radius: 14px; }
+
+.privacy { text-align: left; font-size: 13px; background: var(--panel); border-radius: 12px; padding: 8px 12px; }
+.privacy summary { cursor: pointer; font-weight: 700; color: var(--cyan); }
+.privacy p { margin: 6px 0 0; font-size: 13px; }
+.consent { display: flex; gap: 8px; align-items: flex-start; text-align: left; font-size: 13px; color: var(--muted); }
+.modal-box .consent input { padding: 0; border: 0; width: 20px; height: 20px; flex: none; margin: 0; accent-color: var(--pink); }
+.linkish { background: none; border: 0; color: var(--muted); font-size: 12px; text-decoration: underline; cursor: pointer; padding: 4px; }
+.modal-box { max-height: calc(100dvh - 32px); overflow-y: auto; }
+
   </style>
 </head>
 <body>
@@ -647,10 +672,11 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     <!-- ===================== HOME ===================== -->
     <section id="screen-home" class="screen active">
       <header class="topbar">
-        <button class="chip" id="btn-profile" title="Change name and avatar"><span id="home-avatar">🐒</span> <span id="home-name">Player</span></button>
+        <button class="chip" id="btn-profile" title="Palitan ang pangalan at avatar"><span id="home-avatar">🐒</span> <span id="home-name">Player</span></button>
         <div class="chip level-chip">
           <span>Lv.<b id="home-level">1</b></span>
           <div class="xpbar"><div id="home-xp"></div></div>
+          <small class="home-title" id="home-title">Baguhan</small>
         </div>
         <div class="row-chips">
           <button class="chip" id="btn-music" title="Music on/off">🎵</button>
@@ -668,7 +694,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         <div class="rank-badge" id="home-rank-badge">🌱</div>
         <div class="rank-info">
           <div class="rank-name" id="home-rank-name">BAGUHAN</div>
-          <div class="rank-sub">Ranked best <b id="home-rank-best">0</b> · ⭐ <b id="home-stars">0</b></div>
+          <div class="rank-sub">Best sa Ranked <b id="home-rank-best">0</b> · ⭐ <b id="home-stars">0</b></div>
           <div class="rank-next" id="home-rank-next"></div>
         </div>
       </button>
@@ -679,9 +705,9 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       <nav class="menu">
         <button class="btn big yellow hidden" id="hw-banner"></button>
         <button class="btn big pink" data-go="ranked">🏆 RANKED<small>3 buhay · walang timer · patagalan, pataasan ng score</small></button>
-        <button class="btn big blue" data-go="daily">🌟 DAILY HAMON<small id="daily-sub">Same 20 questions for everyone today</small></button>
-        <button class="btn big cyan" data-go="classic"><svg class="ph-flag" viewBox="0 0 30 15" aria-label="Philippine flag"><rect width="30" height="7.5" fill="#0038a8"/><rect y="7.5" width="30" height="7.5" fill="#ce1126"/><path d="M0 0 L13 7.5 L0 15 Z" fill="#fff"/><circle cx="4.6" cy="7.5" r="1.7" fill="#fcd116"/><g fill="#fcd116"><circle cx="1.6" cy="2.2" r=".7"/><circle cx="1.6" cy="12.8" r=".7"/><circle cx="10.6" cy="7.5" r=".7"/></g></svg> LAKBAY PILIPINAS<small>Classic · 18 regions · Batanes hanggang Tawi-Tawi</small></button>
-        <button class="btn big green" data-go="hagdan">🪜 HAGDAN · LEVEL UP<small>One operation · gets harder the longer you play</small></button>
+        <button class="btn big blue" data-go="daily">🌟 DAILY HAMON<small id="daily-sub">Parehong 20 tanong para sa lahat</small></button>
+        <button class="btn big cyan" data-go="classic"><svg class="ph-flag" viewBox="0 0 30 15" aria-label="Philippine flag"><rect width="30" height="7.5" fill="#0038a8"/><rect y="7.5" width="30" height="7.5" fill="#ce1126"/><path d="M0 0 L13 7.5 L0 15 Z" fill="#fff"/><circle cx="4.6" cy="7.5" r="1.7" fill="#fcd116"/><g fill="#fcd116"><circle cx="1.6" cy="2.2" r=".7"/><circle cx="1.6" cy="12.8" r=".7"/><circle cx="10.6" cy="7.5" r=".7"/></g></svg> LAKBAY PILIPINAS<small>18 region · Batanes hanggang Tawi-Tawi</small></button>
+        <button class="btn big green" data-go="hagdan">🪜 HAGDAN · LEVEL UP<small>Isang operation · humihirap habang umaakyat</small></button>
         <button class="btn big purple" data-go="mini">🕹️ MINI GAMES<small>Jeepney Rush · Sari-Sari · Tama o Mali · Tables</small></button>
         <div class="row">
           <button class="btn yellow" data-go="board">📊 LEADERBOARD</button>
@@ -694,8 +720,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
     <!-- ===================== CLASSIC SELECT ===================== -->
     <section id="screen-classic" class="screen">
-      <header class="bar"><button class="back" data-go="home">‹ BACK</button><h3><svg class="ph-flag" viewBox="0 0 30 15" aria-label="Philippine flag"><rect width="30" height="7.5" fill="#0038a8"/><rect y="7.5" width="30" height="7.5" fill="#ce1126"/><path d="M0 0 L13 7.5 L0 15 Z" fill="#fff"/><circle cx="4.6" cy="7.5" r="1.7" fill="#fcd116"/><g fill="#fcd116"><circle cx="1.6" cy="2.2" r=".7"/><circle cx="1.6" cy="12.8" r=".7"/><circle cx="10.6" cy="7.5" r=".7"/></g></svg> LAKBAY PILIPINAS</h3><span></span></header>
-      <p class="hint-text">Choose your route, then travel all 18 regions of the Philippines, Batanes to Tawi-Tawi. 15 questions, 3 lives. Earn ⭐ to unlock the next region and learn an <b>Alam mo ba?</b> fact.</p>
+      <header class="bar"><button class="back" data-go="home">‹ BALIK</button><h3><svg class="ph-flag" viewBox="0 0 30 15" aria-label="Philippine flag"><rect width="30" height="7.5" fill="#0038a8"/><rect y="7.5" width="30" height="7.5" fill="#ce1126"/><path d="M0 0 L13 7.5 L0 15 Z" fill="#fff"/><circle cx="4.6" cy="7.5" r="1.7" fill="#fcd116"/><g fill="#fcd116"><circle cx="1.6" cy="2.2" r=".7"/><circle cx="1.6" cy="12.8" r=".7"/><circle cx="10.6" cy="7.5" r=".7"/></g></svg> LAKBAY PILIPINAS</h3><span></span></header>
+      <p class="hint-text">Pumili ng route, tapos libutin ang 18 region ng Pilipinas, mula Batanes hanggang Tawi-Tawi. 15 tanong, 3 buhay. Kumuha ng ⭐ para mabuksan ang susunod na region at may bagong <b>Alam mo ba?</b> ka.</p>
       <div class="ops" id="classic-ops"></div>
       <div class="map-wrap">
         <svg id="ph-map" class="ph-map" viewBox="0 0 200 334" role="img" aria-label="Mapa ng Pilipinas"></svg>
@@ -710,7 +736,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
     <!-- ===================== TEACHER ===================== -->
     <section id="screen-teacher" class="screen">
-      <header class="bar"><button class="back" data-go="home">‹ BACK</button><h3>👩‍🏫 PARA SA GURO</h3><span></span></header>
+      <header class="bar"><button class="back" data-go="home">‹ BALIK</button><h3>👩‍🏫 PARA SA GURO</h3><span></span></header>
       <p class="hint-text">Gumawa ng link na naka-set na sa isang topic. Pag binuksan ito ng estudyante, may <b>📌 Takdang-aralin</b> button sa home nila. Lalabas ang resulta sa Google Sheet mo (Mode: <b>assign</b>).</p>
       <div class="teacher-form">
         <label>Topic<select id="t-topic"></select></label>
@@ -727,7 +753,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
     <!-- ===================== PASSPORT ===================== -->
     <section id="screen-passport" class="screen">
-      <header class="bar"><button class="back" data-go="classic">‹ BACK</button><h3>🛂 PASSPORT</h3><span></span></header>
+      <header class="bar"><button class="back" data-go="classic">‹ BALIK</button><h3>🛂 PASSPORT</h3><span></span></header>
       <div class="passport-cover">
         <div class="pc-title">REPUBLIKA NG PILIPINAS</div>
         <div class="pc-sub">NumBleetz Lakbay Passport</div>
@@ -742,8 +768,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
     <!-- ===================== HAGDAN (LEVEL UP) ===================== -->
     <section id="screen-hagdan" class="screen">
-      <header class="bar"><button class="back" data-go="home">‹ BACK</button><h3>HAGDAN</h3><span></span></header>
-      <p class="hint-text">Pick one operation. Every 8 correct answers you climb a step and it gets harder: whole numbers, bigger numbers, signed numbers, then decimals. 3 lives!</p>
+      <header class="bar"><button class="back" data-go="home">‹ BALIK</button><h3>HAGDAN</h3><span></span></header>
+      <p class="hint-text">Pumili ng isang operation. Bawat 8 tamang sagot, aakyat ka ng isang step at hihirap ito: whole numbers, mas malalaking numero, signed numbers, tapos decimals. 3 buhay!</p>
       <div class="ops" id="hagdan-ops"></div>
       <ol class="ladder" id="hagdan-steps"></ol>
       <div class="mini-best" id="hagdan-best"></div>
@@ -752,7 +778,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
     <!-- ===================== MINI GAMES ===================== -->
     <section id="screen-mini" class="screen">
-      <header class="bar"><button class="back" data-go="home">‹ BACK</button><h3>MINI GAMES</h3><span></span></header>
+      <header class="bar"><button class="back" data-go="home">‹ BALIK</button><h3>MINI GAMES</h3><span></span></header>
       <div class="carousel">
         <button class="arrow" id="mini-prev" aria-label="Previous">‹</button>
         <div class="mini-card" id="mini-card">
@@ -784,7 +810,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         <div id="hud-progress"></div>
         <div class="combo" id="hud-combo"></div>
       </div>
-      <div class="combo-meter" id="combo-meter" title="Answer before the bar runs out to keep your combo">
+      <div class="combo-meter" id="combo-meter" title="Sumagot bago maubos ang bar para tuloy ang combo">
         <div class="combo-track"><div id="combo-fill"></div></div>
         <span id="combo-mult">×1</span>
       </div>
@@ -815,8 +841,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         <button data-k="del" class="fn">⌫</button><button data-k="0">0</button><button data-k="ok" class="fn ok">✓</button>
       </div>
       <div class="play-tools">
-        <button class="btn small ghost hidden" id="btn-hint">💡 Tulong (hint)</button>
-        <button class="btn small ghost" id="btn-input">⌨️ Type instead</button>
+        <button class="btn small ghost hidden" id="btn-hint">💡 Tulong</button>
+        <button class="btn small ghost" id="btn-input">⌨️ I-type ang sagot</button>
       </div>
     </section>
 
@@ -826,7 +852,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       <div class="res-stars" id="res-stars">☆☆☆</div>
       <div class="res-score" id="res-score">0</div>
       <div class="res-grid">
-        <div><b id="res-correct">0</b><small>CORRECT</small></div>
+        <div><b id="res-correct">0</b><small>TAMA</small></div>
         <div><b id="res-acc">0%</b><small>ACCURACY</small></div>
         <div><b id="res-combo">0</b><small>BEST COMBO</small></div>
         <div><b id="res-xp">+0</b><small>XP</small></div>
@@ -846,11 +872,11 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
     <!-- ===================== LEADERBOARD ===================== -->
     <section id="screen-board" class="screen">
-      <header class="bar"><button class="back" data-go="home">‹ BACK</button><h3>LEADERBOARD</h3><button class="back" id="board-refresh" title="Refresh">↻</button></header>
+      <header class="bar"><button class="back" data-go="home">‹ BALIK</button><h3>LEADERBOARD</h3><button class="back" id="board-refresh" title="I-refresh">↻</button></header>
       <div class="tabs" id="board-tabs"></div>
       <div class="tabs small" id="board-period">
-        <button data-period="all" class="active">ALL TIME</button>
-        <button data-period="week">THIS WEEK</button>
+        <button data-period="all" class="active">LAHAT</button>
+        <button data-period="week">NGAYONG LINGGO</button>
       </div>
       <div class="board-status" id="board-status"></div>
       <ol class="board" id="board-list"></ol>
@@ -858,7 +884,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
     <!-- ===================== CARDS ===================== -->
     <section id="screen-cards" class="screen">
-      <header class="bar"><button class="back" data-go="home">‹ BACK</button><h3>PINOY CARDS</h3><span id="cards-count"></span></header>
+      <header class="bar"><button class="back" data-go="home">‹ BALIK</button><h3>PINOY CARDS</h3><span id="cards-count"></span></header>
       <div class="cards-progress"><div id="cards-bar"></div></div>
       <div class="cards" id="cards-grid"></div>
     </section>
@@ -870,10 +896,41 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     <div class="modal-box">
       <img class="modal-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM6YzJwYT0iaHR0cDovL2MycGEub3JnL21hbmlmZXN0Ij4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ051bSIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzlmZmNmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzJlZjJmZiIvPjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ0JsIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmYzZGYyIi8+PHN0b3Agb2Zmc2V0PSIwLjYiIHN0b3AtY29sb3I9IiNmZjNkNmUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmQyM2QiLz48L2xpbmVhckdyYWRpZW50Pgo8bGluZWFyR3JhZGllbnQgaWQ9ImdCb2x0IiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmNmIwIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZmZkMjNkIi8+PC9saW5lYXJHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJnQmciIGN4PSIwLjUiIGN5PSIwLjQ1IiByPSIwLjc1Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMxZDEzNTAiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwNzA2MWEiLz48L3JhZGlhbEdyYWRpZW50Pgo8ZmlsdGVyIGlkPSJnbG93IiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj48ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI3IiByZXN1bHQ9ImIiLz48ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImIiLz48ZmVNZXJnZU5vZGUgaW49ImIiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+PC9maWx0ZXI+CjxmaWx0ZXIgaWQ9Imdsb3dTIiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj48ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIzLjUiIHJlc3VsdD0iYiIvPjxmZU1lcmdlPjxmZU1lcmdlTm9kZSBpbj0iYiIvPjxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPjwvZmVNZXJnZT48L2ZpbHRlcj4KPGZpbHRlciBpZD0ibmVvbiIgeD0iLTUwJSIgeT0iLTEwMCUiIHdpZHRoPSIyMDAlIiBoZWlnaHQ9IjMwMCUiPgo8ZmVHYXVzc2lhbkJsdXIgaW49IlNvdXJjZUFscGhhIiBzdGREZXZpYXRpb249IjQiIHJlc3VsdD0iYSIvPjxmZUZsb29kIGZsb29kLWNvbG9yPSIjZmZmZmZmIi8+PGZlQ29tcG9zaXRlIGluMj0iYSIgb3BlcmF0b3I9ImluIiByZXN1bHQ9InciLz4KPGZlR2F1c3NpYW5CbHVyIGluPSJTb3VyY2VBbHBoYSIgc3RkRGV2aWF0aW9uPSIxMiIgcmVzdWx0PSJiIi8+PGZlRmxvb2QgZmxvb2QtY29sb3I9IiMyZWYyZmYiLz48ZmVDb21wb3NpdGUgaW4yPSJiIiBvcGVyYXRvcj0iaW4iIHJlc3VsdD0iYyIvPgo8ZmVHYXVzc2lhbkJsdXIgaW49IlNvdXJjZUFscGhhIiBzdGREZXZpYXRpb249IjI2IiByZXN1bHQ9ImQiLz48ZmVGbG9vZCBmbG9vZC1jb2xvcj0iIzNkN2JmZiIvPjxmZUNvbXBvc2l0ZSBpbjI9ImQiIG9wZXJhdG9yPSJpbiIgcmVzdWx0PSJlIi8+CjxmZU1lcmdlPjxmZU1lcmdlTm9kZSBpbj0iZSIvPjxmZU1lcmdlTm9kZSBpbj0iZSIvPjxmZU1lcmdlTm9kZSBpbj0iYyIvPjxmZU1lcmdlTm9kZSBpbj0iYyIvPjxmZU1lcmdlTm9kZSBpbj0idyIvPjxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPjwvZmVNZXJnZT48L2ZpbHRlcj4KPGZpbHRlciBpZD0icGlua0dsb3ciIHg9Ii0zMCUiIHk9Ii0xMDAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIzMDAlIj48ZmVHYXVzc2lhbkJsdXIgaW49IlNvdXJjZUFscGhhIiBzdGREZXZpYXRpb249IjciIHJlc3VsdD0iYiIvPjxmZUZsb29kIGZsb29kLWNvbG9yPSIjZmYzZGYyIi8+PGZlQ29tcG9zaXRlIGluMj0iYiIgb3BlcmF0b3I9ImluIiByZXN1bHQ9ImMiLz48ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImMiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+PC9maWx0ZXI+CjxmaWx0ZXIgaWQ9InN1bkdsb3ciIHg9Ii04MCUiIHk9Ii04MCUiIHdpZHRoPSIyNjAlIiBoZWlnaHQ9IjI2MCUiPjxmZUdhdXNzaWFuQmx1ciBpbj0iU291cmNlQWxwaGEiIHN0ZERldmlhdGlvbj0iOCIgcmVzdWx0PSJiIi8+PGZlRmxvb2QgZmxvb2QtY29sb3I9IiNmZmQyM2QiLz48ZmVDb21wb3NpdGUgaW4yPSJiIiBvcGVyYXRvcj0iaW4iIHJlc3VsdD0iYyIvPjxmZUdhdXNzaWFuQmx1ciBpbj0iU291cmNlQWxwaGEiIHN0ZERldmlhdGlvbj0iMjAiIHJlc3VsdD0iZCIvPjxmZUZsb29kIGZsb29kLWNvbG9yPSIjZmY5ZDAwIi8+PGZlQ29tcG9zaXRlIGluMj0iZCIgb3BlcmF0b3I9ImluIiByZXN1bHQ9ImUiLz48ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImUiLz48ZmVNZXJnZU5vZGUgaW49ImMiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+PC9maWx0ZXI+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ0JnMiIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzA3MDYxYSIvPjxzdG9wIG9mZnNldD0iMC41NSIgc3RvcC1jb2xvcj0iIzE0MGQzZCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzJhMGY0YSIvPjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTIiIGZpbGw9InVybCgjZ0JnMikiLz48Y2xpcFBhdGggaWQ9ImNsNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIvPjwvY2xpcFBhdGg+PGcgY2xpcC1wYXRoPSJ1cmwoI2NsNTEyKSI+PGxpbmUgeDE9Ii00NC4wIiB5MT0iNDIyIiB4Mj0iLTEyNDQuMCIgeTI9IjUxMiIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4zIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iLTE0LjAiIHkxPSI0MjIiIHgyPSItMTA5NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIxNi4wIiB5MT0iNDIyIiB4Mj0iLTk0NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI0Ni4wIiB5MT0iNDIyIiB4Mj0iLTc5NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI3Ni4wIiB5MT0iNDIyIiB4Mj0iLTY0NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIxMDYuMCIgeTE9IjQyMiIgeDI9Ii00OTQuMCIgeTI9IjUxMiIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4zIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iMTM2LjAiIHkxPSI0MjIiIHgyPSItMzQ0LjAiIHkyPSI1MTIiIHN0cm9rZT0iIzliNmJmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMyIgc3Ryb2tlLXdpZHRoPSIyIi8+PGxpbmUgeDE9IjE2Ni4wIiB5MT0iNDIyIiB4Mj0iLTE5NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIxOTYuMCIgeTE9IjQyMiIgeDI9Ii00NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIyMjYuMCIgeTE9IjQyMiIgeDI9IjEwNi4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIyNTYuMCIgeTE9IjQyMiIgeDI9IjI1Ni4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIyODYuMCIgeTE9IjQyMiIgeDI9IjQwNi4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIzMTYuMCIgeTE9IjQyMiIgeDI9IjU1Ni4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIzNDYuMCIgeTE9IjQyMiIgeDI9IjcwNi4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIzNzYuMCIgeTE9IjQyMiIgeDI9Ijg1Ni4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI0MDYuMCIgeTE9IjQyMiIgeDI9IjEwMDYuMCIgeTI9IjUxMiIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4zIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iNDM2LjAiIHkxPSI0MjIiIHgyPSIxMTU2LjAiIHkyPSI1MTIiIHN0cm9rZT0iIzliNmJmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMyIgc3Ryb2tlLXdpZHRoPSIyIi8+PGxpbmUgeDE9IjQ2Ni4wIiB5MT0iNDIyIiB4Mj0iMTMwNi4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI0OTYuMCIgeTE9IjQyMiIgeDI9IjE0NTYuMCIgeTI9IjUxMiIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4zIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iNTI2LjAiIHkxPSI0MjIiIHgyPSIxNjA2LjAiIHkyPSI1MTIiIHN0cm9rZT0iIzliNmJmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMyIgc3Ryb2tlLXdpZHRoPSIyIi8+PGxpbmUgeDE9IjU1Ni4wIiB5MT0iNDIyIiB4Mj0iMTc1Ni4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIwIiB5MT0iNDIyIiB4Mj0iNTEyIiB5Mj0iNDIyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjE1IiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iMCIgeTE9IjQzNiIgeDI9IjUxMiIgeTI9IjQzNiIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4yMSIgc3Ryb2tlLXdpZHRoPSIyIi8+PGxpbmUgeDE9IjAiIHkxPSI0NTQiIHgyPSI1MTIiIHkyPSI0NTQiIHN0cm9rZT0iIzliNmJmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMjciIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIwIiB5MT0iNDc4IiB4Mj0iNTEyIiB5Mj0iNDc4IiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMzIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iMCIgeTE9IjUwOCIgeDI9IjUxMiIgeTI9IjUwOCIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4zOSIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9nPgo8cmVjdCB4PSIxOCIgeT0iMTgiIHdpZHRoPSI0NzYiIGhlaWdodD0iNDc2IiByeD0iOTYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzliNmJmZiIgc3Ryb2tlLXdpZHRoPSI2IiBvcGFjaXR5PSIwLjkiIGZpbHRlcj0idXJsKCNwaW5rR2xvdykiLz4KPHJlY3QgeD0iMTIxLjAiIHk9Ijc1LjAiIHdpZHRoPSIxMTgiIGhlaWdodD0iMTE4IiByeD0iMjYiIGZpbGw9IiMxMjBjMzMiIHN0cm9rZT0iIzNkZmY5YSIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvd1MpIi8+CjxwYXRoIGQ9Ik0xNzkuOTk5OTk5OTk5OTk5OTcgMTY3LjUwNFExNzUuNzM2IDE2Ny41MDQgMTczLjk2OCAxNjYuMjA0UTE3Mi4yIDE2NC45MDQgMTcxLjgzNTk5OTk5OTk5OTk4IDE2Mi45MjhRMTcxLjQ3MTk5OTk5OTk5OTk4IDE2MC45NTIgMTcxLjQ3MTk5OTk5OTk5OTk4IDE1OC44NzJWMTI3Ljk4NDAwMDAwMDAwMDAxUTE3MS40NzE5OTk5OTk5OTk5OCAxMjUuOTA0IDE3MS44MzU5OTk5OTk5OTk5OCAxMjMuOThRMTcyLjIgMTIyLjA1NjAwMDAwMDAwMDAxIDE3NC4wMTk5OTk5OTk5OTk5OCAxMjAuODA4UTE3NS44Mzk5OTk5OTk5OTk5NyAxMTkuNTYgMTgwLjEwMzk5OTk5OTk5OTk4IDExOS41NlExODQuMzY4IDExOS41NiAxODYuMTM2IDEyMC44MDhRMTg3LjkwNCAxMjIuMDU2MDAwMDAwMDAwMDEgMTg4LjI2Nzk5OTk5OTk5OTk3IDEyNC4wMzIwMDAwMDAwMDAwMVExODguNjMxOTk5OTk5OTk5OTggMTI2LjAwODAwMDAwMDAwMDAxIDE4OC42MzE5OTk5OTk5OTk5OCAxMjguMDg4VjE1OC45NzZRMTg4LjYzMTk5OTk5OTk5OTk4IDE2MS4wNTYgMTg4LjI2Nzk5OTk5OTk5OTk3IDE2My4wMzJRMTg3LjkwNCAxNjUuMDA4IDE4Ni4xMzYgMTY2LjI1NlExODQuMzY4IDE2Ny41MDQgMTc5Ljk5OTk5OTk5OTk5OTk3IDE2Ny41MDRaTTE2My45ODM5OTk5OTk5OTk5OCAxNTIuMTEyUTE2Mi4xMTIgMTUyLjExMiAxNjAuMjQgMTUxLjc0OFExNTguMzY4IDE1MS4zODQwMDAwMDAwMDAwMSAxNTcuMTcxOTk5OTk5OTk5OTcgMTQ5LjU2NDAwMDAwMDAwMDAyUTE1NS45NzU5OTk5OTk5OTk5NyAxNDcuNzQ0IDE1NS45NzU5OTk5OTk5OTk5NyAxNDMuNDhRMTU1Ljk3NTk5OTk5OTk5OTk3IDEzOS4xMTIgMTU3LjI3NTk5OTk5OTk5OTk4IDEzNy4zNDRRMTU4LjU3NiAxMzUuNTc2IDE2MC42MDM5OTk5OTk5OTk5OCAxMzUuMjEyUTE2Mi42MzE5OTk5OTk5OTk5OCAxMzQuODQ4IDE2NC43MTIgMTM0Ljg0OEgxOTUuNDk1OTk5OTk5OTk5OThRMTk3LjU3NTk5OTk5OTk5OTk2IDEzNC44NDggMTk5LjU1MTk5OTk5OTk5OTk2IDEzNS4yMTJRMjAxLjUyNzk5OTk5OTk5OTk2IDEzNS41NzYgMjAyLjc3NTk5OTk5OTk5OTk1IDEzNy4zOTYwMDAwMDAwMDAwMlEyMDQuMDIzOTk5OTk5OTk5OTcgMTM5LjIxNiAyMDQuMDIzOTk5OTk5OTk5OTcgMTQzLjU4NFEyMDQuMDIzOTk5OTk5OTk5OTcgMTQ3Ljg0OCAyMDIuODI3OTk5OTk5OTk5OTcgMTQ5LjYxNlEyMDEuNjMxOTk5OTk5OTk5OTggMTUxLjM4NDAwMDAwMDAwMDAxIDE5OS44MTE5OTk5OTk5OTk5OCAxNTEuNzQ4UTE5Ny45OTIgMTUyLjExMiAxOTYuMDE1OTk5OTk5OTk5OTYgMTUyLjExMloiIGZpbGw9IiMzZGZmOWEiIGZpbHRlcj0idXJsKCNnbG93UykiLz4KPHJlY3QgeD0iMjczLjAiIHk9Ijc1LjAiIHdpZHRoPSIxMTgiIGhlaWdodD0iMTE4IiByeD0iMjYiIGZpbGw9IiMxMjBjMzMiIHN0cm9rZT0iI2ZmM2RmMiIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvd1MpIi8+CjxwYXRoIGQ9Ik0zMTMuNDg4IDE1Mi4zMlEzMTEuODI0IDE1Mi4zMiAzMDkuOTUyIDE1MS45NTYwMDAwMDAwMDAwMlEzMDguMDgwMDAwMDAwMDAwMDQgMTUxLjU5MiAzMDYuNzI4MDAwMDAwMDAwMDcgMTQ5LjcyMDAwMDAwMDAwMDAzUTMwNS4zNzYwMDAwMDAwMDAwMyAxNDcuODQ4IDMwNS4zNzYwMDAwMDAwMDAwMyAxNDMuMzc2UTMwNS4zNzYwMDAwMDAwMDAwMyAxMzkuMDA4IDMwNi43MjgwMDAwMDAwMDAwNyAxMzcuMjRRMzA4LjA4MDAwMDAwMDAwMDA0IDEzNS40NzIgMzEwLjAwNCAxMzUuMTA4UTMxMS45MjggMTM0Ljc0NCAzMTMuNTkyMDAwMDAwMDAwMDQgMTM0Ljc0NEgzNTAuNDA4UTM1Mi4xNzYwMDAwMDAwMDAwNCAxMzQuNzQ0IDM1NC4xIDEzNS4xMDhRMzU2LjAyNCAxMzUuNDcyIDM1Ny4zMjQgMTM3LjI5MlEzNTguNjI0IDEzOS4xMTIgMzU4LjYyNCAxNDMuNDhRMzU4LjYyNCAxNDcuOTUyIDM1Ny4zMjQgMTQ5Ljc3MlEzNTYuMDI0IDE1MS41OTIgMzU0LjE1MjAwMDAwMDAwMDA0IDE1MS45NTYwMDAwMDAwMDAwMlEzNTIuMjgwMDAwMDAwMDAwMDMgMTUyLjMyIDM1MC4zMDQwMDAwMDAwMDAwMyAxNTIuMzJaIiBmaWxsPSIjZmYzZGYyIiBmaWx0ZXI9InVybCgjZ2xvd1MpIi8+CjxyZWN0IHg9IjEyMS4wIiB5PSIyMjcuMCIgd2lkdGg9IjExOCIgaGVpZ2h0PSIxMTgiIHJ4PSIyNiIgZmlsbD0iIzEyMGMzMyIgc3Ryb2tlPSIjZmZkMjNkIiBzdHJva2Utd2lkdGg9IjYiIGZpbHRlcj0idXJsKCNnbG93UykiLz4KPHBhdGggZD0iTTE5Mi4yMiAyOTYuNTIgMjAwLjIyOCAzMDQuNTI4UTIwMi42MiAzMDYuNzEyIDIwMy40IDMwOC42MzU5OTk5OTk5OTk5N1EyMDQuMTggMzEwLjU2IDIwMy40NTIgMzEyLjQ4NDAwMDAwMDAwMDA0UTIwMi43MjQgMzE0LjQwOCAyMDAuNDM2IDMxNi42OTZRMTk4LjE0OCAzMTguOTg0IDE5Ni4yMjQgMzE5Ljc2NFExOTQuMyAzMjAuNTQ0IDE5Mi4zNzYgMzE5Ljc2NFExOTAuNDUyIDMxOC45ODQgMTg4LjE2NCAzMTYuNjk2TDE4MC4wNTIgMzA4LjU4NEwxNzEuOTQgMzE2LjY5NlExNjkuNjUyIDMxOC45ODQgMTY3LjcyOCAzMTkuNzY0UTE2NS44MDQgMzIwLjU0NCAxNjMuODggMzE5Ljc2NFExNjEuOTU2IDMxOC45ODQgMTU5LjY2OCAzMTYuNjk2UTE1Ny4zOCAzMTQuNDA4IDE1Ni42NTIgMzEyLjQ4NDAwMDAwMDAwMDA0UTE1NS45MjQgMzEwLjU2IDE1Ni43NTYgMzA4LjYzNTk5OTk5OTk5OTk3UTE1Ny41ODggMzA2LjcxMiAxNTkuODc2IDMwNC41MjhMMTY3Ljg4NDAwMDAwMDAwMDAxIDI5Ni41MkwxNTkuNTY0IDI4OC4yUTE1Ny4zOCAyODYuMDE2IDE1Ni42NTIgMjg0LjE0NFExNTUuOTI0IDI4Mi4yNzIgMTU2LjY1MiAyODAuMzQ3OTk5OTk5OTk5OTZRMTU3LjM4IDI3OC40MjQgMTU5LjY2OCAyNzYuMTM2UTE2Mi4wNiAyNzMuOTUyIDE2My45ODQgMjczLjIyNFExNjUuOTA4MDAwMDAwMDAwMDIgMjcyLjQ5NiAxNjcuODMyIDI3My4yMjRRMTY5Ljc1NiAyNzMuOTUyIDE3MS45NCAyNzYuMTM2TDE4MC4wNTIgMjg0LjI0OEwxODguMTY0IDI3Ni4xMzZRMTkwLjM0OCAyNzMuOTUyIDE5Mi4yNzIgMjczLjIyNFExOTQuMTk2IDI3Mi40OTYgMTk2LjE3MiAyNzMuMjI0UTE5OC4xNDggMjczLjk1MiAyMDAuNDM2IDI3Ni4xMzZRMjAyLjcyNCAyNzguNDI0IDIwMy40NTIgMjgwLjM0Nzk5OTk5OTk5OTk2UTIwNC4xOCAyODIuMjcyIDIwMy40NTIgMjg0LjE0NFEyMDIuNzI0IDI4Ni4wMTYgMjAwLjU0IDI4OC4yWiIgZmlsbD0iI2ZmZDIzZCIgZmlsdGVyPSJ1cmwoI2dsb3dTKSIvPgo8cmVjdCB4PSIyNzMuMCIgeT0iMjI3LjAiIHdpZHRoPSIxMTgiIGhlaWdodD0iMTE4IiByeD0iMjYiIGZpbGw9IiMxMjBjMzMiIHN0cm9rZT0iIzJlZjJmZiIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvd1MpIi8+CjxwYXRoIGQ9Ik0zMTYuODE2IDMwMi4zNDRRMzE1LjI1NiAzMDIuMzQ0IDMxMy40MzYgMzAxLjk4UTMxMS42MTYgMzAxLjYxNiAzMTAuMzY4IDI5OS45NTJRMzA5LjEyIDI5OC4yODggMzA5LjEyIDI5NC4zMzZRMzA5LjEyIDI5MC4zODQgMzEwLjQ3MiAyODguNzcyMDAwMDAwMDAwMDVRMzExLjgyNCAyODcuMTYgMzEzLjY5NiAyODYuODQ4UTMxNS41NjggMjg2LjUzNiAzMTcuMjMxOTk5OTk5OTk5OTcgMjg2LjUzNkgzNDYuODcxOTk5OTk5OTk5OTZRMzQ4LjUzNiAyODYuNTM2IDM1MC40MDggMjg2Ljg0OFEzNTIuMjggMjg3LjE2IDM1My41OCAyODguODI0UTM1NC44OCAyOTAuNDg4IDM1NC44OCAyOTQuNDRRMzU0Ljg4IDI5OC4yODggMzUzLjY4Mzk5OTk5OTk5OTk3IDI5OS45NTJRMzUyLjQ4OCAzMDEuNjE2IDM1MC42MTYgMzAxLjk4UTM0OC43NDM5OTk5OTk5OTk5NyAzMDIuMzQ0IDM0Ni43NjggMzAyLjM0NFpNMzMxLjg5NTk5OTk5OTk5OTk2IDMyMi43MjhRMzI3LjAwOCAzMjIuNzI4IDMyNS4wMzIgMzIwLjgwNFEzMjMuMDU2IDMxOC44OCAzMjMuMDU2IDMxNC4wOTZRMzIzLjA1NiAzMDkuMCAzMjUuMDMyIDMwNy4wMjRRMzI3LjAwOCAzMDUuMDQ4IDMzMi4wIDMwNS4wNDhRMzM2Ljg4OCAzMDUuMDQ4IDMzOC44MTIgMzA3LjAyNFEzNDAuNzM2IDMwOS4wIDM0MC43MzYgMzEzLjk5MlEzNDAuNzM2IDMxOC44OCAzMzguNzYgMzIwLjgwNFEzMzYuNzg0IDMyMi43MjggMzMxLjg5NTk5OTk5OTk5OTk2IDMyMi43MjhaTTMzMS44OTU5OTk5OTk5OTk5NiAyODMuODMyUTMyNy4wMDggMjgzLjgzMiAzMjUuMDMyIDI4MS45MDhRMzIzLjA1NiAyNzkuOTg0IDMyMy4wNTYgMjc1LjJRMzIzLjA1NiAyNzAuMTA0IDMyNS4wMzIgMjY4LjEyOFEzMjcuMDA4IDI2Ni4xNTIgMzMyLjAgMjY2LjE1MlEzMzYuODg4IDI2Ni4xNTIgMzM4LjgxMiAyNjguMTI4UTM0MC43MzYgMjcwLjEwNCAzNDAuNzM2IDI3NS4wOTZRMzQwLjczNiAyNzkuOTg0IDMzOC43NiAyODEuOTA4UTMzNi43ODQgMjgzLjgzMiAzMzEuODk1OTk5OTk5OTk5OTYgMjgzLjgzMloiIGZpbGw9IiMyZWYyZmYiIGZpbHRlcj0idXJsKCNnbG93UykiLz4KPGcgZmlsdGVyPSJ1cmwoI3N1bkdsb3cpIj48cG9seWdvbiBwb2ludHM9IjI5NS45LDkyLjAgMjI1LjEsMjI4LjkgMjc3LjUsMjI4LjkgMjUzLjQsMzI4LjAgMzUyLjUsMTc3LjAgMjk1LjksMTc3LjAgMzI0LjIsOTIuMCIgZmlsbD0idXJsKCNnQm9sdCkiIHN0cm9rZT0iIzA3MDYxYSIgc3Ryb2tlLXdpZHRoPSI3LjEiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L2c+CjxwYXRoIGQ9Ik02NC4wMjQ5OTk5OTk5OTk5OSA0NTIuMFY0MTYuMEg3Mi4wMjQ5OTk5OTk5OTk5OUw5Mi4xNzUgNDQwLjBWNDE2LjBIMTAwLjAyNVY0NTIuMEg5Mi4wMjQ5OTk5OTk5OTk5OUw3MS43NzQ5OTk5OTk5OTk5OSA0MjcuOVY0NTIuMFpNMTE1LjkyNDk5OTk5OTk5OTk4IDQ1Mi4wUTExMy45MjQ5OTk5OTk5OTk5OCA0NTIuMCAxMTIuMjI1IDQ1MS4wUTExMC41MjQ5OTk5OTk5OTk5OSA0NTAuMCAxMDkuNTI0OTk5OTk5OTk5OTkgNDQ4LjNRMTA4LjUyNDk5OTk5OTk5OTk5IDQ0Ni42IDEwOC41MjQ5OTk5OTk5OTk5OSA0NDQuNlY0MTYuMEgxMTYuMjc0OTk5OTk5OTk5OTlWNDQ0LjJRMTE2LjI3NDk5OTk5OTk5OTk5IDQ0NC4yIDExNi4yNzQ5OTk5OTk5OTk5OSA0NDQuMlExMTYuMjc0OTk5OTk5OTk5OTkgNDQ0LjIgMTE2LjI3NDk5OTk5OTk5OTk5IDQ0NC4ySDEzNi42NzQ5OTk5OTk5OTk5OFExMzYuNjc0OTk5OTk5OTk5OTggNDQ0LjIgMTM2LjY3NDk5OTk5OTk5OTk4IDQ0NC4yUTEzNi42NzQ5OTk5OTk5OTk5OCA0NDQuMiAxMzYuNjc0OTk5OTk5OTk5OTggNDQ0LjJWNDE2LjBIMTQ0LjUyNDk5OTk5OTk5OTk4VjQ0NC42UTE0NC41MjQ5OTk5OTk5OTk5OCA0NDYuNiAxNDMuNSA0NDguM1ExNDIuNDc1IDQ1MC4wIDE0MC44IDQ1MS4wUTEzOS4xMjUgNDUyLjAgMTM3LjEyNSA0NTIuMEgxMTUuOTI0OTk5OTk5OTk5OThaTTE1My4wMjUgNDUyLjBWNDE2LjBIMTYxLjAyNUwxNzMuMjI1IDQzMC41NUwxODUuMzc1IDQxNi4wSDE5My40MjVWNDUyLjBIMTg1LjYyNVY0MjcuODVMMTczLjIyNSA0NDIuNjVMMTYwLjc3NSA0MjcuOVY0NTIuMFpNMjAyLjU3NSA0NTIuMFY0MTYuMEgyMjkuNzc1UTIzMS43NzUgNDE2LjAgMjMzLjQ1IDQxNy4wUTIzNS4xMjUgNDE4LjAgMjM2LjE1IDQxOS42NzVRMjM3LjE3NSA0MjEuMzUgMjM3LjE3NSA0MjMuNFY0MzAuMTVRMjM3LjE3NSA0MzAuOCAyMzcuMTAwMDAwMDAwMDAwMDIgNDMxLjM3NVEyMzcuMDI1IDQzMS45NSAyMzYuODI1IDQzMi40NVEyMzcuNTc1IDQzMy40IDIzOC4wNzUgNDM0LjY1UTIzOC41NzUgNDM1LjkgMjM4LjU3NSA0MzcuMTVWNDQ0LjZRMjM4LjU3NSA0NDYuNiAyMzcuNTUgNDQ4LjNRMjM2LjUyNSA0NTAuMCAyMzQuODUwMDAwMDAwMDAwMDIgNDUxLjBRMjMzLjE3NSA0NTIuMCAyMzEuMTI1IDQ1Mi4wSDIwMi41NzVaTTIxMC4zMjUgNDQ0LjJIMjMwLjcyNVEyMzAuNzI1IDQ0NC4yIDIzMC43MjUgNDQ0LjJRMjMwLjcyNSA0NDQuMiAyMzAuNzI1IDQ0NC4yVjQzNy42UTIzMC43MjUgNDM3LjYgMjMwLjcyNSA0MzcuNlEyMzAuNzI1IDQzNy42IDIzMC43MjUgNDM3LjZIMjEwLjMyNVEyMTAuMzI1IDQzNy42IDIxMC4zMjUgNDM3LjZRMjEwLjMyNSA0MzcuNiAyMTAuMzI1IDQzNy42VjQ0NC4yUTIxMC4zMjUgNDQ0LjIgMjEwLjMyNSA0NDQuMlEyMTAuMzI1IDQ0NC4yIDIxMC4zMjUgNDQ0LjJaTTIxMC4zMjUgNDI5LjhIMjI5LjMyNVEyMjkuMzI1IDQyOS44IDIyOS4zMjUgNDI5LjhRMjI5LjMyNSA0MjkuOCAyMjkuMzI1IDQyOS44VjQyMy44UTIyOS4zMjUgNDIzLjggMjI5LjMyNSA0MjMuOFEyMjkuMzI1IDQyMy44IDIyOS4zMjUgNDIzLjhIMjEwLjMyNVEyMTAuMzI1IDQyMy44IDIxMC4zMjUgNDIzLjhRMjEwLjMyNSA0MjMuOCAyMTAuMzI1IDQyMy44VjQyOS44UTIxMC4zMjUgNDI5LjggMjEwLjMyNSA0MjkuOFEyMTAuMzI1IDQyOS44IDIxMC4zMjUgNDI5LjhaTTI0Ny4wNzUgNDUyLjBWNDE1Ljk1SDI1NC44MjVWNDQ0LjJIMjgzLjA3NVY0NTIuMFpNMjg5LjA3NDk5OTk5OTk5OTkzIDQ1Mi4wVjQxNi4wSDMyMi4zMjQ5OTk5OTk5OTk5M1Y0MjMuOEgyOTYuOTI0OTk5OTk5OTk5OTVWNDMwLjFIMzE3LjM3NDk5OTk5OTk5OTk0VjQzNy45SDI5Ni45MjQ5OTk5OTk5OTk5NVY0NDQuMkgzMjIuMzI0OTk5OTk5OTk5OTNWNDUyLjBaTTMzMC4zNzUgNDUyLjBWNDE2LjBIMzYzLjYyNVY0MjMuOEgzMzguMjI1VjQzMC4xSDM1OC42NzVWNDM3LjlIMzM4LjIyNVY0NDQuMkgzNjMuNjI1VjQ1Mi4wWk0zODMuODc1IDQ1Mi4wVjQyMy44SDM2OS43NzVWNDE2LjBINDA1Ljc3NVY0MjMuOEgzOTEuNjc0OTk5OTk5OTk5OTVWNDUyLjBaTTQxMi4yNzUwMDAwMDAwMDAwMyA0NTIuMFY0NDQuMDVMNDM2LjM3NSA0MjMuOEg0MTIuMjc1MDAwMDAwMDAwMDNWNDE2LjBINDQ4LjI3NTAwMDAwMDAwMDAzVjQyMy45NUw0MjQuMTc1IDQ0NC4ySDQ0OC4yNzUwMDAwMDAwMDAwM1Y0NTIuMFoiIGZpbGw9IiNmZmZmZmYiIGZpbHRlcj0idXJsKCNuZW9uKSIvPgo8L3N2Zz4=" alt="">
       <h3>ANONG PANGALAN MO?</h3>
-      <p>Your name shows on the global leaderboard. Use a nickname, not your full name.</p>
-      <input id="name-input" maxlength="16" placeholder="e.g. Juan" autocomplete="off">
+      <p>Lalabas ang pangalan mo sa leaderboard. Gumamit ng nickname, hindi ang buong pangalan mo.</p>
+      <input id="name-input" maxlength="16" placeholder="hal. Juan" autocomplete="off">
+      <div class="lvl-info" id="lvl-info"></div>
       <div class="avatars" id="avatar-pick"></div>
       <button class="btn pink" id="name-save">LARO NA ▶</button>
+      <button class="btn ghost small" id="btn-cloud">💾 I-SAVE / IBALIK ANG PROGRESS</button>
+    </div>
+  </div>
+
+  <!-- Save code dialog -->
+  <div class="modal hidden" id="modal-cloud">
+    <div class="modal-box">
+      <h3>💾 SAVE PROGRESS</h3>
+      <div id="cloud-mine"></div>
+      <div class="cloud-new" id="cloud-new">
+        <p>I-save ang XP, level, stars, passport at streak mo sa pangalang <b id="cloud-myname"></b> para hindi mawala kahit magpalit ng phone.</p>
+        <input id="cloud-pin" type="tel" inputmode="tel" maxlength="16" placeholder="Phone number (09XX XXX XXXX)" autocomplete="off">
+        <details class="privacy">
+          <summary>🔒 Privacy notice · basahin muna</summary>
+          <p><b>Ano ang kinukuha?</b> Pangalan (nickname), phone number, at progress sa laro (XP, level, stars, passport, streak).</p>
+          <p><b>Para saan?</b> Para lang maibalik ang progress mo sa ibang phone. Hindi ka namin ite-text o tatawagan, at hindi ito ibibigay kaninuman.</p>
+          <p><b>Paano iniingatan?</b> Hindi sine-save ang buong number. Naka-hash ito (ginawang code na hindi na mabasa), at huling 4 digits lang ang nakikita ng guro sa Google Sheet.</p>
+          <p><b>Gusto mong burahin?</b> Pindutin ang "Burahin ang naka-save ko" sa ibaba, o sabihan ang guro mo.</p>
+          <p>Kung wala ka pang 18, ipaalam muna sa magulang o guardian mo, at gamitin ang number nila kung wala kang sarili.</p>
+        </details>
+        <label class="consent"><input type="checkbox" id="cloud-agree"> Nabasa ko ang privacy notice at pumapayag ako (at ang magulang ko).</label>
+        <button class="btn cyan" id="cloud-save">💾 I-SAVE ANG PROGRESS</button>
+      </div>
+      <hr class="cloud-hr">
+      <p><b>Naka-save ka na dati?</b> Ilagay ang pangalan at phone number mo para bumalik ang progress.</p>
+      <input id="cloud-name" maxlength="16" placeholder="Pangalan mo" autocomplete="off">
+      <input id="cloud-pin2" type="tel" inputmode="tel" maxlength="16" placeholder="Phone number" autocomplete="off">
+      <button class="btn yellow" id="cloud-load">📥 IBALIK ANG PROGRESS</button>
+      <button class="linkish" id="cloud-delete">🗑️ Burahin ang naka-save ko</button>
+      <button class="btn ghost small" id="cloud-close">✕ ISARA</button>
     </div>
   </div>
 
@@ -903,6 +960,10 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
   /* ---------------- game data ---------------- */
   const AVATARS = ['🐒', '🐃', '🦅', '🐓', '🐠', '🥭', '🌺', '🦀', '🐢', '🦜', '🍍', '🐊'];
+  // Unlocked by leveling up with XP: [level, avatar]
+  const LEVEL_AVATARS = [[2, '🦈'], [3, '🐋'], [4, '🌋'], [5, '🥥'], [6, '🦉'], [7, '🐉'], [8, '🤖'], [9, '🥷'], [10, '🦸'], [12, '🚀'], [15, '🦄'], [20, '👑']];
+  // Player titles: [from level, title]
+  const TITLES = [[1, 'Baguhan'], [3, 'Batang Matalino'], [5, 'Batang Henyo'], [8, 'Mandirigma ng Numero'], [12, 'Sipnayan Bayani'], [16, 'Alamat ng Sipnayan'], [20, 'NumBleetz Master']];
   const OPS = {
     add: { sym: '+', name: 'DAGDAG', color: 'cyan' },
     sub: { sym: '−', name: 'BAWAS', color: 'pink' },
@@ -1051,7 +1112,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     [1600, 'HENYO', '🧠'], [2400, 'BAYANI', '🛡️'], [3500, 'ALAMAT', '🌞']
   ];
   // Combo tiers: [streak needed, points multiplier, label]
-  const COMBO_TIERS = [[0, 1, ''], [5, 1.5, 'NICE!'], [10, 2, 'GALING!'], [20, 3, 'FEVER 🔥'], [30, 4, 'SUPER FEVER ⚡']];
+  const COMBO_TIERS = [[0, 1, ''], [5, 1.5, 'AYOS!'], [10, 2, 'GALING!'], [20, 3, 'FEVER 🔥'], [30, 4, 'SUPER FEVER ⚡']];
   const tierOf = (c) => COMBO_TIERS.filter((t) => c >= t[0]).pop();
   const CHEERS = ['Galing!', 'Ang bilis!', 'Astig!', 'Tama!', 'Lodi!', 'Petmalu!', 'Husay!'];
   const OOPS = ['Sayang!', 'Konti na lang!', "Kaya mo 'yan!", 'Laban lang!'];
@@ -1085,42 +1146,42 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     mul: ['Tables up to 5', 'Tables up to 10', 'Tables up to 12', '2-digit × 1-digit', 'Signed numbers', 'Decimal × whole', 'Signed 2-digit'],
     div: ['Divide by 2–5', 'Divide by up to 10', 'Divide by up to 12', 'Signed numbers', 'Bigger answers', 'Decimal answers', 'Signed bigger'],
     mix: ['Small whole numbers', 'Whole numbers', 'Bigger numbers', 'Signed numbers', 'Bigger signed numbers', 'Decimals', 'Signed mix'],
-    frac: ['Isimplify (lowest terms)', 'Kaparehong denominator', 'Magkaibang denominator', 'Fraction × fraction', 'Fraction ÷ fraction', 'Fraction × buong bilang', 'Signed fractions'],
-    pemdas: ['× bago +', '÷ bago + at −', 'Parentheses muna', 'Tatlong operation', 'Exponents (² ³)', 'Buong PEMDAS', 'Signed PEMDAS'],
+    frac: ['Simplify (lowest terms)', 'Same denominator', 'Different denominators', 'Fraction × fraction', 'Fraction ÷ fraction', 'Fraction × whole number', 'Signed fractions'],
+    pemdas: ['× before +', '÷ before + and −', 'Parentheses first', 'Three operations', 'Exponents (² ³)', 'Full PEMDAS', 'Signed PEMDAS'],
     alg: ['x + a = b', 'x − a = b', 'ax = b', 'x ÷ a = b', 'ax + b = c', 'a(x + b) = c', 'Signed equations']
   };
   // Which step of each operation's ladder a Halo-Halo step uses
   const MIX_STEPS = { add: [0, 1, 2, 4, 5, 6, 7], sub: [0, 1, 2, 4, 5, 6, 7], mul: [0, 1, 3, 4, 6, 5, 6], div: [0, 1, 4, 3, 6, 5, 6] };
   const MINIS = [
-    { id: 'jeepney', icon: '🚙', title: 'JEEPNEY RUSH', tags: [['⚡ SPEED', 'yellow'], ['❤️ 3 LIVES', 'pink']],
-      desc: 'Answer before the jeepney reaches the stop! Every ride gets faster.' },
+    { id: 'jeepney', icon: '🚙', title: 'JEEPNEY RUSH', tags: [['⚡ BILIS', 'yellow'], ['❤️ 3 BUHAY', 'pink']],
+      desc: 'Sumagot bago makarating ang jeep sa babaan! Pabilis nang pabilis ang bawat biyahe.' },
     { id: 'sarisari', icon: '🏪', title: 'SARI-SARI STORE', tags: [['₱ PERA', 'green'], ['🧠 WORD PROBLEMS', 'cyan']],
-      desc: 'Be the tindera! Add up the prices and give the right sukli in 75 seconds.' },
-    { id: 'tamaomali', icon: '✅', title: 'TAMA O MALI', tags: [['⚡ SPEED', 'yellow'], ['👀 FOCUS', 'cyan']],
-      desc: 'Is the answer tama or mali? Tap fast, you only have 45 seconds!' },
-    { id: 'tables', icon: '📚', title: 'TIMES TABLES', tags: [['× PRACTICE', 'purple'], ['💡 HINTS', 'yellow']],
-      desc: 'Pick a table from 2 to 12 and master it. Get 3 stars on every table!' }
+      desc: 'Ikaw ang tindera! Kuwentahin ang presyo at ibigay ang tamang sukli sa loob ng 75 segundo.' },
+    { id: 'tamaomali', icon: '✅', title: 'TAMA O MALI', tags: [['⚡ BILIS', 'yellow'], ['👀 TUTOK', 'cyan']],
+      desc: 'Tama o mali ang sagot? Bilisan mo, 45 segundo lang!' },
+    { id: 'tables', icon: '📚', title: 'TIMES TABLES', tags: [['× SANAYAN', 'purple'], ['💡 MAY TULONG', 'yellow']],
+      desc: 'Pumili ng table mula 2 hanggang 12 at sanayin ito. Kunin ang 3 stars sa bawat table!' }
   ];
   const BOARD_TABS = [['ranked', '🏆 Ranked'], ['daily', '🌟 Daily'], ['jeepney', '🚙 Jeepney'], ['sarisari', '🏪 Sari-Sari'], ['tamaomali', '✅ Tama o Mali']];
 
   const CARDS = [
-    { id: 'sampaguita', e: '🌼', n: 'Sampaguita', d: 'Get your first correct answer', c: 'yellow', t: (p) => p.stats.correct >= 1 },
-    { id: 'tarsier', e: '🐒', n: 'Tarsier', d: 'Reach a 10 combo', c: 'green', t: (p) => p.stats.bestCombo >= 10 },
-    { id: 'kalabaw', e: '🐃', n: 'Kalabaw', d: '200 correct answers', c: 'cyan', t: (p) => p.stats.correct >= 200 },
-    { id: 'jeepney', e: '🚙', n: 'Jeepney', d: 'Score 500 in Jeepney Rush', c: 'pink', t: (p) => (p.best.jeepney || 0) >= 500 },
-    { id: 'halohalo', e: '🍧', n: 'Halo-Halo', d: 'Clear a Halo-Halo island', c: 'purple', t: (p) => Object.keys(p.classic).some((k) => k.startsWith('mix-') && p.classic[k] > 0) },
-    { id: 'bahaykubo', e: '🛖', n: 'Bahay Kubo', d: 'Collect 15 stars', c: 'green', t: (p) => totalStars(p) >= 15 },
-    { id: 'sarisari', e: '🏪', n: 'Sari-Sari', d: 'Score 600 in Sari-Sari Store', c: 'yellow', t: (p) => (p.best.sarisari || 0) >= 600 },
-    { id: 'tama', e: '✅', n: 'Tama!', d: 'Score 800 in Tama o Mali', c: 'green', t: (p) => (p.best.tamaomali || 0) >= 800 },
-    { id: 'parol', e: '🌟', n: 'Parol', d: 'Finish a Daily Hamon', c: 'yellow', t: (p) => p.stats.daily >= 1 },
-    { id: 'mayon', e: '🌋', n: 'Mayon', d: 'Reach a 25 combo', c: 'red', t: (p) => p.stats.bestCombo >= 25 },
-    { id: 'vinta', e: '⛵', n: 'Vinta', d: '3 stars on 6 times tables', c: 'cyan', t: (p) => Object.values(p.tables).filter((s) => s >= 3).length >= 6 },
-    { id: 'chocohills', e: '🍫', n: 'Chocolate Hills', d: 'Reach BARMM (Tawi-Tawi) on any route', c: 'pink', t: (p) => Object.keys(p.classic).some((k) => k.endsWith('-' + ISLANDS.length) && p.classic[k] > 0) },
-    { id: 'banaue', e: '🌾', n: 'Banaue', d: '1,000 correct answers', c: 'green', t: (p) => p.stats.correct >= 1000 },
-    { id: 'agila', e: '🦅', n: 'Philippine Eagle', d: 'Reach HENYO rank', c: 'cyan', t: (p) => (p.best.ranked || 0) >= 1600 },
-    { id: 'sarimanok', e: '🐓', n: 'Sarimanok', d: 'Reach ALAMAT rank', c: 'pink', t: (p) => (p.best.ranked || 0) >= 3500 },
-    { id: 'hagdan', e: '🪜', n: 'Hagdan', d: 'Reach the signed numbers step in Hagdan', c: 'purple', t: (p) => Object.values(p.ladder).some((x) => x.step >= 4) },
-    { id: 'araw', e: '☀️', n: 'Araw', d: 'Collect 100 stars', c: 'yellow', t: (p) => totalStars(p) >= 100 }
+    { id: 'sampaguita', e: '🌼', n: 'Sampaguita', d: 'Unang tamang sagot', c: 'yellow', t: (p) => p.stats.correct >= 1 },
+    { id: 'tarsier', e: '🐒', n: 'Tarsier', d: 'Umabot sa 10 combo', c: 'green', t: (p) => p.stats.bestCombo >= 10 },
+    { id: 'kalabaw', e: '🐃', n: 'Kalabaw', d: '200 tamang sagot', c: 'cyan', t: (p) => p.stats.correct >= 200 },
+    { id: 'jeepney', e: '🚙', n: 'Jeepney', d: 'Maka-500 sa Jeepney Rush', c: 'pink', t: (p) => (p.best.jeepney || 0) >= 500 },
+    { id: 'halohalo', e: '🍧', n: 'Halo-Halo', d: 'Matapos ang isang region sa Halo-Halo route', c: 'purple', t: (p) => Object.keys(p.classic).some((k) => k.startsWith('mix-') && p.classic[k] > 0) },
+    { id: 'bahaykubo', e: '🛖', n: 'Bahay Kubo', d: 'Makaipon ng 15 stars', c: 'green', t: (p) => totalStars(p) >= 15 },
+    { id: 'sarisari', e: '🏪', n: 'Sari-Sari', d: 'Maka-600 sa Sari-Sari Store', c: 'yellow', t: (p) => (p.best.sarisari || 0) >= 600 },
+    { id: 'tama', e: '✅', n: 'Tama!', d: 'Maka-800 sa Tama o Mali', c: 'green', t: (p) => (p.best.tamaomali || 0) >= 800 },
+    { id: 'parol', e: '🌟', n: 'Parol', d: 'Matapos ang isang Daily Hamon', c: 'yellow', t: (p) => p.stats.daily >= 1 },
+    { id: 'mayon', e: '🌋', n: 'Mayon', d: 'Umabot sa 25 combo', c: 'red', t: (p) => p.stats.bestCombo >= 25 },
+    { id: 'vinta', e: '⛵', n: 'Vinta', d: '3 stars sa 6 na times table', c: 'cyan', t: (p) => Object.values(p.tables).filter((s) => s >= 3).length >= 6 },
+    { id: 'chocohills', e: '🍫', n: 'Chocolate Hills', d: 'Marating ang Tawi-Tawi sa kahit anong route', c: 'pink', t: (p) => Object.keys(p.classic).some((k) => k.endsWith('-' + ISLANDS.length) && p.classic[k] > 0) },
+    { id: 'banaue', e: '🌾', n: 'Banaue', d: '1,000 tamang sagot', c: 'green', t: (p) => p.stats.correct >= 1000 },
+    { id: 'agila', e: '🦅', n: 'Philippine Eagle', d: 'Maabot ang HENYO rank', c: 'cyan', t: (p) => (p.best.ranked || 0) >= 1600 },
+    { id: 'sarimanok', e: '🐓', n: 'Sarimanok', d: 'Maabot ang ALAMAT rank', c: 'pink', t: (p) => (p.best.ranked || 0) >= 3500 },
+    { id: 'hagdan', e: '🪜', n: 'Hagdan', d: 'Maabot ang signed numbers step sa Hagdan', c: 'purple', t: (p) => Object.values(p.ladder).some((x) => x.step >= 4) },
+    { id: 'araw', e: '☀️', n: 'Araw', d: 'Makaipon ng 100 stars', c: 'yellow', t: (p) => totalStars(p) >= 100 }
   ];
 
   /* ---------------- saved progress ---------------- */
@@ -1210,6 +1271,19 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     const lvl = Math.floor(Math.sqrt(xp / 40)) + 1;
     const lo = 40 * (lvl - 1) ** 2, hi = 40 * lvl ** 2;
     return { lvl, pct: ((xp - lo) / (hi - lo)) * 100 };
+  }
+  const titleOf = (lvl) => TITLES.filter((t) => lvl >= t[0]).pop()[1];
+  // Everything that unlocks after lvlFrom, up to and including lvlTo
+  function unlocksBetween(lvlFrom, lvlTo) {
+    const out = LEVEL_AVATARS.filter((a) => a[0] > lvlFrom && a[0] <= lvlTo).map((a) => a[1]);
+    TITLES.forEach((t) => { if (t[0] > lvlFrom && t[0] <= lvlTo) out.push(`"${t[1]}"`); });
+    return out;
+  }
+  function nextUnlock(lvl) {
+    const a = LEVEL_AVATARS.find((x) => x[0] > lvl), t = TITLES.find((x) => x[0] > lvl);
+    if (!a && !t) return null;
+    if (!t || (a && a[0] <= t[0])) return { lvl: a[0], what: a[1] };
+    return { lvl: t[0], what: `title na "${t[1]}"` };
   }
   function rankOf(score) {
     let r = RANKS[0], next = null;
@@ -1626,18 +1700,18 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   function hintFor(q) {
     const { op, a, b } = q;
     if (op === 'add') {
-      if (b >= 10) { const t = b - (b % 10); return `Split it: ${a} + ${t} = ${a + t}, then add ${b % 10}.`; }
-      return `Start at ${Math.max(a, b)} and count up ${Math.min(a, b)}.`;
+      if (b >= 10) { const t = b - (b % 10); return `Hatiin: ${a} + ${t} = ${a + t}, tapos dagdagan ng ${b % 10}.`; }
+      return `Magsimula sa ${Math.max(a, b)} at magbilang pataas nang ${Math.min(a, b)}.`;
     }
     if (op === 'sub') {
-      if (b >= 10) { const t = b - (b % 10); return `Split it: ${a} − ${t} = ${a - t}, then take away ${b % 10}.`; }
-      return `Start at ${a} and count back ${b}.`;
+      if (b >= 10) { const t = b - (b % 10); return `Hatiin: ${a} − ${t} = ${a - t}, tapos bawasan ng ${b % 10}.`; }
+      return `Magsimula sa ${a} at magbilang pababa nang ${b}.`;
     }
     if (op === 'mul') {
       const big = Math.max(a, b), small = Math.min(a, b);
-      if (big > 10) return `Split it: 10 × ${small} = ${10 * small}, plus ${big - 10} × ${small} = ${(big - 10) * small}.`;
-      if (small <= 1) return `Anything times 1 stays the same!`;
-      return `${big} × ${small - 1} = ${big * (small - 1)}. Add one more ${big}.`;
+      if (big > 10) return `Hatiin: 10 × ${small} = ${10 * small}, dagdagan ng ${big - 10} × ${small} = ${(big - 10) * small}.`;
+      if (small <= 1) return `Kahit anong numero × 1, hindi nagbabago!`;
+      return `${big} × ${small - 1} = ${big * (small - 1)}. Dagdagan pa ng isang ${big}.`;
     }
     if (op === 'div') return `Think: ${b} × ? = ${a}`;
     return '';
@@ -1664,6 +1738,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     $('#home-avatar').textContent = P.avatar;
     const L = levelInfo(P.xp);
     $('#home-level').textContent = L.lvl;
+    $('#home-title').textContent = titleOf(L.lvl);
     $('#home-xp').style.width = L.pct + '%';
     $('#btn-sound').textContent = P.sound ? '🔊' : '🔇';
     $('#btn-music').style.opacity = P.music ? 1 : 0.4;
@@ -1671,12 +1746,12 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     $('#home-rank-badge').textContent = R.icon;
     $('#home-rank-name').textContent = R.name;
     $('#home-rank-best').textContent = best;
-    $('#home-rank-next').textContent = R.next ? `Next: ${R.next[1]} at ${R.next[0]}` : 'Pinakamataas na rank! 👑';
+    $('#home-rank-next').textContent = R.next ? `Susunod: ${R.next[1]} sa ${R.next[0]} points` : 'Pinakamataas na rank! 👑';
     $('#home-stars').textContent = totalStars(P);
     $('#home-cards').textContent = `${P.cards.length}/${CARDS.length}`;
     const sc = streakNow(), playedToday = P.streak.last === manilaDate();
     $('#home-streak').innerHTML = sc
-      ? `🔥 <b>${sc} araw</b> na sunod-sunod${playedToday ? ' ✅' : ' · maglaro ngayon para tumuloy!'}<small>Best: ${P.streak.best} araw · bonus tuwing 7 araw 🎁</small>`
+      ? `🔥 <b>${sc} araw</b> na sunod-sunod${playedToday ? ' ✅' : ' · maglaro ngayon para tumuloy!'}<small>Pinakamahaba: ${P.streak.best} araw · bonus tuwing 7 araw 🎁</small>`
       : '🔥 Maglaro araw-araw para sa <b>streak</b>!<small>May bonus XP tuwing 7 araw na sunod-sunod 🎁</small>';
     const hb = $('#hw-banner');
     hb.classList.toggle('hidden', !HW);
@@ -1685,8 +1760,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       hb.innerHTML = `📌 TAKDANG-ARALIN<small>${hwLabel(HW)}${done ? ` · ✅ Tapos na (${done.acc}%), puwedeng ulitin` : ''}</small>`;
     }
     $('#daily-sub').textContent = P.dailyDone === manilaDate()
-      ? '✅ Done today · practice run (not ranked)'
-      : 'Same 20 questions for everyone · first try counts';
+      ? '✅ Tapos ka na ngayon · practice na lang'
+      : 'Parehong 20 tanong · unang laro lang ang bilang';
   }
 
   let classicOp = 'add';
@@ -2083,7 +2158,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     $('#choices').classList.toggle('hidden', tf || !tap);
     $('#answer').classList.toggle('hidden', tf || tap);
     $('#btn-input').classList.toggle('hidden', !!(tf || G.M.tapOnly));
-    $('#btn-input').textContent = tap ? '⌨️ Type instead' : '👆 Tap answers';
+    $('#btn-input').textContent = tap ? '⌨️ I-type ang sagot' : '👆 Pindutin ang sagot';
   }
 
   function renderChoices() {
@@ -2365,7 +2440,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
   function breakCombo() {
     if (G.combo >= 3) {
-      cheer('Combo lost! 💨', 'var(--muted)');
+      cheer('Naputol ang combo! 💨', 'var(--muted)');
       sfx.comboLost();
     }
     G.combo = 0;
@@ -2403,7 +2478,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
   function quitGame() {
     if (!G || G.over) return;
-    if (!confirm('Quit this game? Your score will not be saved.')) return;
+    if (!confirm('Aalis ka na? Hindi mase-save ang score mo.')) return;
     G.over = true;
     backToOrigin();
   }
@@ -2425,8 +2500,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       const firstClear = !failed && !(store[key] > 0);
       store[key] = Math.max(store[key] || 0, stars);
       if (failed) msg = "Sayang! Try again, kaya mo 'yan! 💪";
-      else if (mode === 'classic' && G.opts.level < ISLANDS.length) msg = `⛵ Next region unlocked: <b>${ISLANDS[G.opts.level][0]}</b>`;
-      else if (mode === 'classic') msg = `🛶 You reached <b>Tawi-Tawi</b>! Batanes hanggang Tawi-Tawi, kumpleto ang 18 regions!`;
+      else if (mode === 'classic' && G.opts.level < ISLANDS.length) msg = `⛵ Bukas na ang susunod na region: <b>${ISLANDS[G.opts.level][0]}</b>`;
+      else if (mode === 'classic') msg = `🛶 Narating mo ang <b>Tawi-Tawi</b>! Kumpleto mo na ang 18 region, mula Batanes hanggang Tawi-Tawi!`;
       if (mode === 'classic' && !failed && !P.passport[G.opts.level]) {
         P.passport[G.opts.level] = manilaDate();
         const [rn, re] = ISLANDS[G.opts.level - 1];
@@ -2447,9 +2522,9 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       stars = G.step >= L.length - 1 ? 3 : G.step >= 4 ? 2 : G.step >= 2 ? 1 : 0;
       title = 'UBOS ANG BUHAY!';
       const rec = P.ladder[G.op] || { step: 0, score: 0 };
-      if (G.score > rec.score) msg = '🎉 <b>Bagong record</b> for this hagdan!';
+      if (G.score > rec.score) msg = '🎉 <b>Bagong record</b> sa hagdang ito!';
       P.ladder[G.op] = { step: Math.max(rec.step, G.step), score: Math.max(rec.score, G.score) };
-      msg = `🪜 You reached <b>Step ${G.step + 1}: ${L[G.step]}</b>` + (msg ? '<br>' + msg : '');
+      msg = `🪜 Naabot mo ang <b>Step ${G.step + 1}: ${L[G.step]}</b>` + (msg ? '<br>' + msg : '');
     } else if (mode === 'review') {
       stars = !G.wrong ? 3 : G.correct / G.answered >= 0.7 ? 2 : G.correct ? 1 : 0;
       title = G.wrong ? 'TAPOS ANG PRACTICE!' : 'NAITAMA MO LAHAT!';
@@ -2462,7 +2537,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       msg = `<div class="hw-proof">📌 <b>${hwLabel(G.opts)}</b><br>👤 ${P.avatar} ${P.name || 'Player'}<br>✅ ${G.correct}/${G.total} tama · <b>${acc}%</b><br>🕒 ${when}</div>📸 I-screenshot ito at ipakita sa guro mo.`;
     } else {
       stars = M.thresholds.filter((t) => G.score >= t).length;
-      title = mode === 'jeepney' ? 'LAST STOP!' : mode === 'daily' ? 'HAMON COMPLETE!' : M.survival ? 'UBOS ANG BUHAY!' : "TIME'S UP!";
+      title = mode === 'jeepney' ? 'PARA PO! 🛑' : mode === 'daily' ? 'TAPOS ANG HAMON!' : M.survival ? 'UBOS ANG BUHAY!' : 'UBOS ANG ORAS!';
     }
 
     // stats & XP
@@ -2487,6 +2562,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     }
     const fresh = checkCards();
     save();
+    cloudSave(true);
 
     // render
     $('#res-title').textContent = title;
@@ -2498,14 +2574,19 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     $('#res-xp').textContent = '+' + xp;
     const parts = [];
     if (msg) parts.push(msg);
-    if (record) parts.push('🎉 <b>Bagong record!</b> New personal best!');
+    if (record) parts.push('🎉 <b>Bagong record!</b> Ito na ang pinakamataas mo!');
     if (streak) parts.push(`🔥 <b>${streak.count} araw</b> na sunod-sunod kang naglaro!` + (streak.bonus ? ` <b>+${streak.bonus} XP</b> bonus! 🎁` : ''));
-    if (lvlAfter > lvlBefore) parts.push(`⬆️ Level up! You are now <b>Lv.${lvlAfter}</b>`);
+    if (lvlAfter > lvlBefore) {
+      const got = unlocksBetween(lvlBefore, lvlAfter);
+      parts.push(`⬆️ Level up! <b>Lv.${lvlAfter}</b> ka na · <b>${titleOf(lvlAfter)}</b>` +
+        (got.length ? `<br>🎁 Bagong unlock: <b>${got.join(' ')}</b> <small>(palitan sa pangalan mo sa home)</small>` : ''));
+      if (got.length) setTimeout(confettiSmall, 300);
+    }
     if (mode === 'ranked') {
       const R = rankOf(P.best.ranked || 0);
       parts.push(`Rank: <b>${R.icon} ${R.name}</b>`);
     }
-    if (mode === 'daily' && !G.ranked) parts.push('Practice run · only your first try today counts.');
+    if (mode === 'daily' && !G.ranked) parts.push('Practice lang ito · ang unang laro mo ngayong araw lang ang bilang.');
     $('#res-msg').innerHTML = parts.join('<br>');
     renderQuiz(mode === 'classic' && stars > 0 ? G.opts.level : 0);
     const rv = $('#res-review');
@@ -2528,14 +2609,14 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     const rc = $('#res-cards');
     rc.innerHTML = '';
     fresh.forEach((c) => rc.appendChild(cardEl(c, true, true)));
-    if (fresh.length) toast(`🃏 New card${fresh.length > 1 ? 's' : ''} unlocked!`);
+    if (fresh.length) toast(`🃏 May bagong card ka!`);
     $('#btn-res-board').classList.toggle('hidden', !M.board);
     const next = mode === 'classic' && stars > 0 && G.opts.level < ISLANDS.length ? G.opts.level + 1 : 0;
     const nextTable = mode === 'tables' && G.opts.table < 12 ? G.opts.table + 1 : 0;
     const nb = $('#btn-next');
     nb.classList.toggle('hidden', !next && !nextTable);
-    if (next) nb.innerHTML = `⛵ NEXT DESTINATION<small>${ISLANDS[next - 1][1]} ${ISLANDS[next - 1][0]} →</small>`;
-    if (nextTable) nb.innerHTML = `📚 NEXT TABLE<small>Table of ${nextTable} →</small>`;
+    if (next) nb.innerHTML = `⛵ SUSUNOD NA REGION<small>${ISLANDS[next - 1][1]} ${ISLANDS[next - 1][0]} →</small>`;
+    if (nextTable) nb.innerHTML = `📚 SUSUNOD NA TABLE<small>Table of ${nextTable} →</small>`;
     $('#btn-origin').textContent = origin(mode)[1];
     const rb = $('#btn-retry');
     rb.classList.toggle('hidden', !G.mistakes.length);
@@ -2569,19 +2650,19 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   }
 
   async function sendScore(s) {
-    if (!API) { addLine('📴 Offline leaderboard (no Google Sheet linked yet).'); return; }
+    if (!API) { addLine('📴 Offline ang leaderboard (wala pang naka-link na Google Sheet).'); return; }
     const entry = Object.assign({ action: 'submit', id: P.id, name: P.name || 'Player', avatar: P.avatar }, s);
-    addLine('📡 Sending score…');
+    addLine('📡 Ipinapadala ang score…');
     try {
       const j = await postScore(entry);
       if (!j.ok) throw new Error(j.error || 'rejected');
       const m = $('#res-msg');
-      m.innerHTML = m.innerHTML.replace('📡 Sending score…', j.rank ? `🌏 Global rank: <b>#${j.rank}</b>` : '🌏 Score saved!');
+      m.innerHTML = m.innerHTML.replace('📡 Ipinapadala ang score…', j.rank ? `🌏 Global rank: <b>#${j.rank}</b>` : '🌏 Na-save ang score!');
     } catch (e) {
       P.queue.push(entry);
       save();
       const m = $('#res-msg');
-      m.innerHTML = m.innerHTML.replace('📡 Sending score…', '📶 No connection. Score will be sent next time.');
+      m.innerHTML = m.innerHTML.replace('📡 Ipinapadala ang score…', '📶 Walang internet. Ipapadala ang score sa susunod.');
     }
   }
 
@@ -2629,7 +2710,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     const list = $('#board-list'), status = $('#board-status');
     list.innerHTML = '';
     if (!API) {
-      status.textContent = '📴 Offline mode: showing scores from this device only. Paste your Google Sheet link in LEADERBOARD_URL at the top of index.html to go global.';
+      status.textContent = '📴 Offline: mga score lang sa phone na ito ang makikita.';
       drawBoard(P.local[boardMode] || []);
       return;
     }
@@ -2641,12 +2722,12 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       if (req !== boardReq) return;
       if (!j.ok) throw new Error(j.error);
       status.textContent = j.scores.length
-        ? (boardMode === 'daily' ? `🌟 Today's Hamon · ${manilaDate()}` : '🌏 Global leaderboard')
-        : 'Wala pang score. Be the first! 🚀';
+        ? (boardMode === 'daily' ? `🌟 Hamon ngayong araw · ${manilaDate()}` : '🌏 Global leaderboard')
+        : 'Wala pang score. Ikaw na ang mauna! 🚀';
       drawBoard(j.scores);
     } catch (e) {
       if (req !== boardReq) return;
-      status.textContent = '📶 Could not reach the leaderboard. Showing this device only.';
+      status.textContent = '📶 Hindi maabot ang leaderboard. Mga score muna sa phone na ito ang makikita.';
       drawBoard(P.local[boardMode] || []);
     }
   }
@@ -2682,20 +2763,118 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   function renderAvatars() {
     const box = $('#avatar-pick');
     box.innerHTML = '';
-    AVATARS.forEach((a) => {
-      const b = el('button', a === avatarPick ? 'active' : '', a);
-      b.onclick = () => { avatarPick = a; renderAvatars(); };
+    const lvl = levelInfo(P.xp).lvl;
+    AVATARS.map((a) => [1, a]).concat(LEVEL_AVATARS).forEach(([need, a]) => {
+      const b = el('button', a === avatarPick ? 'active' : '');
+      b.appendChild(el('span', null, a));
+      if (lvl >= need) b.onclick = () => { avatarPick = a; renderAvatars(); };
+      else {
+        b.classList.add('locked');
+        b.appendChild(el('small', null, 'Lv.' + need));
+        b.onclick = () => toast(`🔒 Mabubuksan sa Level ${need}. Maglaro pa para sa XP!`);
+      }
       box.appendChild(b);
     });
+    const nx = nextUnlock(lvl);
+    $('#lvl-info').innerHTML = `⭐ <b>Lv.${lvl} · ${titleOf(lvl)}</b>` +
+      (nx ? `<small>Susunod: ${nx.what} sa Lv.${nx.lvl}</small>` : '<small>Nabuksan mo na lahat! 👑</small>');
   }
+  // "0917 123 4567", "+63 917…", "917…" → "9171234567" (empty if it doesn't look like a PH mobile number)
+  const cleanPhone = (v) => { const d = String(v).replace(/\D/g, '').slice(-10); return /^9\d{9}$/.test(d) ? d : ''; };
+  const cleanName = (v) => v.replace(/[^\p{L}\p{N} ._-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 16);
   function saveName() {
-    const n = $('#name-input').value.replace(/[^\p{L}\p{N} ._-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 16);
-    if (!n) { toast('Type a nickname first 🙂'); return; }
+    const n = cleanName($('#name-input').value);
+    if (!n) { toast('Ilagay muna ang nickname mo 🙂'); return; }
     P.name = n;
     P.avatar = avatarPick;
     save();
     $('#modal-name').classList.add('hidden');
     renderHome();
+  }
+
+  /* ---------------- save code (progress sa Google Sheet) ---------------- */
+  const cloudData = () => JSON.stringify(Object.assign({}, P, { queue: [], cloud: undefined }));
+  let cloudBusy = false;
+  async function cloudSave(quiet) {
+    const c = P.cloud;
+    if (!API || cloudBusy || (quiet && !(c && c.name && c.phone))) return;
+    const mine = !!(c && c.name && c.phone);
+    const phone = mine ? c.phone : cleanPhone($('#cloud-pin').value);
+    if (!mine && !P.name) { toast('Ilagay muna ang pangalan mo 🙂'); return; }
+    if (!phone) { toast('Ilagay ang phone number, hal. 0917 123 4567 📱'); return; }
+    if (!mine && !$('#cloud-agree').checked) { toast('I-check muna ang privacy notice ✅'); return; }
+    cloudBusy = true;
+    try {
+      const j = await postScore({ action: 'save', name: mine ? c.name : P.name, phone, isNew: !mine, data: cloudData() });
+      if (!j.ok) throw new Error(j.error);
+      P.cloud = { name: j.name, phone, at: Date.now() };
+      save();
+      if (!quiet) { toast('💾 Na-save na ang progress mo!', 3500); renderCloud(); }
+    } catch (e) {
+      if (!quiet) toast(cloudError(e.message), 3500);
+    }
+    cloudBusy = false;
+  }
+  function cloudError(msg) {
+    if (/already saved/i.test(msg)) return '⚠️ Naka-save ka na dati. Gamitin ang "Ibalik ang progress" sa ibaba para makuha ito.';
+    if (/not found/i.test(msg)) return '❌ Walang naka-save na ganyang pangalan at number. Tingnan kung tama ang sulat.';
+    if (/locked/i.test(msg)) return '🔒 Masyadong maraming mali. Subukan ulit pagkalipas ng 30 minuto.';
+    return '📶 Hindi maka-connect. Subukan ulit mamaya.';
+  }
+  async function cloudLoad() {
+    const name = cleanName($('#cloud-name').value), phone = cleanPhone($('#cloud-pin2').value);
+    if (!name || !phone) { toast('Ilagay ang pangalan at phone number mo 🙂'); return; }
+    if (!API) { toast('📴 Walang leaderboard link, kaya hindi pa puwede ang save code.'); return; }
+    if (P.xp > 0 && !confirm('Papalitan nito ang progress sa phone na ito. Tuloy?')) return;
+    try {
+      const j = await postScore({ action: 'load', name, phone });
+      if (!j.ok) throw new Error(j.error);
+      localStorage.setItem(KEY, j.data);
+      P = load();
+      P.cloud = { name: j.name, phone, at: Date.now() };
+      save();
+      $('#modal-cloud').classList.add('hidden');
+      renderHome();
+      toast(`🎉 Maligayang pagbabalik, ${P.name || 'Player'}! Lv.${levelInfo(P.xp).lvl}`, 3500);
+      confettiSmall();
+    } catch (e) {
+      toast(cloudError(e.message), 3500);
+    }
+  }
+  async function cloudDelete() {
+    const c = P.cloud, mine = !!(c && c.name && c.phone);
+    const name = mine ? c.name : cleanName($('#cloud-name').value);
+    const phone = mine ? c.phone : cleanPhone($('#cloud-pin2').value);
+    if (!name || !phone) { toast('Ilagay sa ibaba ang pangalan at number na buburahin 🙂', 3000); return; }
+    if (!confirm(`Buburahin ang naka-save na progress ni ${name} sa Google Sheet. Mananatili ito sa phone na ito. Tuloy?`)) return;
+    try {
+      const j = await postScore({ action: 'delete', name, phone });
+      if (!j.ok) throw new Error(j.error);
+      if (mine) { delete P.cloud; save(); }
+      renderCloud();
+      toast('🗑️ Nabura na sa Sheet.', 3000);
+    } catch (e) {
+      toast(cloudError(e.message), 3500);
+    }
+  }
+  function renderCloud() {
+    const c = P.cloud;
+    const mine = !!(c && c.name && c.phone);
+    $('#cloud-new').classList.toggle('hidden', mine);
+    $('#cloud-myname').textContent = P.name || '(wala pang pangalan)';
+    $('#cloud-mine').innerHTML = mine
+      ? `<div class="cloud-code">${c.name.replace(/[<>&"]/g, "")}</div><p>📱 0${c.phone.slice(0, 3)} ••• ${c.phone.slice(-4)} · ✅ Awtomatikong nase-save tuwing tapos ng laro.</p><p>Sa ibang phone, ilagay lang ang pangalan at number na ito.</p>`
+      : '';
+  }
+  function openCloud() {
+    if (!API) { toast('📴 Kailangan muna ng leaderboard link para sa save code.'); return; }
+    const n = cleanName($('#name-input').value);   // keep what they typed before opening this
+    if (n) { P.name = n; P.avatar = avatarPick; save(); renderHome(); }
+    ['#cloud-pin', '#cloud-name', '#cloud-pin2'].forEach((s) => { $(s).value = ''; });
+    $('#cloud-agree').checked = false;
+    renderCloud();
+    $('#modal-name').classList.add('hidden');
+    $('#modal-cloud').classList.remove('hidden');
   }
 
   /* ---------------- background ---------------- */
@@ -2808,6 +2987,12 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   $('#t-try').onclick = () => { const h = parseHW($('#t-link').value.split('hw=')[1]); if (h) startGame('assign', h); };
   $('#btn-res-board').onclick = () => openBoard(G && G.M.board ? G.mode : 'ranked');
   $('#btn-profile').onclick = openNameModal;
+  $('.level-chip').onclick = openNameModal;
+  $('#btn-cloud').onclick = openCloud;
+  $('#cloud-save').onclick = () => cloudSave(false);
+  $('#cloud-load').onclick = cloudLoad;
+  $('#cloud-delete').onclick = cloudDelete;
+  $('#cloud-close').onclick = () => { $('#modal-cloud').classList.add('hidden'); if (!P.name) openNameModal(); };
   $('#btn-sound').onclick = () => { P.sound = !P.sound; save(); renderHome(); };
   $('#btn-music').onclick = () => {
     P.music = !P.music;
