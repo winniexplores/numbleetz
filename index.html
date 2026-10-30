@@ -682,6 +682,23 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 #screen-home .install-btn { width: fit-content; margin: 12px auto 0; padding: 7px 14px; font-size: 13px; border-radius: 999px; }
 #screen-home .teacher-link { margin-top: 10px; }
 
+/* comments */
+.fb-kinds { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.fb-kinds button { padding: 9px 6px; border-radius: 12px; border: 2px solid var(--line); background: var(--panel); color: var(--text); font: 700 14px var(--body); }
+.fb-kinds button.active { border-color: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
+#fb-text { width: 100%; box-sizing: border-box; padding: 12px; border-radius: 12px; border: 2px solid var(--cyan); background: rgba(0,0,0,.35); color: var(--text); font: 600 15px var(--body); resize: vertical; outline: none; }
+.fb-count { align-self: flex-end; margin-top: -8px; color: var(--muted); font-size: 11px; }
+.modal-box .fb-note { font-size: 12px; }
+.fb-link { margin-top: 12px; color: var(--cyan); border-color: rgba(46, 242, 255, .4); }
+
+/* register on the name screen */
+.reg-box { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 14px; border: 1px dashed rgba(46, 242, 255, .45); text-align: left; }
+.reg-box.hidden, .reg-done.hidden { display: none; }
+.reg-title { margin: 0; font-weight: 800; color: var(--text) !important; }
+.reg-title small { display: block; font-weight: 600; color: var(--muted); font-size: 12px; margin-top: 2px; }
+.reg-done { font-size: 13px; color: var(--green); }
+#modal-name .modal-icon { width: 64px; height: 64px; margin-bottom: 0; }
+
   </style>
 </head>
 <body>
@@ -735,6 +752,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         </div>
       </nav>
       <button class="install-btn hidden" id="btn-install">📲 I-install sa phone (gumagana kahit offline)</button>
+      <button class="teacher-link fb-link" id="btn-feedback">💬 May comment o suggestion ka?</button>
       <button class="teacher-link" data-go="teacher">👩‍🏫 Para sa guro: gumawa ng assignment link</button>
       <p class="foot">Walang ads · walang chat · puro math ✨</p>
     </section>
@@ -916,13 +934,20 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   <div class="modal hidden" id="modal-name">
     <div class="modal-box">
       <img class="modal-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM6YzJwYT0iaHR0cDovL2MycGEub3JnL21hbmlmZXN0Ij4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ051bSIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzlmZmNmZiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzJlZjJmZiIvPjwvbGluZWFyR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ0JsIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmYzZGYyIi8+PHN0b3Agb2Zmc2V0PSIwLjYiIHN0b3AtY29sb3I9IiNmZjNkNmUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmQyM2QiLz48L2xpbmVhckdyYWRpZW50Pgo8bGluZWFyR3JhZGllbnQgaWQ9ImdCb2x0IiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmNmIwIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZmZkMjNkIi8+PC9saW5lYXJHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJnQmciIGN4PSIwLjUiIGN5PSIwLjQ1IiByPSIwLjc1Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMxZDEzNTAiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwNzA2MWEiLz48L3JhZGlhbEdyYWRpZW50Pgo8ZmlsdGVyIGlkPSJnbG93IiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj48ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSI3IiByZXN1bHQ9ImIiLz48ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImIiLz48ZmVNZXJnZU5vZGUgaW49ImIiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+PC9maWx0ZXI+CjxmaWx0ZXIgaWQ9Imdsb3dTIiB4PSItMzAlIiB5PSItMzAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIxNjAlIj48ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIzLjUiIHJlc3VsdD0iYiIvPjxmZU1lcmdlPjxmZU1lcmdlTm9kZSBpbj0iYiIvPjxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPjwvZmVNZXJnZT48L2ZpbHRlcj4KPGZpbHRlciBpZD0ibmVvbiIgeD0iLTUwJSIgeT0iLTEwMCUiIHdpZHRoPSIyMDAlIiBoZWlnaHQ9IjMwMCUiPgo8ZmVHYXVzc2lhbkJsdXIgaW49IlNvdXJjZUFscGhhIiBzdGREZXZpYXRpb249IjQiIHJlc3VsdD0iYSIvPjxmZUZsb29kIGZsb29kLWNvbG9yPSIjZmZmZmZmIi8+PGZlQ29tcG9zaXRlIGluMj0iYSIgb3BlcmF0b3I9ImluIiByZXN1bHQ9InciLz4KPGZlR2F1c3NpYW5CbHVyIGluPSJTb3VyY2VBbHBoYSIgc3RkRGV2aWF0aW9uPSIxMiIgcmVzdWx0PSJiIi8+PGZlRmxvb2QgZmxvb2QtY29sb3I9IiMyZWYyZmYiLz48ZmVDb21wb3NpdGUgaW4yPSJiIiBvcGVyYXRvcj0iaW4iIHJlc3VsdD0iYyIvPgo8ZmVHYXVzc2lhbkJsdXIgaW49IlNvdXJjZUFscGhhIiBzdGREZXZpYXRpb249IjI2IiByZXN1bHQ9ImQiLz48ZmVGbG9vZCBmbG9vZC1jb2xvcj0iIzNkN2JmZiIvPjxmZUNvbXBvc2l0ZSBpbjI9ImQiIG9wZXJhdG9yPSJpbiIgcmVzdWx0PSJlIi8+CjxmZU1lcmdlPjxmZU1lcmdlTm9kZSBpbj0iZSIvPjxmZU1lcmdlTm9kZSBpbj0iZSIvPjxmZU1lcmdlTm9kZSBpbj0iYyIvPjxmZU1lcmdlTm9kZSBpbj0iYyIvPjxmZU1lcmdlTm9kZSBpbj0idyIvPjxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPjwvZmVNZXJnZT48L2ZpbHRlcj4KPGZpbHRlciBpZD0icGlua0dsb3ciIHg9Ii0zMCUiIHk9Ii0xMDAlIiB3aWR0aD0iMTYwJSIgaGVpZ2h0PSIzMDAlIj48ZmVHYXVzc2lhbkJsdXIgaW49IlNvdXJjZUFscGhhIiBzdGREZXZpYXRpb249IjciIHJlc3VsdD0iYiIvPjxmZUZsb29kIGZsb29kLWNvbG9yPSIjZmYzZGYyIi8+PGZlQ29tcG9zaXRlIGluMj0iYiIgb3BlcmF0b3I9ImluIiByZXN1bHQ9ImMiLz48ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImMiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+PC9maWx0ZXI+CjxmaWx0ZXIgaWQ9InN1bkdsb3ciIHg9Ii04MCUiIHk9Ii04MCUiIHdpZHRoPSIyNjAlIiBoZWlnaHQ9IjI2MCUiPjxmZUdhdXNzaWFuQmx1ciBpbj0iU291cmNlQWxwaGEiIHN0ZERldmlhdGlvbj0iOCIgcmVzdWx0PSJiIi8+PGZlRmxvb2QgZmxvb2QtY29sb3I9IiNmZmQyM2QiLz48ZmVDb21wb3NpdGUgaW4yPSJiIiBvcGVyYXRvcj0iaW4iIHJlc3VsdD0iYyIvPjxmZUdhdXNzaWFuQmx1ciBpbj0iU291cmNlQWxwaGEiIHN0ZERldmlhdGlvbj0iMjAiIHJlc3VsdD0iZCIvPjxmZUZsb29kIGZsb29kLWNvbG9yPSIjZmY5ZDAwIi8+PGZlQ29tcG9zaXRlIGluMj0iZCIgb3BlcmF0b3I9ImluIiByZXN1bHQ9ImUiLz48ZmVNZXJnZT48ZmVNZXJnZU5vZGUgaW49ImUiLz48ZmVNZXJnZU5vZGUgaW49ImMiLz48ZmVNZXJnZU5vZGUgaW49IlNvdXJjZUdyYXBoaWMiLz48L2ZlTWVyZ2U+PC9maWx0ZXI+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ0JnMiIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzA3MDYxYSIvPjxzdG9wIG9mZnNldD0iMC41NSIgc3RvcC1jb2xvcj0iIzE0MGQzZCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzJhMGY0YSIvPjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTIiIGZpbGw9InVybCgjZ0JnMikiLz48Y2xpcFBhdGggaWQ9ImNsNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjExMiIvPjwvY2xpcFBhdGg+PGcgY2xpcC1wYXRoPSJ1cmwoI2NsNTEyKSI+PGxpbmUgeDE9Ii00NC4wIiB5MT0iNDIyIiB4Mj0iLTEyNDQuMCIgeTI9IjUxMiIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4zIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iLTE0LjAiIHkxPSI0MjIiIHgyPSItMTA5NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIxNi4wIiB5MT0iNDIyIiB4Mj0iLTk0NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI0Ni4wIiB5MT0iNDIyIiB4Mj0iLTc5NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI3Ni4wIiB5MT0iNDIyIiB4Mj0iLTY0NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIxMDYuMCIgeTE9IjQyMiIgeDI9Ii00OTQuMCIgeTI9IjUxMiIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4zIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iMTM2LjAiIHkxPSI0MjIiIHgyPSItMzQ0LjAiIHkyPSI1MTIiIHN0cm9rZT0iIzliNmJmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMyIgc3Ryb2tlLXdpZHRoPSIyIi8+PGxpbmUgeDE9IjE2Ni4wIiB5MT0iNDIyIiB4Mj0iLTE5NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIxOTYuMCIgeTE9IjQyMiIgeDI9Ii00NC4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIyMjYuMCIgeTE9IjQyMiIgeDI9IjEwNi4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIyNTYuMCIgeTE9IjQyMiIgeDI9IjI1Ni4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIyODYuMCIgeTE9IjQyMiIgeDI9IjQwNi4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIzMTYuMCIgeTE9IjQyMiIgeDI9IjU1Ni4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIzNDYuMCIgeTE9IjQyMiIgeDI9IjcwNi4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIzNzYuMCIgeTE9IjQyMiIgeDI9Ijg1Ni4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI0MDYuMCIgeTE9IjQyMiIgeDI9IjEwMDYuMCIgeTI9IjUxMiIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4zIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iNDM2LjAiIHkxPSI0MjIiIHgyPSIxMTU2LjAiIHkyPSI1MTIiIHN0cm9rZT0iIzliNmJmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMyIgc3Ryb2tlLXdpZHRoPSIyIi8+PGxpbmUgeDE9IjQ2Ni4wIiB5MT0iNDIyIiB4Mj0iMTMwNi4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSI0OTYuMCIgeTE9IjQyMiIgeDI9IjE0NTYuMCIgeTI9IjUxMiIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4zIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iNTI2LjAiIHkxPSI0MjIiIHgyPSIxNjA2LjAiIHkyPSI1MTIiIHN0cm9rZT0iIzliNmJmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMyIgc3Ryb2tlLXdpZHRoPSIyIi8+PGxpbmUgeDE9IjU1Ni4wIiB5MT0iNDIyIiB4Mj0iMTc1Ni4wIiB5Mj0iNTEyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMiIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIwIiB5MT0iNDIyIiB4Mj0iNTEyIiB5Mj0iNDIyIiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjE1IiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iMCIgeTE9IjQzNiIgeDI9IjUxMiIgeTI9IjQzNiIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4yMSIgc3Ryb2tlLXdpZHRoPSIyIi8+PGxpbmUgeDE9IjAiIHkxPSI0NTQiIHgyPSI1MTIiIHkyPSI0NTQiIHN0cm9rZT0iIzliNmJmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMjciIHN0cm9rZS13aWR0aD0iMiIvPjxsaW5lIHgxPSIwIiB5MT0iNDc4IiB4Mj0iNTEyIiB5Mj0iNDc4IiBzdHJva2U9IiM5YjZiZmYiIHN0cm9rZS1vcGFjaXR5PSIwLjMzIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iMCIgeTE9IjUwOCIgeDI9IjUxMiIgeTI9IjUwOCIgc3Ryb2tlPSIjOWI2YmZmIiBzdHJva2Utb3BhY2l0eT0iMC4zOSIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9nPgo8cmVjdCB4PSIxOCIgeT0iMTgiIHdpZHRoPSI0NzYiIGhlaWdodD0iNDc2IiByeD0iOTYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzliNmJmZiIgc3Ryb2tlLXdpZHRoPSI2IiBvcGFjaXR5PSIwLjkiIGZpbHRlcj0idXJsKCNwaW5rR2xvdykiLz4KPHJlY3QgeD0iMTIxLjAiIHk9Ijc1LjAiIHdpZHRoPSIxMTgiIGhlaWdodD0iMTE4IiByeD0iMjYiIGZpbGw9IiMxMjBjMzMiIHN0cm9rZT0iIzNkZmY5YSIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvd1MpIi8+CjxwYXRoIGQ9Ik0xNzkuOTk5OTk5OTk5OTk5OTcgMTY3LjUwNFExNzUuNzM2IDE2Ny41MDQgMTczLjk2OCAxNjYuMjA0UTE3Mi4yIDE2NC45MDQgMTcxLjgzNTk5OTk5OTk5OTk4IDE2Mi45MjhRMTcxLjQ3MTk5OTk5OTk5OTk4IDE2MC45NTIgMTcxLjQ3MTk5OTk5OTk5OTk4IDE1OC44NzJWMTI3Ljk4NDAwMDAwMDAwMDAxUTE3MS40NzE5OTk5OTk5OTk5OCAxMjUuOTA0IDE3MS44MzU5OTk5OTk5OTk5OCAxMjMuOThRMTcyLjIgMTIyLjA1NjAwMDAwMDAwMDAxIDE3NC4wMTk5OTk5OTk5OTk5OCAxMjAuODA4UTE3NS44Mzk5OTk5OTk5OTk5NyAxMTkuNTYgMTgwLjEwMzk5OTk5OTk5OTk4IDExOS41NlExODQuMzY4IDExOS41NiAxODYuMTM2IDEyMC44MDhRMTg3LjkwNCAxMjIuMDU2MDAwMDAwMDAwMDEgMTg4LjI2Nzk5OTk5OTk5OTk3IDEyNC4wMzIwMDAwMDAwMDAwMVExODguNjMxOTk5OTk5OTk5OTggMTI2LjAwODAwMDAwMDAwMDAxIDE4OC42MzE5OTk5OTk5OTk5OCAxMjguMDg4VjE1OC45NzZRMTg4LjYzMTk5OTk5OTk5OTk4IDE2MS4wNTYgMTg4LjI2Nzk5OTk5OTk5OTk3IDE2My4wMzJRMTg3LjkwNCAxNjUuMDA4IDE4Ni4xMzYgMTY2LjI1NlExODQuMzY4IDE2Ny41MDQgMTc5Ljk5OTk5OTk5OTk5OTk3IDE2Ny41MDRaTTE2My45ODM5OTk5OTk5OTk5OCAxNTIuMTEyUTE2Mi4xMTIgMTUyLjExMiAxNjAuMjQgMTUxLjc0OFExNTguMzY4IDE1MS4zODQwMDAwMDAwMDAwMSAxNTcuMTcxOTk5OTk5OTk5OTcgMTQ5LjU2NDAwMDAwMDAwMDAyUTE1NS45NzU5OTk5OTk5OTk5NyAxNDcuNzQ0IDE1NS45NzU5OTk5OTk5OTk5NyAxNDMuNDhRMTU1Ljk3NTk5OTk5OTk5OTk3IDEzOS4xMTIgMTU3LjI3NTk5OTk5OTk5OTk4IDEzNy4zNDRRMTU4LjU3NiAxMzUuNTc2IDE2MC42MDM5OTk5OTk5OTk5OCAxMzUuMjEyUTE2Mi42MzE5OTk5OTk5OTk5OCAxMzQuODQ4IDE2NC43MTIgMTM0Ljg0OEgxOTUuNDk1OTk5OTk5OTk5OThRMTk3LjU3NTk5OTk5OTk5OTk2IDEzNC44NDggMTk5LjU1MTk5OTk5OTk5OTk2IDEzNS4yMTJRMjAxLjUyNzk5OTk5OTk5OTk2IDEzNS41NzYgMjAyLjc3NTk5OTk5OTk5OTk1IDEzNy4zOTYwMDAwMDAwMDAwMlEyMDQuMDIzOTk5OTk5OTk5OTcgMTM5LjIxNiAyMDQuMDIzOTk5OTk5OTk5OTcgMTQzLjU4NFEyMDQuMDIzOTk5OTk5OTk5OTcgMTQ3Ljg0OCAyMDIuODI3OTk5OTk5OTk5OTcgMTQ5LjYxNlEyMDEuNjMxOTk5OTk5OTk5OTggMTUxLjM4NDAwMDAwMDAwMDAxIDE5OS44MTE5OTk5OTk5OTk5OCAxNTEuNzQ4UTE5Ny45OTIgMTUyLjExMiAxOTYuMDE1OTk5OTk5OTk5OTYgMTUyLjExMloiIGZpbGw9IiMzZGZmOWEiIGZpbHRlcj0idXJsKCNnbG93UykiLz4KPHJlY3QgeD0iMjczLjAiIHk9Ijc1LjAiIHdpZHRoPSIxMTgiIGhlaWdodD0iMTE4IiByeD0iMjYiIGZpbGw9IiMxMjBjMzMiIHN0cm9rZT0iI2ZmM2RmMiIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvd1MpIi8+CjxwYXRoIGQ9Ik0zMTMuNDg4IDE1Mi4zMlEzMTEuODI0IDE1Mi4zMiAzMDkuOTUyIDE1MS45NTYwMDAwMDAwMDAwMlEzMDguMDgwMDAwMDAwMDAwMDQgMTUxLjU5MiAzMDYuNzI4MDAwMDAwMDAwMDcgMTQ5LjcyMDAwMDAwMDAwMDAzUTMwNS4zNzYwMDAwMDAwMDAwMyAxNDcuODQ4IDMwNS4zNzYwMDAwMDAwMDAwMyAxNDMuMzc2UTMwNS4zNzYwMDAwMDAwMDAwMyAxMzkuMDA4IDMwNi43MjgwMDAwMDAwMDAwNyAxMzcuMjRRMzA4LjA4MDAwMDAwMDAwMDA0IDEzNS40NzIgMzEwLjAwNCAxMzUuMTA4UTMxMS45MjggMTM0Ljc0NCAzMTMuNTkyMDAwMDAwMDAwMDQgMTM0Ljc0NEgzNTAuNDA4UTM1Mi4xNzYwMDAwMDAwMDAwNCAxMzQuNzQ0IDM1NC4xIDEzNS4xMDhRMzU2LjAyNCAxMzUuNDcyIDM1Ny4zMjQgMTM3LjI5MlEzNTguNjI0IDEzOS4xMTIgMzU4LjYyNCAxNDMuNDhRMzU4LjYyNCAxNDcuOTUyIDM1Ny4zMjQgMTQ5Ljc3MlEzNTYuMDI0IDE1MS41OTIgMzU0LjE1MjAwMDAwMDAwMDA0IDE1MS45NTYwMDAwMDAwMDAwMlEzNTIuMjgwMDAwMDAwMDAwMDMgMTUyLjMyIDM1MC4zMDQwMDAwMDAwMDAwMyAxNTIuMzJaIiBmaWxsPSIjZmYzZGYyIiBmaWx0ZXI9InVybCgjZ2xvd1MpIi8+CjxyZWN0IHg9IjEyMS4wIiB5PSIyMjcuMCIgd2lkdGg9IjExOCIgaGVpZ2h0PSIxMTgiIHJ4PSIyNiIgZmlsbD0iIzEyMGMzMyIgc3Ryb2tlPSIjZmZkMjNkIiBzdHJva2Utd2lkdGg9IjYiIGZpbHRlcj0idXJsKCNnbG93UykiLz4KPHBhdGggZD0iTTE5Mi4yMiAyOTYuNTIgMjAwLjIyOCAzMDQuNTI4UTIwMi42MiAzMDYuNzEyIDIwMy40IDMwOC42MzU5OTk5OTk5OTk5N1EyMDQuMTggMzEwLjU2IDIwMy40NTIgMzEyLjQ4NDAwMDAwMDAwMDA0UTIwMi43MjQgMzE0LjQwOCAyMDAuNDM2IDMxNi42OTZRMTk4LjE0OCAzMTguOTg0IDE5Ni4yMjQgMzE5Ljc2NFExOTQuMyAzMjAuNTQ0IDE5Mi4zNzYgMzE5Ljc2NFExOTAuNDUyIDMxOC45ODQgMTg4LjE2NCAzMTYuNjk2TDE4MC4wNTIgMzA4LjU4NEwxNzEuOTQgMzE2LjY5NlExNjkuNjUyIDMxOC45ODQgMTY3LjcyOCAzMTkuNzY0UTE2NS44MDQgMzIwLjU0NCAxNjMuODggMzE5Ljc2NFExNjEuOTU2IDMxOC45ODQgMTU5LjY2OCAzMTYuNjk2UTE1Ny4zOCAzMTQuNDA4IDE1Ni42NTIgMzEyLjQ4NDAwMDAwMDAwMDA0UTE1NS45MjQgMzEwLjU2IDE1Ni43NTYgMzA4LjYzNTk5OTk5OTk5OTk3UTE1Ny41ODggMzA2LjcxMiAxNTkuODc2IDMwNC41MjhMMTY3Ljg4NDAwMDAwMDAwMDAxIDI5Ni41MkwxNTkuNTY0IDI4OC4yUTE1Ny4zOCAyODYuMDE2IDE1Ni42NTIgMjg0LjE0NFExNTUuOTI0IDI4Mi4yNzIgMTU2LjY1MiAyODAuMzQ3OTk5OTk5OTk5OTZRMTU3LjM4IDI3OC40MjQgMTU5LjY2OCAyNzYuMTM2UTE2Mi4wNiAyNzMuOTUyIDE2My45ODQgMjczLjIyNFExNjUuOTA4MDAwMDAwMDAwMDIgMjcyLjQ5NiAxNjcuODMyIDI3My4yMjRRMTY5Ljc1NiAyNzMuOTUyIDE3MS45NCAyNzYuMTM2TDE4MC4wNTIgMjg0LjI0OEwxODguMTY0IDI3Ni4xMzZRMTkwLjM0OCAyNzMuOTUyIDE5Mi4yNzIgMjczLjIyNFExOTQuMTk2IDI3Mi40OTYgMTk2LjE3MiAyNzMuMjI0UTE5OC4xNDggMjczLjk1MiAyMDAuNDM2IDI3Ni4xMzZRMjAyLjcyNCAyNzguNDI0IDIwMy40NTIgMjgwLjM0Nzk5OTk5OTk5OTk2UTIwNC4xOCAyODIuMjcyIDIwMy40NTIgMjg0LjE0NFEyMDIuNzI0IDI4Ni4wMTYgMjAwLjU0IDI4OC4yWiIgZmlsbD0iI2ZmZDIzZCIgZmlsdGVyPSJ1cmwoI2dsb3dTKSIvPgo8cmVjdCB4PSIyNzMuMCIgeT0iMjI3LjAiIHdpZHRoPSIxMTgiIGhlaWdodD0iMTE4IiByeD0iMjYiIGZpbGw9IiMxMjBjMzMiIHN0cm9rZT0iIzJlZjJmZiIgc3Ryb2tlLXdpZHRoPSI2IiBmaWx0ZXI9InVybCgjZ2xvd1MpIi8+CjxwYXRoIGQ9Ik0zMTYuODE2IDMwMi4zNDRRMzE1LjI1NiAzMDIuMzQ0IDMxMy40MzYgMzAxLjk4UTMxMS42MTYgMzAxLjYxNiAzMTAuMzY4IDI5OS45NTJRMzA5LjEyIDI5OC4yODggMzA5LjEyIDI5NC4zMzZRMzA5LjEyIDI5MC4zODQgMzEwLjQ3MiAyODguNzcyMDAwMDAwMDAwMDVRMzExLjgyNCAyODcuMTYgMzEzLjY5NiAyODYuODQ4UTMxNS41NjggMjg2LjUzNiAzMTcuMjMxOTk5OTk5OTk5OTcgMjg2LjUzNkgzNDYuODcxOTk5OTk5OTk5OTZRMzQ4LjUzNiAyODYuNTM2IDM1MC40MDggMjg2Ljg0OFEzNTIuMjggMjg3LjE2IDM1My41OCAyODguODI0UTM1NC44OCAyOTAuNDg4IDM1NC44OCAyOTQuNDRRMzU0Ljg4IDI5OC4yODggMzUzLjY4Mzk5OTk5OTk5OTk3IDI5OS45NTJRMzUyLjQ4OCAzMDEuNjE2IDM1MC42MTYgMzAxLjk4UTM0OC43NDM5OTk5OTk5OTk5NyAzMDIuMzQ0IDM0Ni43NjggMzAyLjM0NFpNMzMxLjg5NTk5OTk5OTk5OTk2IDMyMi43MjhRMzI3LjAwOCAzMjIuNzI4IDMyNS4wMzIgMzIwLjgwNFEzMjMuMDU2IDMxOC44OCAzMjMuMDU2IDMxNC4wOTZRMzIzLjA1NiAzMDkuMCAzMjUuMDMyIDMwNy4wMjRRMzI3LjAwOCAzMDUuMDQ4IDMzMi4wIDMwNS4wNDhRMzM2Ljg4OCAzMDUuMDQ4IDMzOC44MTIgMzA3LjAyNFEzNDAuNzM2IDMwOS4wIDM0MC43MzYgMzEzLjk5MlEzNDAuNzM2IDMxOC44OCAzMzguNzYgMzIwLjgwNFEzMzYuNzg0IDMyMi43MjggMzMxLjg5NTk5OTk5OTk5OTk2IDMyMi43MjhaTTMzMS44OTU5OTk5OTk5OTk5NiAyODMuODMyUTMyNy4wMDggMjgzLjgzMiAzMjUuMDMyIDI4MS45MDhRMzIzLjA1NiAyNzkuOTg0IDMyMy4wNTYgMjc1LjJRMzIzLjA1NiAyNzAuMTA0IDMyNS4wMzIgMjY4LjEyOFEzMjcuMDA4IDI2Ni4xNTIgMzMyLjAgMjY2LjE1MlEzMzYuODg4IDI2Ni4xNTIgMzM4LjgxMiAyNjguMTI4UTM0MC43MzYgMjcwLjEwNCAzNDAuNzM2IDI3NS4wOTZRMzQwLjczNiAyNzkuOTg0IDMzOC43NiAyODEuOTA4UTMzNi43ODQgMjgzLjgzMiAzMzEuODk1OTk5OTk5OTk5OTYgMjgzLjgzMloiIGZpbGw9IiMyZWYyZmYiIGZpbHRlcj0idXJsKCNnbG93UykiLz4KPGcgZmlsdGVyPSJ1cmwoI3N1bkdsb3cpIj48cG9seWdvbiBwb2ludHM9IjI5NS45LDkyLjAgMjI1LjEsMjI4LjkgMjc3LjUsMjI4LjkgMjUzLjQsMzI4LjAgMzUyLjUsMTc3LjAgMjk1LjksMTc3LjAgMzI0LjIsOTIuMCIgZmlsbD0idXJsKCNnQm9sdCkiIHN0cm9rZT0iIzA3MDYxYSIgc3Ryb2tlLXdpZHRoPSI3LjEiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L2c+CjxwYXRoIGQ9Ik02NC4wMjQ5OTk5OTk5OTk5OSA0NTIuMFY0MTYuMEg3Mi4wMjQ5OTk5OTk5OTk5OUw5Mi4xNzUgNDQwLjBWNDE2LjBIMTAwLjAyNVY0NTIuMEg5Mi4wMjQ5OTk5OTk5OTk5OUw3MS43NzQ5OTk5OTk5OTk5OSA0MjcuOVY0NTIuMFpNMTE1LjkyNDk5OTk5OTk5OTk4IDQ1Mi4wUTExMy45MjQ5OTk5OTk5OTk5OCA0NTIuMCAxMTIuMjI1IDQ1MS4wUTExMC41MjQ5OTk5OTk5OTk5OSA0NTAuMCAxMDkuNTI0OTk5OTk5OTk5OTkgNDQ4LjNRMTA4LjUyNDk5OTk5OTk5OTk5IDQ0Ni42IDEwOC41MjQ5OTk5OTk5OTk5OSA0NDQuNlY0MTYuMEgxMTYuMjc0OTk5OTk5OTk5OTlWNDQ0LjJRMTE2LjI3NDk5OTk5OTk5OTk5IDQ0NC4yIDExNi4yNzQ5OTk5OTk5OTk5OSA0NDQuMlExMTYuMjc0OTk5OTk5OTk5OTkgNDQ0LjIgMTE2LjI3NDk5OTk5OTk5OTk5IDQ0NC4ySDEzNi42NzQ5OTk5OTk5OTk5OFExMzYuNjc0OTk5OTk5OTk5OTggNDQ0LjIgMTM2LjY3NDk5OTk5OTk5OTk4IDQ0NC4yUTEzNi42NzQ5OTk5OTk5OTk5OCA0NDQuMiAxMzYuNjc0OTk5OTk5OTk5OTggNDQ0LjJWNDE2LjBIMTQ0LjUyNDk5OTk5OTk5OTk4VjQ0NC42UTE0NC41MjQ5OTk5OTk5OTk5OCA0NDYuNiAxNDMuNSA0NDguM1ExNDIuNDc1IDQ1MC4wIDE0MC44IDQ1MS4wUTEzOS4xMjUgNDUyLjAgMTM3LjEyNSA0NTIuMEgxMTUuOTI0OTk5OTk5OTk5OThaTTE1My4wMjUgNDUyLjBWNDE2LjBIMTYxLjAyNUwxNzMuMjI1IDQzMC41NUwxODUuMzc1IDQxNi4wSDE5My40MjVWNDUyLjBIMTg1LjYyNVY0MjcuODVMMTczLjIyNSA0NDIuNjVMMTYwLjc3NSA0MjcuOVY0NTIuMFpNMjAyLjU3NSA0NTIuMFY0MTYuMEgyMjkuNzc1UTIzMS43NzUgNDE2LjAgMjMzLjQ1IDQxNy4wUTIzNS4xMjUgNDE4LjAgMjM2LjE1IDQxOS42NzVRMjM3LjE3NSA0MjEuMzUgMjM3LjE3NSA0MjMuNFY0MzAuMTVRMjM3LjE3NSA0MzAuOCAyMzcuMTAwMDAwMDAwMDAwMDIgNDMxLjM3NVEyMzcuMDI1IDQzMS45NSAyMzYuODI1IDQzMi40NVEyMzcuNTc1IDQzMy40IDIzOC4wNzUgNDM0LjY1UTIzOC41NzUgNDM1LjkgMjM4LjU3NSA0MzcuMTVWNDQ0LjZRMjM4LjU3NSA0NDYuNiAyMzcuNTUgNDQ4LjNRMjM2LjUyNSA0NTAuMCAyMzQuODUwMDAwMDAwMDAwMDIgNDUxLjBRMjMzLjE3NSA0NTIuMCAyMzEuMTI1IDQ1Mi4wSDIwMi41NzVaTTIxMC4zMjUgNDQ0LjJIMjMwLjcyNVEyMzAuNzI1IDQ0NC4yIDIzMC43MjUgNDQ0LjJRMjMwLjcyNSA0NDQuMiAyMzAuNzI1IDQ0NC4yVjQzNy42UTIzMC43MjUgNDM3LjYgMjMwLjcyNSA0MzcuNlEyMzAuNzI1IDQzNy42IDIzMC43MjUgNDM3LjZIMjEwLjMyNVEyMTAuMzI1IDQzNy42IDIxMC4zMjUgNDM3LjZRMjEwLjMyNSA0MzcuNiAyMTAuMzI1IDQzNy42VjQ0NC4yUTIxMC4zMjUgNDQ0LjIgMjEwLjMyNSA0NDQuMlEyMTAuMzI1IDQ0NC4yIDIxMC4zMjUgNDQ0LjJaTTIxMC4zMjUgNDI5LjhIMjI5LjMyNVEyMjkuMzI1IDQyOS44IDIyOS4zMjUgNDI5LjhRMjI5LjMyNSA0MjkuOCAyMjkuMzI1IDQyOS44VjQyMy44UTIyOS4zMjUgNDIzLjggMjI5LjMyNSA0MjMuOFEyMjkuMzI1IDQyMy44IDIyOS4zMjUgNDIzLjhIMjEwLjMyNVEyMTAuMzI1IDQyMy44IDIxMC4zMjUgNDIzLjhRMjEwLjMyNSA0MjMuOCAyMTAuMzI1IDQyMy44VjQyOS44UTIxMC4zMjUgNDI5LjggMjEwLjMyNSA0MjkuOFEyMTAuMzI1IDQyOS44IDIxMC4zMjUgNDI5LjhaTTI0Ny4wNzUgNDUyLjBWNDE1Ljk1SDI1NC44MjVWNDQ0LjJIMjgzLjA3NVY0NTIuMFpNMjg5LjA3NDk5OTk5OTk5OTkzIDQ1Mi4wVjQxNi4wSDMyMi4zMjQ5OTk5OTk5OTk5M1Y0MjMuOEgyOTYuOTI0OTk5OTk5OTk5OTVWNDMwLjFIMzE3LjM3NDk5OTk5OTk5OTk0VjQzNy45SDI5Ni45MjQ5OTk5OTk5OTk5NVY0NDQuMkgzMjIuMzI0OTk5OTk5OTk5OTNWNDUyLjBaTTMzMC4zNzUgNDUyLjBWNDE2LjBIMzYzLjYyNVY0MjMuOEgzMzguMjI1VjQzMC4xSDM1OC42NzVWNDM3LjlIMzM4LjIyNVY0NDQuMkgzNjMuNjI1VjQ1Mi4wWk0zODMuODc1IDQ1Mi4wVjQyMy44SDM2OS43NzVWNDE2LjBINDA1Ljc3NVY0MjMuOEgzOTEuNjc0OTk5OTk5OTk5OTVWNDUyLjBaTTQxMi4yNzUwMDAwMDAwMDAwMyA0NTIuMFY0NDQuMDVMNDM2LjM3NSA0MjMuOEg0MTIuMjc1MDAwMDAwMDAwMDNWNDE2LjBINDQ4LjI3NTAwMDAwMDAwMDAzVjQyMy45NUw0MjQuMTc1IDQ0NC4ySDQ0OC4yNzUwMDAwMDAwMDAwM1Y0NTIuMFoiIGZpbGw9IiNmZmZmZmYiIGZpbHRlcj0idXJsKCNuZW9uKSIvPgo8L3N2Zz4=" alt="">
-      <h3>ANONG PANGALAN MO?</h3>
+      <h3>MAG-REGISTER</h3>
       <p>Lalabas ang pangalan mo sa leaderboard. Gumamit ng nickname, hindi ang buong pangalan mo.</p>
       <input id="name-input" maxlength="16" placeholder="hal. Juan" autocomplete="off">
+      <div class="reg-box" id="reg-box">
+        <p class="reg-title">📱 Phone number<small>Para sa registration, at para hindi mawala ang progress mo kahit magpalit ng phone. Puwede ang number ng magulang mo.</small></p>
+        <input id="reg-phone" type="tel" inputmode="tel" maxlength="16" placeholder="Phone number (09XX XXX XXXX)" autocomplete="off">
+        <details class="privacy" id="reg-privacy"></details>
+        <label class="consent"><input type="checkbox" id="reg-agree"> Nabasa ko ang privacy notice at pumapayag ako (at ang magulang ko).</label>
+      </div>
+      <div class="reg-done hidden" id="reg-done"></div>
       <div class="lvl-info" id="lvl-info"></div>
       <div class="avatars" id="avatar-pick"></div>
       <button class="btn pink" id="name-save">LARO NA ▶</button>
-      <button class="btn ghost small" id="btn-cloud">💾 I-SAVE / IBALIK ANG PROGRESS</button>
+      <button class="linkish" id="btn-cloud">May naka-save ka na? Ibalik ang progress mo</button>
     </div>
   </div>
 
@@ -952,6 +977,25 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       <button class="btn yellow" id="cloud-load">📥 IBALIK ANG PROGRESS</button>
       <button class="linkish" id="cloud-delete">🗑️ Burahin ang naka-save ko</button>
       <button class="btn ghost small" id="cloud-close">✕ ISARA</button>
+    </div>
+  </div>
+
+  <!-- Comments & suggestions -->
+  <div class="modal hidden" id="modal-feedback">
+    <div class="modal-box">
+      <h3>💬 COMMENTS</h3>
+      <p>Ano ang masasabi mo sa laro? Babasahin ito ng gumawa ng NumBleetz.</p>
+      <div class="fb-kinds" id="fb-kinds">
+        <button data-k="idea" class="active">💡 Suggestion</button>
+        <button data-k="bug">🐞 May mali</button>
+        <button data-k="love">❤️ Papuri</button>
+        <button data-k="other">💬 Iba pa</button>
+      </div>
+      <textarea id="fb-text" maxlength="500" rows="5" placeholder="Isulat dito…"></textarea>
+      <small class="fb-count" id="fb-count">0/500</small>
+      <p class="fb-note">Huwag ilagay ang buong pangalan, address o phone number mo dito.</p>
+      <button class="btn cyan" id="fb-send">📨 IPADALA</button>
+      <button class="btn ghost small" id="fb-close">✕ ISARA</button>
     </div>
   </div>
 
@@ -2070,7 +2114,11 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   /* ---------------- gameplay ---------------- */
   let G = null;
 
+  // Everyone registers (name + phone number) before playing. Offline, they can play and register later.
+  let regSkip = false;   // set when the Sheet can't take registrations right now, so nobody gets stuck
+  const needsRegister = () => !P.name || (!!API && navigator.onLine && !regSkip && !(P.cloud && P.cloud.phone));
   function startGame(mode, opts = {}) {
+    if (needsRegister()) { openNameModal(); toast('📝 Mag-register muna bago maglaro 🙂', 2500); return; }
     const M = MODES[mode];
     const today = manilaDate();
     rng = M.seeded ? mulberry32(hashStr('bilang-' + today)) : Math.random;
@@ -2779,6 +2827,13 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     $('#name-input').value = P.name;
     avatarPick = P.avatar;
     renderAvatars();
+    const c = P.cloud, mine = !!(c && c.name && c.phone);
+    $('#reg-box').classList.toggle('hidden', mine || !API);
+    $('#reg-done').classList.toggle('hidden', !mine);
+    if (mine) $('#reg-done').textContent = `✅ Naka-save ang progress mo bilang ${c.name} · 📱 0${c.phone.slice(0, 3)} ••• ${c.phone.slice(-4)}`;
+    $('#reg-phone').value = '';
+    $('#reg-agree').checked = false;
+    $('#btn-cloud').classList.toggle('hidden', !API);
     $('#modal-name').classList.remove('hidden');
     setTimeout(() => $('#name-input').focus(), 50);
   }
@@ -2804,12 +2859,25 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   // "0917 123 4567", "+63 917…", "917…" → "9171234567" (empty if it doesn't look like a PH mobile number)
   const cleanPhone = (v) => { const d = String(v).replace(/\D/g, '').slice(-10); return /^9\d{9}$/.test(d) ? d : ''; };
   const cleanName = (v) => v.replace(/[^\p{L}\p{N} ._-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 16);
-  function saveName() {
+  async function saveName() {
     const n = cleanName($('#name-input').value);
     if (!n) { toast('Ilagay muna ang nickname mo 🙂'); return; }
     P.name = n;
     P.avatar = avatarPick;
     save();
+    // Registration: name + phone number are both needed (stay here if saving fails)
+    if (!navigator.onLine && !$('#reg-box').classList.contains('hidden')) toast('📶 Walang internet. Mag-register ka na lang pagbalik ng internet.', 3500);
+    else if (!$('#reg-box').classList.contains('hidden')) {
+      const btn = $('#name-save');
+      btn.disabled = true;
+      cloudSave.lastErr = '';
+      const ok = await cloudSave(false, { phone: '#reg-phone', agree: '#reg-agree' });
+      btn.disabled = false;
+      // Kid's mistake (wrong number, already registered…): fix it here. Sheet down or not updated yet: let them play.
+      const kidError = /already saved|locked|phone|missing name/i.test(cloudSave.lastErr) || (!ok && !cloudSave.lastErr);
+      if (!ok && kidError) return;
+      if (!ok) { regSkip = true; toast('📶 Hindi pa ma-register ngayon. Puwede ka nang maglaro, at susubukan ulit mamaya.', 4000); }
+    }
     $('#modal-name').classList.add('hidden');
     renderHome();
   }
@@ -2817,25 +2885,30 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   /* ---------------- save code (progress sa Google Sheet) ---------------- */
   const cloudData = () => JSON.stringify(Object.assign({}, P, { queue: [], cloud: undefined }));
   let cloudBusy = false;
-  async function cloudSave(quiet) {
+  // form: which phone input and consent checkbox to read the first time (save screen or name screen)
+  async function cloudSave(quiet, form = { phone: '#cloud-pin', agree: '#cloud-agree' }) {
     const c = P.cloud;
-    if (!API || cloudBusy || (quiet && !(c && c.name && c.phone))) return;
+    if (!API || cloudBusy || (quiet && !(c && c.name && c.phone))) return false;
     const mine = !!(c && c.name && c.phone);
-    const phone = mine ? c.phone : cleanPhone($('#cloud-pin').value);
-    if (!mine && !P.name) { toast('Ilagay muna ang pangalan mo 🙂'); return; }
-    if (!phone) { toast('Ilagay ang phone number, hal. 0917 123 4567 📱'); return; }
-    if (!mine && !$('#cloud-agree').checked) { toast('I-check muna ang privacy notice ✅'); return; }
+    const phone = mine ? c.phone : cleanPhone($(form.phone).value);
+    if (!mine && !P.name) { toast('Ilagay muna ang pangalan mo 🙂'); return false; }
+    if (!phone) { toast(!mine && !$(form.phone).value.trim() ? 'Ilagay ang phone number mo 📱' : 'Mali ang phone number. Halimbawa: 0917 123 4567 📱', 3000); return false; }
+    if (!mine && !$(form.agree).checked) { toast('I-check muna ang privacy notice ✅'); return false; }
     cloudBusy = true;
+    let ok = false;
     try {
       const j = await postScore({ action: 'save', name: mine ? c.name : P.name, phone, isNew: !mine, data: cloudData() });
       if (!j.ok) throw new Error(j.error);
       P.cloud = { name: j.name, phone, at: Date.now() };
       save();
       if (!quiet) { toast('💾 Na-save na ang progress mo!', 3500); renderCloud(); }
+      ok = true;
     } catch (e) {
+      cloudSave.lastErr = e.message;
       if (!quiet) toast(cloudError(e.message), 3500);
     }
     cloudBusy = false;
+    return ok;
   }
   function cloudError(msg) {
     if (/already saved/i.test(msg)) return '⚠️ Naka-save ka na dati. Gamitin ang "Ibalik ang progress" sa ibaba para makuha ito.';
@@ -2898,6 +2971,36 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     $('#modal-name').classList.add('hidden');
     $('#modal-cloud').classList.remove('hidden');
   }
+
+  /* ---------------- comments & suggestions ---------------- */
+  let fbKind = 'idea';
+  function openFeedback() {
+    if (!API) { toast('📴 Kailangan muna ng leaderboard link para makapagpadala.'); return; }
+    $('#fb-text').value = '';
+    $('#fb-count').textContent = '0/500';
+    $('#modal-feedback').classList.remove('hidden');
+  }
+  $$('#fb-kinds button').forEach((b) => {
+    b.onclick = () => { fbKind = b.dataset.k; $$('#fb-kinds button').forEach((x) => x.classList.toggle('active', x === b)); };
+  });
+  $('#fb-text').oninput = () => { $('#fb-count').textContent = $('#fb-text').value.length + '/500'; };
+  $('#fb-send').onclick = async () => {
+    const text = $('#fb-text').value.trim();
+    if (text.length < 3) { toast('Isulat muna ang comment mo ✏️'); return; }
+    const btn = $('#fb-send');
+    btn.disabled = true;
+    try {
+      const j = await postScore({ action: 'feedback', kind: fbKind, text, name: P.name, id: P.id, screen: 'home' });
+      if (!j.ok) throw new Error(j.error);
+      $('#modal-feedback').classList.add('hidden');
+      toast('📨 Salamat! Natanggap na ang comment mo.', 3000);
+    } catch (e) {
+      toast(/fast/.test(e.message) ? '⏳ Sandali lang, kakapadala mo lang. Subukan ulit mamaya.' : '📶 Hindi naipadala. Subukan ulit mamaya.', 3500);
+    }
+    btn.disabled = false;
+  };
+  $('#btn-feedback').onclick = openFeedback;
+  $('#fb-close').onclick = () => $('#modal-feedback').classList.add('hidden');
 
   /* ---------------- background ---------------- */
   function buildBackground() {
@@ -3011,10 +3114,11 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   $('#btn-profile').onclick = openNameModal;
   $('.level-chip').onclick = openNameModal;
   $('#btn-cloud').onclick = openCloud;
+  $('#reg-privacy').innerHTML = $('#cloud-new .privacy').innerHTML;
   $('#cloud-save').onclick = () => cloudSave(false);
   $('#cloud-load').onclick = cloudLoad;
   $('#cloud-delete').onclick = cloudDelete;
-  $('#cloud-close').onclick = () => { $('#modal-cloud').classList.add('hidden'); if (!P.name) openNameModal(); };
+  $('#cloud-close').onclick = () => { $('#modal-cloud').classList.add('hidden'); if (needsRegister()) openNameModal(); };
   $('#btn-sound').onclick = () => { P.sound = !P.sound; save(); renderHome(); };
   $('#btn-music').onclick = () => {
     P.music = !P.music;
@@ -3070,8 +3174,12 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   document.title = CFG.GAME_NAME;
   buildBackground();
   show('home');
-  if (!P.name) openNameModal();
-  flushQueue();
+  // New players, and players who haven't registered their number yet, see the register screen
+  if (needsRegister()) openNameModal();
+  // Send anything saved while offline: right away, and again whenever the internet comes back
+  function syncNow() { flushQueue(); cloudSave(true); }
+  syncNow();
+  window.addEventListener('online', syncNow);
 })();
 
   </script>
