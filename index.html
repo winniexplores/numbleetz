@@ -826,6 +826,26 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .lang-pick button.on { background: #9b6bff; border-color: #c7adff; color: #fff; }
 body.lang-en .res-cards:not(:empty)::before { content: '🃏 New cards'; }
 
+/* How to play */
+.howto-btn { display: block; margin: 14px auto 4px; font: inherit; font-weight: 800; font-size: 15px; color: #04241a; background: linear-gradient(180deg, #ffe066, #ffc21a); border: 0; border-radius: 999px; padding: 9px 22px; box-shadow: 0 4px 0 #b88700, 0 0 14px rgba(255, 210, 61, .45); cursor: pointer; }
+.howto-list { text-align: left; max-height: 52dvh; overflow-y: auto; margin: 8px 0 12px; padding-right: 4px; }
+.howto .ht { background: rgba(255, 255, 255, .05); border: 1px solid rgba(155, 107, 255, .3); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
+.howto .ht b { font-size: 15px; }
+.howto .ht p { margin: 4px 0 0; font-size: 13.5px; line-height: 1.45; color: var(--muted); }
+.howto .btn { width: 100%; margin-top: 8px; }
+
+/* First-time tour: dark screen with a lit hole around one button */
+.tour { position: fixed; inset: 0; z-index: 90; }
+.tour-hole { position: fixed; border-radius: 16px; box-shadow: 0 0 0 9999px rgba(5, 3, 20, .78), 0 0 0 3px #ffd23d, 0 0 22px #ffd23d; transition: all .3s ease; pointer-events: none; }
+.tour-tip { position: fixed; left: 16px; right: 16px; max-width: 420px; margin: 0 auto; background: #1d1350; border: 2px solid #ffd23d; border-radius: 16px; padding: 14px 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, .5); }
+.tour-tip.pop { animation: tourPop .25s ease-out; }
+@keyframes tourPop { from { transform: scale(.92); opacity: 0; } to { transform: none; opacity: 1; } }
+.tour-step { font-size: 12px; letter-spacing: 1px; color: #ffd23d; font-weight: 800; }
+.tour-text { margin: 6px 0 12px; font-size: 16px; line-height: 1.45; color: #fff; }
+.tour-btns { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.tour-skip { background: none; border: 0; color: var(--muted); font: inherit; text-decoration: underline; cursor: pointer; }
+.tour-btns .btn { flex: 0 0 auto; padding: 10px 18px; }
+
   </style>
 </head>
 <body>
@@ -880,6 +900,7 @@ body.lang-en .res-cards:not(:empty)::before { content: '🃏 New cards'; }
         </div>
       </nav>
       <button class="install-btn hidden" id="btn-install">📲 I-install sa phone (gumagana kahit offline)</button>
+      <button class="howto-btn" id="btn-howto">❓ Paano maglaro?</button>
       <button class="teacher-link fb-link" id="btn-feedback">💬 May comment o suggestion ka?</button>
       <button class="teacher-link" data-go="teacher">👩‍🏫 Para sa guro: gumawa ng assignment link</button>
       <p class="foot">Walang ads · walang chat · puro math ✨</p>
@@ -1116,6 +1137,39 @@ body.lang-en .res-cards:not(:empty)::before { content: '🃏 New cards'; }
   </div>
 
   <!-- Comments & suggestions -->
+  <!-- How to play: open any time from the home screen -->
+  <div class="modal hidden" id="modal-howto">
+    <div class="modal-box howto">
+      <h3>❓ PAANO MAGLARO</h3>
+      <div class="howto-list">
+        <div class="ht"><b>👆 Paano sumagot</b><p>May tanong sa gitna ng screen. Pindutin ang tamang sagot sa 3 pagpipilian. Puwede ring i-type ang sagot gamit ang ⌨️ button sa ibaba.</p></div>
+        <div class="ht"><b>🔥 Combo</b><p>Sunod-sunod na tama ang combo. Habang tumataas ang combo, lumalaki ang points mo. Kapag nagkamali, babalik sa zero ang combo.</p></div>
+        <div class="ht"><b>❤️ Buhay</b><p>Sa karamihan ng laro, may 3 buhay ka. Bawat mali, bawas ng isang buhay. Ubos ang buhay, tapos ang laro.</p></div>
+        <div class="ht"><b>⭐ Stars</b><p>Sa Lakbay Pilipinas at Times Tables, puwede kang makakuha ng 1 hanggang 3 stars. Kailangan ng kahit 1 star para mabuksan ang susunod na region.</p></div>
+        <div class="ht"><b>🛂 Passport</b><p>Bawat region ay may 5 tatak, isa sa bawat sign (+ − × ÷ 🍧). May bagong "Alam mo ba?" sa bawat tatak, at nagiging ginto ang stamp kapag kumpleto.</p></div>
+        <div class="ht"><b>💡 Tulong</b><p>Sa Lakbay Pilipinas at Times Tables, pindutin ang 💡 Tulong kapag nahihirapan ka.</p></div>
+        <div class="ht"><b>🧠 XP at Level</b><p>Bawat laro, may XP ka. Kapag nag-level up, may bagong avatar at title na mabubuksan.</p></div>
+        <div class="ht"><b>📅 Streak</b><p>Maglaro kahit isang beses bawat araw para tumaas ang streak mo. May bonus XP tuwing 7 araw!</p></div>
+        <div class="ht"><b>📊 Leaderboard</b><p>Lalabas sa leaderboard ang score mo sa Ranked, Daily Hamon at Mini Games.</p></div>
+      </div>
+      <button class="btn cyan" id="howto-tour">🧭 IPAKITA ULIT ANG TOUR</button>
+      <button class="btn purple" id="howto-close">✕ ISARA</button>
+    </div>
+  </div>
+
+  <!-- First-time tour of the home screen -->
+  <div class="tour hidden" id="tour">
+    <div class="tour-hole" id="tour-hole"></div>
+    <div class="tour-tip" id="tour-tip">
+      <div class="tour-step" id="tour-step"></div>
+      <p class="tour-text" id="tour-text"></p>
+      <div class="tour-btns">
+        <button class="tour-skip" id="tour-skip">Laktawan</button>
+        <button class="btn green" id="tour-next">SUNOD ▶</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal hidden" id="modal-feedback">
     <div class="modal-box">
       <h3>💬 COMMENTS</h3>
@@ -1345,6 +1399,42 @@ body.lang-en .res-cards:not(:empty)::before { content: '🃏 New cards'; }
     // ---- install ----
     '📲 Na-install na ang NumBleetz!': '📲 NumBleetz is installed!',
     'Sa Safari: pindutin ang Share ⬆️ tapos "Add to Home Screen" ➕': 'In Safari: tap Share ⬆️ then "Add to Home Screen" ➕',
+    // ---- how to play + tour ----
+    '❓ Paano maglaro?': '❓ How to play?', '❓ PAANO MAGLARO': '❓ HOW TO PLAY',
+    '👆 Paano sumagot': '👆 How to answer',
+    'May tanong sa gitna ng screen. Pindutin ang tamang sagot sa 3 pagpipilian. Puwede ring i-type ang sagot gamit ang ⌨️ button sa ibaba.':
+      'A question shows in the middle of the screen. Tap the right answer from the 3 choices. You can also type it using the ⌨️ button below.',
+    '🔥 Combo': '🔥 Combo',
+    'Sunod-sunod na tama ang combo. Habang tumataas ang combo, lumalaki ang points mo. Kapag nagkamali, babalik sa zero ang combo.':
+      'A combo is correct answers in a row. The higher your combo, the more points you get. One mistake sends it back to zero.',
+    '❤️ Buhay': '❤️ Lives',
+    'Sa karamihan ng laro, may 3 buhay ka. Bawat mali, bawas ng isang buhay. Ubos ang buhay, tapos ang laro.':
+      'Most games give you 3 lives. Each mistake costs one life. No lives left, game over.',
+    '⭐ Stars': '⭐ Stars',
+    'Sa Lakbay Pilipinas at Times Tables, puwede kang makakuha ng 1 hanggang 3 stars. Kailangan ng kahit 1 star para mabuksan ang susunod na region.':
+      'In Lakbay Pilipinas and Times Tables you can earn 1 to 3 stars. You need at least 1 star to open the next region.',
+    '🛂 Passport': '🛂 Passport',
+    'Bawat region ay may 5 tatak, isa sa bawat sign (+ − × ÷ 🍧). May bagong "Alam mo ba?" sa bawat tatak, at nagiging ginto ang stamp kapag kumpleto.':
+      'Each region has 5 stamps, one for each sign (+ − × ÷ 🍧). Every stamp unlocks a new "Did you know?", and the stamp turns gold when all 5 are done.',
+    '💡 Tulong': '💡 Hint',
+    'Sa Lakbay Pilipinas at Times Tables, pindutin ang 💡 Tulong kapag nahihirapan ka.': 'In Lakbay Pilipinas and Times Tables, tap 💡 Hint when you get stuck.',
+    '🧠 XP at Level': '🧠 XP and Level',
+    'Bawat laro, may XP ka. Kapag nag-level up, may bagong avatar at title na mabubuksan.': 'Every game gives you XP. When you level up, you unlock a new avatar and title.',
+    '📅 Streak': '📅 Streak',
+    'Maglaro kahit isang beses bawat araw para tumaas ang streak mo. May bonus XP tuwing 7 araw!': 'Play at least once a day to grow your streak. Bonus XP every 7 days!',
+    '📊 Leaderboard': '📊 Leaderboard',
+    'Lalabas sa leaderboard ang score mo sa Ranked, Daily Hamon at Mini Games.': 'Your scores in Ranked, Daily Challenge and Mini Games show on the leaderboard.',
+    '🧭 IPAKITA ULIT ANG TOUR': '🧭 SHOW THE TOUR AGAIN',
+    'SUNOD ▶': 'NEXT ▶', 'GETS! ▶': 'GOT IT! ▶',
+    '👋 Ikaw ito! Pindutin para palitan ang pangalan at avatar mo.': '👋 This is you! Tap here to change your name and avatar.',
+    '⭐ Bawat laro, may XP ka. Kapag nag-level up, may bagong avatar at title!': '⭐ Every game gives you XP. Level up to unlock new avatars and titles!',
+    '🏆 RANKED: 3 buhay, pataasan ng score. Dito ka makakapasok sa leaderboard!': '🏆 RANKED: 3 lives, go for the high score. This is how you get on the leaderboard!',
+    '🗺️ LAKBAY PILIPINAS: libutin ang 18 region. Bawat region, may trivia at tatak sa passport mo.': '🗺️ LAKBAY PILIPINAS: travel all 18 regions. Each region gives you trivia and a passport stamp.',
+    '🌟 DAILY HAMON: bagong hamon araw-araw. Maglaro araw-araw para tumaas ang 🔥 streak mo!': '🌟 DAILY CHALLENGE: a new challenge every day. Play daily to grow your 🔥 streak!',
+    '🪜 HAGDAN: pumili ng isang operation at umakyat. Pahirap nang pahirap!': '🪜 HAGDAN: pick one operation and climb. It keeps getting harder!',
+    '🕹️ MINI GAMES: Jeepney Rush, Sari-Sari Store, Tama o Mali at Times Tables.': '🕹️ MINI GAMES: Jeepney Rush, Sari-Sari Store, True or False and Times Tables.',
+    '🌐 Filipino o English? Pindutin ito para magpalit ng wika.': '🌐 Filipino or English? Tap here to switch languages.',
+    '❓ Kapag nalito ka, nandito ang gabay kung paano maglaro. Handa ka na? Laro na!': "❓ If you get confused, the guide on how to play is right here. Ready? Let's play!",
     // ---- data: titles, ranks, modes, cards, store ----
     'Batang Matalino': 'Smart Kid', 'Batang Henyo': 'Kid Genius', 'Mandirigma ng Numero': 'Number Warrior',
     'Sipnayan Bayani': 'Math Hero', 'Alamat ng Sipnayan': 'Math Legend',
@@ -3542,7 +3632,57 @@ body.lang-en .res-cards:not(:empty)::before { content: '🃏 New cards'; }
     }
     $('#modal-name').classList.add('hidden');
     renderHome();
+    if (!P.toured) setTimeout(startTour, 500);
   }
+
+  /* ---------------- first-time tour + how to play ---------------- */
+  const TOUR = [
+    ['#btn-profile', '👋 Ikaw ito! Pindutin para palitan ang pangalan at avatar mo.'],
+    ['.level-chip', '⭐ Bawat laro, may XP ka. Kapag nag-level up, may bagong avatar at title!'],
+    ['.menu [data-go=ranked]', '🏆 RANKED: 3 buhay, pataasan ng score. Dito ka makakapasok sa leaderboard!'],
+    ['.menu [data-go=classic]', '🗺️ LAKBAY PILIPINAS: libutin ang 18 region. Bawat region, may trivia at tatak sa passport mo.'],
+    ['.menu [data-go=daily]', '🌟 DAILY HAMON: bagong hamon araw-araw. Maglaro araw-araw para tumaas ang 🔥 streak mo!'],
+    ['.menu [data-go=hagdan]', '🪜 HAGDAN: pumili ng isang operation at umakyat. Pahirap nang pahirap!'],
+    ['.menu [data-go=mini]', '🕹️ MINI GAMES: Jeepney Rush, Sari-Sari Store, Tama o Mali at Times Tables.'],
+    ['#btn-lang', '🌐 Filipino o English? Pindutin ito para magpalit ng wika.'],
+    ['#btn-howto', '❓ Kapag nalito ka, nandito ang gabay kung paano maglaro. Handa ka na? Laro na!']
+  ];
+  let tourAt = 0;
+  function startTour() {
+    if (!$('#screen-home').classList.contains('active')) show('home');
+    $('#modal-howto').classList.add('hidden');
+    tourAt = 0;
+    $('#tour').classList.remove('hidden');
+    showTourStep();
+  }
+  function showTourStep() {
+    const [sel, text] = TOUR[tourAt];
+    const target = $(sel);
+    target.scrollIntoView({ block: 'center' });
+    // wait for the scroll to settle before measuring
+    setTimeout(() => {
+      const r = target.getBoundingClientRect(), pad = 6;
+      Object.assign($('#tour-hole').style, { left: r.left - pad + 'px', top: r.top - pad + 'px', width: r.width + pad * 2 + 'px', height: r.height + pad * 2 + 'px' });
+      const tip = $('#tour-tip'), below = r.bottom + 190 < innerHeight;
+      tip.style.top = below ? r.bottom + 16 + 'px' : '';
+      tip.style.bottom = below ? '' : innerHeight - r.top + 16 + 'px';
+      $('#tour-step').textContent = `${tourAt + 1} / ${TOUR.length}`;
+      $('#tour-text').textContent = text;
+      $('#tour-next').textContent = tourAt === TOUR.length - 1 ? 'GETS! ▶' : 'SUNOD ▶';
+      tip.classList.remove('pop'); void tip.offsetWidth; tip.classList.add('pop');
+    }, 250);
+  }
+  function endTour() {
+    $('#tour').classList.add('hidden');
+    P.toured = true;
+    save();
+    window.scrollTo(0, 0);
+  }
+  $('#tour-next').onclick = () => { sfx.tap(); if (++tourAt >= TOUR.length) endTour(); else showTourStep(); };
+  $('#tour-skip').onclick = endTour;
+  $('#btn-howto').onclick = () => { sfx.tap(); $('#modal-howto').classList.remove('hidden'); $('#modal-howto .howto-list').scrollTop = 0; };
+  $('#howto-close').onclick = () => $('#modal-howto').classList.add('hidden');
+  $('#howto-tour').onclick = startTour;
 
   /* ---------------- save code (progress sa Google Sheet) ---------------- */
   const cloudData = () => JSON.stringify(Object.assign({}, P, { queue: [], cloud: undefined }));
@@ -3856,6 +3996,7 @@ body.lang-en .res-cards:not(:empty)::before { content: '🃏 New cards'; }
   show('home');
   // New players, and players who haven't registered their number yet, see the register screen
   if (needsRegister()) openNameModal();
+  else if (!P.toured) setTimeout(startTour, 700);
   // Send anything saved while offline: right away, and again whenever the internet comes back
   function syncNow() { flushQueue(); cloudSave(true); }
   syncNow();
