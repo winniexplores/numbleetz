@@ -757,6 +757,26 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 @keyframes luReveal { 0% { transform: scale(0) rotate(-540deg); opacity: 0; } 70% { transform: scale(1.15) rotate(10deg); opacity: 1; } 100% { transform: none; } }
 @media (prefers-reduced-motion: reduce) { .lu-rays, .lu-title, .lu-av.reveal, .lu-box { animation: none; } }
 
+/* "Alam mo ba?" pop-up */
+.factpop { position: fixed; inset: 0; z-index: 29; display: grid; place-items: center; padding: 16px; background: rgba(4, 3, 14, .88); backdrop-filter: blur(4px); }
+.factpop.hidden { display: none; }
+.fp-box { width: 100%; max-width: 380px; max-height: calc(100dvh - 32px); overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 22px 20px; border-radius: 22px;
+  background: linear-gradient(180deg, #2a1d4d, #150f30); border: 2px solid var(--yellow); box-shadow: 0 0 30px rgba(255, 210, 61, .45); animation: luPop .4s cubic-bezier(.2, 1.5, .4, 1); }
+.fp-top { display: flex; align-items: center; gap: 12px; }
+.fp-em { font-size: 40px; width: 64px; height: 64px; display: grid; place-items: center; flex: none; border-radius: 18px; background: rgba(46, 242, 255, .12); border: 1px solid rgba(46, 242, 255, .4); }
+.fp-top b { display: block; font-size: 19px; }
+.fp-top small { color: var(--muted); font-size: 13px; }
+.fp-title { font-family: var(--display); font-weight: 900; font-size: 26px; letter-spacing: .06em; color: var(--yellow); text-shadow: 0 0 12px var(--yellow); }
+.fp-label { align-self: flex-start; font-size: 13px; font-weight: 800; padding: 4px 12px; border-radius: 999px; background: rgba(46, 242, 255, .14); color: var(--cyan); }
+.fp-text { margin: 0; font-size: 18px; line-height: 1.5; color: var(--text); }
+.fp-box .btn { margin-top: 4px; }
+
+#quizpop .quiz-head { font-size: 18px; text-align: center; }
+#quizpop .quiz-fact { font-size: 17px; }
+#quizpop .linkish { align-self: center; }
+.fact-again { display: block; margin: 10px auto 0; padding: 8px 14px; border-radius: 999px; border: 1px solid rgba(255, 210, 61, .5); background: rgba(255, 210, 61, .1); color: var(--yellow); font: 700 14px var(--body); }
+.quiz-q { font-weight: 800; font-size: 20px; text-align: center; color: var(--text); margin-bottom: 4px; }
+
   </style>
 </head>
 <body>
@@ -955,7 +975,6 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         <div><b id="res-xp">+0</b><small>XP</small></div>
       </div>
       <div class="res-msg" id="res-msg"></div>
-      <div class="quiz" id="res-quiz"></div>
       <button class="btn green big hidden" id="btn-next"></button>
       <button class="btn pink big hidden" id="btn-retry"></button>
       <div class="res-review" id="res-review"></div>
@@ -1055,6 +1074,22 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       <button class="btn cyan" id="fb-send">📨 IPADALA</button>
       <button class="btn ghost small" id="fb-close">✕ ISARA</button>
     </div>
+  </div>
+
+  <!-- "Alam mo ba?" after clearing a Lakbay region -->
+  <div class="factpop hidden" id="factpop">
+    <div class="fp-box">
+      <div class="fp-top"><span class="fp-em" id="fp-em"></span><div><b id="fp-region"></b><small id="fp-sub"></small></div></div>
+      <div class="fp-title">📚 ALAM MO BA?</div>
+      <span class="fp-label" id="fp-label"></span>
+      <p class="fp-text" id="fp-text"></p>
+      <button class="btn yellow big" id="fp-ok">ASTIG! TULOY ▶</button>
+    </div>
+  </div>
+
+  <!-- Bonus quiz after the "Alam mo ba?" -->
+  <div class="factpop hidden" id="quizpop">
+    <div class="fp-box quiz" id="res-quiz"></div>
   </div>
 
   <!-- Level up -->
@@ -2042,19 +2077,20 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     const box = $('#res-quiz');
     box.innerHTML = '';
     box.classList.remove('done');   // otherwise the next quiz can't be answered
-    if (!lvl) return;
+    if (!lvl) return false;
     const pool = [];
     ISLANDS.forEach((isl, i) => clearedOps(i + 1).forEach((op) => {
       if (i + 1 !== lvl || clearedOps(lvl).length > 1) pool.push([i, Object.keys(OPS).indexOf(op)]);
     }));
     const others = pool.filter(([i]) => i + 1 !== lvl);
     const [ri, fi] = pick(others.length ? others : pool, Math.random) || [];
-    if (ri === undefined) return;
+    if (ri === undefined) return false;
     // Wrong choices: regions close by on the map, so it takes real geography to answer
     const near = ISLANDS.map((_, j) => j).filter((j) => j !== ri).sort((a, b) => Math.abs(a - ri) - Math.abs(b - ri)).slice(0, 5);
     const opts = shuffle([ri].concat(shuffle(near, Math.random).slice(0, 2)), Math.random);
     const [label, text] = ISLANDS[ri][3][fi];
-    box.appendChild(el('div', 'quiz-head', '🧠 BONUS QUIZ · Saang region ito?'));
+    box.appendChild(el('div', 'quiz-head', '🧠 BONUS QUIZ · +30 XP'));
+    box.appendChild(el('div', 'quiz-q', 'Saang region ito?'));
     box.appendChild(el('div', 'quiz-fact', `${label}: ${maskRegion(text, ISLANDS[ri][0])}`));
     const row = el('div', 'quiz-opts');
     opts.forEach((j) => {
@@ -2067,12 +2103,40 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
         $$('.quiz-opts button')[opts.indexOf(ri)].classList.add('good');
         if (ok) { P.xp += 30; P.quiz = (P.quiz || 0) + 1; save(); sfx.combo(); confettiSmall(); }
         else sfx.bad();
-        box.appendChild(el('div', 'quiz-res', ok ? '🎉 Tama! +30 XP bonus' : `Sayang! ${ISLANDS[ri][1]} ${ISLANDS[ri][0]} ang tamang sagot.`));
+        box.appendChild(el('div', 'quiz-res', ok ? '🎉 Tama! +30 XP bonus' : `Sayang! ${ISLANDS[ri][1]} ${ISLANDS[ri][0]} ang tamang sagot. Walang bawas, subukan ulit sa susunod! 💪`));
+        const go = el('button', 'btn yellow', 'TULOY ▶');
+        go.onclick = closeQuiz;
+        box.appendChild(go);
+        $('#quiz-skip').classList.add('hidden');
       };
       row.appendChild(b);
     });
     box.appendChild(row);
+    const skip = el('button', 'linkish', 'Laktawan');
+    skip.id = 'quiz-skip';
+    skip.onclick = closeQuiz;
+    box.appendChild(skip);
+    return true;
   }
+  function closeQuiz() { $('#quizpop').classList.add('hidden'); nextPop(); }
+  // Pop-ups after a game, one at a time: the region's "Alam mo ba?" first, then LEVEL UP
+  const popQueue = [];
+  function nextPop() {
+    const show = popQueue.shift();
+    if (show && $('#screen-results').classList.contains('active')) show();
+    else popQueue.length = 0;
+  }
+  function showFact(isl, label, text) {
+    const [name, em, sub] = isl;
+    $('#fp-em').textContent = em;
+    $('#fp-region').textContent = name;
+    $('#fp-sub').textContent = sub;
+    $('#fp-label').textContent = label;
+    $('#fp-text').textContent = text;
+    $('#factpop').classList.remove('hidden');
+    sfx.card();
+  }
+
   // Big full-screen moment when a player levels up, showing what they unlocked
   let luPick = null;
   function showLevelUp(from, to) {
@@ -2100,6 +2164,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   function closeLevelUp(use) {
     if (use && luPick) { P.avatar = luPick; save(); renderHome(); toast(`${luPick} Ito na ang avatar mo!`); }
     $('#levelup').classList.add('hidden');
+    nextPop();
   }
 
   function confettiSmall() {
@@ -2688,6 +2753,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 
   /* ---------------- results ---------------- */
   function endGame() {
+    let popFact = null, popLevel = null;
     if (!G || G.over) return;
     G.over = true;
     const { mode, M } = G;
@@ -2717,7 +2783,12 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
       if (mode === 'classic') {
         const facts = ISLANDS[G.opts.level - 1][3];
         const [label, text] = facts[Object.keys(OPS).indexOf(G.op)] || facts[0];
-        msg += `<div class="fact"><div class="fact-head"><b>📚 Alam mo ba?</b><span>${label}</span></div>${text}</div>`;
+        const isl = ISLANDS[G.opts.level - 1];
+        if (failed) msg += `<div class="fact"><div class="fact-head"><b>📚 Alam mo ba?</b><span>${label}</span></div>${text}</div>`;
+        else {
+          popFact = () => showFact(isl, label, text);
+          msg += `<button class="fact-again" id="fact-again">📚 Basahin ulit ang "Alam mo ba?"</button>`;
+        }
       }
       else msg = `Times table ${G.opts.table}: ${'★'.repeat(stars)}`;
     } else if (M.climb) {
@@ -2779,19 +2850,20 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
     if (msg) parts.push(msg);
     if (record) parts.push('🎉 <b>Bagong record!</b> Ito na ang pinakamataas mo!');
     if (streak) parts.push(`🔥 <b>${streak.count} araw</b> na sunod-sunod kang naglaro!` + (streak.bonus ? ` <b>+${streak.bonus} XP</b> bonus! 🎁` : ''));
-    if (lvlAfter > lvlBefore) {
-      const got = unlocksBetween(lvlBefore, lvlAfter);
-      parts.push(`⬆️ Level up! <b>Lv.${lvlAfter}</b> ka na · <b>${titleOf(lvlAfter)}</b>` +
-        (got.length ? `<br>🎁 Bagong unlock: <b>${got.join(' ')}</b> <small>(palitan sa pangalan mo sa home)</small>` : ''));
-      setTimeout(() => showLevelUp(lvlBefore, lvlAfter), 700);
-    }
+    if (lvlAfter > lvlBefore) popLevel = () => showLevelUp(lvlBefore, lvlAfter);   // shown as a pop-up, not a line here
     if (mode === 'ranked') {
       const R = rankOf(P.best.ranked || 0);
       parts.push(`Rank: <b>${R.icon} ${R.name}</b>`);
     }
     if (mode === 'daily' && !G.ranked) parts.push('Practice lang ito · ang unang laro mo ngayong araw lang ang bilang.');
     $('#res-msg').innerHTML = parts.join('<br>');
-    renderQuiz(mode === 'classic' && stars > 0 ? G.opts.level : 0);
+    // One thing at a time: "Alam mo ba?" → bonus quiz → LEVEL UP
+    const popQuiz = renderQuiz(mode === 'classic' && stars > 0 ? G.opts.level : 0) ? () => $('#quizpop').classList.remove('hidden') : null;
+    popQueue.length = 0;
+    popQueue.push(...[popFact, popQuiz, popLevel].filter(Boolean));
+    if (popQueue.length) setTimeout(nextPop, 800);
+    const again = $('#fact-again');
+    if (again) again.onclick = popFact;
     const rv = $('#res-review');
     rv.innerHTML = '';
     if (G.mistakes.length) {
@@ -3248,6 +3320,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   $('.level-chip').onclick = openNameModal;
   $('#btn-cloud').onclick = openCloud;
   $('#lu-use').onclick = () => closeLevelUp(true);
+  $('#fp-ok').onclick = () => { $('#factpop').classList.add('hidden'); nextPop(); };
   $('#lu-later').onclick = () => closeLevelUp(false);
   $('#reg-privacy').innerHTML = $('#cloud-new .privacy').innerHTML;
   $('#cloud-save').onclick = () => cloudSave(false);
